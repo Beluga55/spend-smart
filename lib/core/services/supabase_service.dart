@@ -79,12 +79,19 @@ class SupabaseService {
   static supabase.User? get currentUser => client.auth.currentUser;
 
   static Future<void> refreshSession() async {
-    await client.auth.refreshSession();
-    final response = await client.auth.getUser();
-    if (response.user != null) {
-      final email = response.user!.email;
-      final isAnon = response.user!.isAnonymous;
-      print('Session refreshed - email: $email, isAnonymous: $isAnon');
+    try {
+      await client.auth.refreshSession();
+      final response = await client.auth.getUser();
+      if (response.user != null) {
+        final email = response.user!.email;
+        final isAnon = response.user!.isAnonymous;
+        print('Session refreshed - email: $email, isAnonymous: $isAnon');
+      }
+    } catch (e) {
+      print('Session refresh failed, signing in anonymously: $e');
+      try {
+        await client.auth.signInAnonymously();
+      } catch (_) {}
     }
   }
 

@@ -15,6 +15,7 @@ import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -126,6 +127,7 @@ void main() async {
   }
 
   await _processRecurringExpenses();
+  await _processMonthlyCarryover();
 
   // Initialize Supabase (silent fail if no config)
   try {
@@ -182,6 +184,60 @@ Future<void> _processRecurringExpenses() async {
       await recurringBox.put(recurring.id, updated);
     }
   }
+}
+
+Future<void> _processMonthlyCarryover() async {
+  final settings = Hive.box('settings');
+  final now = DateTime.now();
+  final currentMonthKey = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+
+  if (settings.get('carryoverMonth') == currentMonthKey) return;
+
+  final prevYear = now.month == 1 ? now.year - 1 : now.year;
+  final prevMonth = now.month == 1 ? 12 : now.month - 1;
+
+  final incomeBox = Hive.box<Income>('incomes');
+  final expenseBox = Hive.box<Expense>('expenses');
+
+  final prevIncome = incomeBox.values
+      .where((i) => i.date.year == prevYear && i.date.month == prevMonth)
+      .fold(0.0, (sum, i) => sum + i.amount);
+
+  final prevExpenses = expenseBox.values
+      .where((e) => e.date.year == prevYear && e.date.month == prevMonth)
+      .fold(0.0, (sum, e) => sum + e.amount);
+
+  final net = prevIncome - prevExpenses;
+  final monthLabel = DateFormat('MMMM yyyy').format(DateTime(prevYear, prevMonth));
+  const uuid = Uuid();
+  final firstOfMonth = DateTime(now.year, now.month, 1);
+
+  if (net > 0) {
+    final income = Income(
+      id: uuid.v4(),
+      amount: net,
+      source: 'Carryover from $monthLabel',
+      date: firstOfMonth,
+      createdAt: now,
+    );
+    await incomeBox.put(income.id, income);
+  } else if (net < 0) {
+    final categoryBox = Hive.box<Category>('categories');
+    final otherCat = categoryBox.values.firstWhere(
+      (c) => c.name == 'Other' && c.categoryType == 'expense',
+    );
+    final expense = Expense(
+      id: uuid.v4(),
+      amount: net.abs(),
+      categoryId: otherCat.id,
+      date: firstOfMonth,
+      note: 'Deficit from $monthLabel',
+      createdAt: now,
+    );
+    await expenseBox.put(expense.id, expense);
+  }
+
+  await settings.put('carryoverMonth', currentMonthKey);
 }
 
 class ExpenseTrackerApp extends ConsumerWidget {

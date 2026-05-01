@@ -36,9 +36,11 @@ class BudgetProgressCard extends ConsumerWidget {
     final successColor = isDark ? AppTheme.darkSuccessColor : AppTheme.successColor;
     final warningColor = isDark ? AppTheme.darkWarningColor : AppTheme.warningColor;
 
+    final criticalColor = isDark ? Colors.white : Colors.red;
+
     Color progressColor = successColor;
     if (isCritical) {
-      progressColor = Colors.white;
+      progressColor = criticalColor;
     } else if (isWarning) {
       progressColor = warningColor;
     }
@@ -101,7 +103,7 @@ class BudgetProgressCard extends ConsumerWidget {
                       : '${currency.symbol}${(-remaining).toStringAsFixed(2)} ${l10n.overBudget}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: isCritical ? Colors.white : textSecondary,
+                    color: isCritical ? criticalColor : textSecondary,
                   ),
                 ),
                 if (isWarning && !isCritical) ...[
@@ -123,7 +125,7 @@ class BudgetProgressCard extends ConsumerWidget {
                   ),
                 ],
                 const SizedBox(height: 12),
-                _buildDailyAllowance(currency, dailyAllowance, textPrimary, textSecondary, isCritical),
+                _buildDailyAllowance(currency, dailyAllowance, textPrimary, textSecondary, isCritical, criticalColor),
                 const SizedBox(height: 8),
                 _buildProjectedSpending(currency, projected, budgetAmount, textPrimary, textSecondary),
               ],
@@ -134,7 +136,7 @@ class BudgetProgressCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildDailyAllowance(dynamic currency, double dailyAllowanceValue, Color textPrimary, Color textSecondary, bool isCritical) {
+  Widget _buildDailyAllowance(dynamic currency, double dailyAllowanceValue, Color textPrimary, Color textSecondary, bool isCritical, Color criticalColor) {
     if (dailyAllowanceValue <= 0) return const SizedBox.shrink();
 
     return Row(
@@ -149,7 +151,7 @@ class BudgetProgressCard extends ConsumerWidget {
           'You can spend ${currency.symbol}${dailyAllowanceValue.toStringAsFixed(2)}/day',
           style: TextStyle(
             fontSize: 12,
-            color: isCritical ? Colors.white.withAlpha(179) : textSecondary,
+            color: isCritical ? criticalColor.withAlpha(179) : textSecondary,
           ),
         ),
       ],

@@ -34,15 +34,9 @@ class DashboardScreen extends ConsumerWidget {
 
     final displayBudget = globalBudget?.limitAmount ?? 0;
 
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
+    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
+    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
 
     return Scaffold(
       appBar: AppBar(
@@ -80,7 +74,6 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Month selector ──
             MonthSelector(
               selectedMonth: selectedMonth,
               onMonthChanged: (month) {
@@ -89,16 +82,12 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // ── Budget alerts (compact) ──
             if (budgetAlerts.isNotEmpty)
               ...budgetAlerts.entries.map(
                 (alert) => Container(
                   width: double.infinity,
                   margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     color: backgroundColor,
                     borderRadius: BorderRadius.circular(10),
@@ -129,13 +118,11 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
 
-            // ── Hero summary: Income / Expense / Balance ──
             SummaryCard(
               title: DateFormat('MMMM yyyy').format(selectedMonth),
               budget: displayBudget > 0 ? displayBudget : null,
             ),
 
-            // ── Budget progress (only if set) ──
             if (displayBudget > 0) ...[
               const SizedBox(height: 16),
               BudgetProgressCard(
@@ -145,30 +132,18 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
 
-            // ── Spending by category ──
             const SizedBox(height: 24),
-            _SectionHeader(
-              title: l10n.spendingByCategory,
-              textPrimary: textPrimary,
-            ),
+            _SectionHeader(title: l10n.spendingByCategory, textPrimary: textPrimary),
             const SizedBox(height: 12),
-            CategoryChart(
-              categoryTotals: categoryTotals,
-              categories: categories,
-            ),
+            CategoryChart(categoryTotals: categoryTotals, categories: categories),
 
-            // ── Daily spending trends ──
             const SizedBox(height: 24),
             _SectionHeader(title: l10n.dailySpending, textPrimary: textPrimary),
             const SizedBox(height: 12),
             const SpendingTrendsChart(),
 
-            // ── Recent transactions ──
             const SizedBox(height: 24),
-            _SectionHeader(
-              title: l10n.recentTransactions,
-              textPrimary: textPrimary,
-            ),
+            _SectionHeader(title: l10n.recentTransactions, textPrimary: textPrimary),
             const SizedBox(height: 12),
             const RecentTransactionsList(),
 
@@ -176,8 +151,6 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
       ),
-
-      // ── Single FAB → opens quick-add sheet ──
       floatingActionButton: FloatingActionButton(
         heroTag: 'dashboard_fab',
         onPressed: () => _showQuickAddSheet(context, ref),
@@ -186,7 +159,6 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  // ── Quick add sheet: Expense / Income / Category ──
   void _showQuickAddSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
@@ -222,14 +194,16 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
         onSave: (amount, categoryId, date, note) {
-          ref
-              .read(expensesProvider.notifier)
-              .addExpense(
-                amount: amount,
-                categoryId: categoryId,
-                date: date,
-                note: note,
-              );
+          ref.read(expensesProvider.notifier).addExpense(
+            amount: amount,
+            categoryId: categoryId,
+            date: date,
+            note: note,
+          );
+          final selected = ref.read(selectedMonthProvider);
+          if (date.year != selected.year || date.month != selected.month) {
+            ref.read(selectedMonthProvider.notifier).state = DateTime(date.year, date.month);
+          }
         },
       ),
     );
@@ -242,14 +216,16 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => IncomeModal(
         onSave: (amount, source, date, note) {
-          ref
-              .read(incomesProvider.notifier)
-              .addIncome(
-                amount: amount,
-                source: source,
-                date: date,
-                note: note,
-              );
+          ref.read(incomesProvider.notifier).addIncome(
+            amount: amount,
+            source: source,
+            date: date,
+            note: note,
+          );
+          final selected = ref.read(selectedMonthProvider);
+          if (date.year != selected.year || date.month != selected.month) {
+            ref.read(selectedMonthProvider.notifier).state = DateTime(date.year, date.month);
+          }
         },
       ),
     );
@@ -289,13 +265,10 @@ class DashboardScreen extends ConsumerWidget {
     return IconButton(
       icon: Icon(icon, color: color),
       onPressed: () {
-        if (syncState.status == SyncStatus.error &&
-            syncState.errorMessage != null) {
+        if (syncState.status == SyncStatus.error && syncState.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                '${l10n?.syncError ?? 'Sync Error'}: ${syncState.errorMessage}',
-              ),
+              content: Text('${l10n?.syncError ?? 'Sync Error'}: ${syncState.errorMessage}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -322,11 +295,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      ),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textPrimary),
     );
   }
 }

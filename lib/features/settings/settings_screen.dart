@@ -658,24 +658,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.unlinkGoogle),
-        content: Text(l10n.unlinkGoogleConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return AlertDialog(
+          title: Text(l10n.unlinkGoogle),
+          content: Text(
+            l10n.unlinkGoogleConfirm,
+            style: TextStyle(color: isDark ? Colors.white : Colors.black87),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
             ),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.unlinkGoogle),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.unlinkGoogle),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {

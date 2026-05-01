@@ -66,12 +66,9 @@ class MonthSelector extends StatelessWidget {
             icon: const Icon(Icons.chevron_right),
             onPressed: () {
               final now = DateTime.now();
-              final nextMonth = DateTime(
-                selectedMonth.year,
-                selectedMonth.month + 1,
-              );
-              if (nextMonth.isBefore(now) ||
-                  (nextMonth.year == now.year && nextMonth.month == now.month)) {
+              final limit = DateTime(now.year, now.month + 1);
+              final nextMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+              if (!nextMonth.isAfter(limit)) {
                 onMonthChanged(nextMonth);
               }
             },
@@ -88,7 +85,7 @@ class MonthSelector extends StatelessWidget {
       context: context,
       initialDate: selectedMonth,
       firstDate: DateTime(2020),
-      lastDate: now,
+      lastDate: DateTime(now.year, now.month + 1),
       initialDatePickerMode: DatePickerMode.year,
     );
     if (result != null) {

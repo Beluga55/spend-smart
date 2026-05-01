@@ -294,7 +294,7 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);

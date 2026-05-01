@@ -41,7 +41,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     _noteController = TextEditingController(text: widget.expense?.note ?? '');
     _selectedDate = widget.expense?.date ?? DateTime.now();
 
-    final categories = ref.read(categoriesProvider);
+    final categories = ref.read(expenseCategoriesProvider);
     _selectedCategoryId = widget.expense?.categoryId ?? categories.first.id;
   }
 
@@ -56,7 +56,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final categories = ref.watch(categoriesProvider);
+    final categories = ref.watch(expenseCategoriesProvider);
     final isEditing = widget.expense != null;
 
     final surfaceColor = isDark
@@ -262,11 +262,12 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(now.year, now.month + 1, now.day),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
