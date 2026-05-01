@@ -20,11 +20,11 @@ class RecurringScreen extends ConsumerWidget {
     final categories = ref.watch(categoriesProvider);
     final currency = ref.watch(currencyProvider);
 
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final dividerColor = Theme.of(context).colorScheme.outline;
 
     return Scaffold(
       appBar: AppBar(

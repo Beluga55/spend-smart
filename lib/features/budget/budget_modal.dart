@@ -48,18 +48,10 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
     final categories = ref.watch(categoriesProvider);
     final selectedMonth = ref.watch(selectedMonthProvider);
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final primaryColor = isDark ? Colors.white : AppTheme.primaryColor;
 
     return Container(
@@ -146,16 +138,10 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
 
   Widget _buildMonthlyBudgetTab(Budget? globalBudget, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -258,18 +244,10 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
     final categoryTotals = ref.watch(categoryTotalsProvider);
     final spent = categoryTotals[category.id] ?? 0;
     final remaining = budget != null ? budget.limitAmount - spent : 0.0;
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final primaryColor = isDark ? Colors.white : AppTheme.primaryColor;
 
     return Container(
@@ -341,16 +319,10 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
     AppLocalizations l10n,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
     final controller = TextEditingController(
       text: existingBudget?.limitAmount.toStringAsFixed(2) ?? '',
     );
@@ -476,3 +448,4 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
     Navigator.pop(context);
   }
 }
+

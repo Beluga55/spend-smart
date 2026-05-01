@@ -82,6 +82,8 @@
   "theme": "主题",
   "light": "浅色",
   "dark": "深色",
+  "catLight": "猫咪浅色 🐱",
+  "catDark": "猫咪深色 🐱",
   "about": "关于",
   "developedBy": "开发者：Justin",
   "approachingMonthlyLimit": "接近月度上限",

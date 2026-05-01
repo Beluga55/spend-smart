@@ -59,21 +59,11 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     final categories = ref.watch(expenseCategoriesProvider);
     final isEditing = widget.expense != null;
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final dividerColor = Theme.of(context).colorScheme.outline;
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     return Container(
@@ -286,3 +276,4 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     }
   }
 }
+

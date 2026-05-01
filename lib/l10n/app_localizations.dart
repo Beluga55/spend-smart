@@ -506,6 +506,18 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get dark;
 
+  /// No description provided for @catLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Cat Light 🐱'**
+  String get catLight;
+
+  /// No description provided for @catDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Cat Dark 🐱'**
+  String get catDark;
+
   /// No description provided for @about.
   ///
   /// In en, this message translates to:

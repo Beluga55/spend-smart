@@ -217,6 +217,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dark => '深色';
 
   @override
+  String get catLight => '猫咪浅色 🐱';
+
+  @override
+  String get catDark => '猫咪深色 🐱';
+
+  @override
   String get about => '关于';
 
   @override

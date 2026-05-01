@@ -12,8 +12,7 @@ import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/features/home_screen.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
-import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
-import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
+import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -247,11 +246,13 @@ class ExpenseTrackerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeProvider);
+    final themeStyle = ref.watch(themeStyleProvider);
+    final isCat = themeStyle == ThemeStyle.catTheme;
 
     return MaterialApp(
       title: AppConstants.appName,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: isCat ? AppTheme.catLightTheme : AppTheme.lightTheme,
+      darkTheme: isCat ? AppTheme.catDarkTheme : AppTheme.darkTheme,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       locale: locale,

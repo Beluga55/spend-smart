@@ -2,28 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
-  final box = Hive.box('settings');
-  return ThemeNotifier(box);
+enum ThemeStyle { defaultTheme, catTheme }
+
+class ThemeState {
+  final ThemeMode mode;
+  final ThemeStyle style;
+  const ThemeState(this.mode, this.style);
+}
+
+final themeStateProvider =
+    StateNotifierProvider<ThemeNotifier, ThemeState>((ref) {
+  return ThemeNotifier(Hive.box('settings'));
 });
 
-class ThemeNotifier extends StateNotifier<ThemeMode> {
+/// Convenience: just the ThemeMode, for MaterialApp.themeMode
+final themeProvider = Provider<ThemeMode>((ref) {
+  return ref.watch(themeStateProvider).mode;
+});
+
+/// Convenience: just the ThemeStyle
+final themeStyleProvider = Provider<ThemeStyle>((ref) {
+  return ref.watch(themeStateProvider).style;
+});
+
+class ThemeNotifier extends StateNotifier<ThemeState> {
   final Box _box;
 
-  ThemeNotifier(this._box) : super(ThemeMode.light) {
-    _loadTheme();
+  ThemeNotifier(this._box)
+      : super(const ThemeState(ThemeMode.light, ThemeStyle.defaultTheme)) {
+    _load();
   }
 
-  void _loadTheme() {
-    final isDark = _box.get('isDarkMode', defaultValue: false);
-    state = isDark ? ThemeMode.dark : ThemeMode.light;
+  void _load() {
+    final isDark = _box.get('isDarkMode', defaultValue: false) as bool;
+    final styleStr = _box.get('themeStyle', defaultValue: 'default') as String;
+    final style =
+        styleStr == 'cat' ? ThemeStyle.catTheme : ThemeStyle.defaultTheme;
+    state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);
+  }
+
+  Future<void> setTheme(ThemeStyle style, bool isDark) async {
+    await _box.put('isDarkMode', isDark);
+    await _box.put('themeStyle', style == ThemeStyle.catTheme ? 'cat' : 'default');
+    state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);
   }
 
   Future<void> toggleTheme() async {
-    final newMode = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    await _box.put('isDarkMode', newMode == ThemeMode.dark);
-    state = newMode;
+    await setTheme(state.style, state.mode != ThemeMode.dark);
   }
 
-  bool get isDarkMode => state == ThemeMode.dark;
+  bool get isDarkMode => state.mode == ThemeMode.dark;
 }

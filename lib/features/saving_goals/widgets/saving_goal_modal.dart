@@ -91,18 +91,10 @@ class _SavingGoalModalState extends State<SavingGoalModal> {
     final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.goal != null;
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
       constraints: BoxConstraints(
@@ -445,3 +437,4 @@ class _SavingGoalModalState extends State<SavingGoalModal> {
     }
   }
 }
+

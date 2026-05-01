@@ -85,21 +85,11 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
     final isEditing = widget.income != null;
     final incomeCategories = ref.watch(incomeCategoriesProvider);
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final backgroundColor = isDark
-        ? AppTheme.darkBackgroundColor
-        : AppTheme.backgroundColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     return Container(
@@ -313,3 +303,4 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
     }
   }
 }
+

@@ -48,9 +48,9 @@ class _SearchFilterModalState extends ConsumerState<SearchFilterModal> {
     final l10n = AppLocalizations.of(context)!;
     final categories = ref.watch(categoriesProvider);
 
-    final backgroundColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
+    final backgroundColor = Theme.of(context).colorScheme.surface;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     return Container(
       decoration: BoxDecoration(

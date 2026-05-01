@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/saving_goals_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
@@ -19,9 +18,9 @@ class SavingGoalsScreen extends ConsumerWidget {
     final goals = ref.watch(savingGoalsProvider);
     final currency = ref.watch(currencyProvider);
 
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final surfaceColor = Theme.of(context).colorScheme.surface;
 
     return Scaffold(
       appBar: AppBar(
@@ -295,3 +294,5 @@ class SavingGoalsScreen extends ConsumerWidget {
     );
   }
 }
+
+

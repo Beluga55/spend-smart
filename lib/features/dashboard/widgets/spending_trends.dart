@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -11,17 +10,17 @@ class SpendingTrendsChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final dailySpending = ref.watch(dailySpendingProvider);
     final selectedMonth = ref.watch(selectedMonthProvider);
     final currency = ref.watch(currencyProvider);
 
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final primaryColor = isDark ? Colors.white : AppTheme.primaryColor;
+    final cs = Theme.of(context).colorScheme;
+    final surfaceColor = cs.surface;
+    final dividerColor = cs.outline;
+    final textPrimary = cs.onSurface;
+    final textSecondary = cs.onSurface.withAlpha(153);
+    final primaryColor = cs.primary;
 
     if (dailySpending.isEmpty) {
       return Container(
@@ -135,14 +134,14 @@ class SpendingTrendsChart extends ConsumerWidget {
                     barTouchData: BarTouchData(
                       enabled: true,
                       touchTooltipData: BarTouchTooltipData(
-                        getTooltipColor: (_) => isDark ? Colors.white : Colors.black,
+                        getTooltipColor: (_) => Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         tooltipMargin: 8,
                         getTooltipItem: (group, groupIndex, rod, rodIndex) {
                           return BarTooltipItem(
                             'Day ${group.x}\n${currency.symbol}${rod.toY.toStringAsFixed(2)}',
                             TextStyle(
-                              color: isDark ? Colors.black : Colors.white,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
@@ -229,3 +228,6 @@ class SpendingTrendsChart extends ConsumerWidget {
     );
   }
 }
+
+
+

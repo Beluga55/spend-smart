@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 enum QuickAddAction { expense, income }
@@ -11,18 +10,11 @@ class QuickAddSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
 
     return Container(
       decoration: BoxDecoration(
@@ -138,3 +130,5 @@ class _QuickAddTile extends StatelessWidget {
     );
   }
 }
+
+

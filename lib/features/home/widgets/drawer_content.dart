@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
@@ -17,19 +16,26 @@ class DrawerContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
     final currentTheme = ref.watch(themeProvider);
     final isDarkMode = currentTheme == ThemeMode.dark;
+    final themeStyle = ref.watch(themeStyleProvider);
+    final isCat = themeStyle == ThemeStyle.catTheme;
+    final themeLabel = isCat
+        ? (isDarkMode ? l10n.catDark : l10n.catLight)
+        : (isDarkMode ? l10n.dark : l10n.light);
+    final themeIcon = isCat
+        ? (isDarkMode ? Icons.nightlight_outlined : Icons.wb_sunny_outlined)
+        : (isDarkMode ? Icons.dark_mode : Icons.light_mode);
     final currentLocale = ref.watch(localeProvider);
     final localeName = currentLocale.languageCode == 'zh' ? l10n.chinese : l10n.english;
 
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     return Drawer(
       backgroundColor: surfaceColor,
@@ -103,14 +109,11 @@ class DrawerContent extends ConsumerWidget {
             const SizedBox(height: 8),
             _buildDrawerItem(
               context: context,
-              icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              icon: themeIcon,
               title: l10n.theme,
               trailing: Text(
-                isDarkMode ? l10n.dark : l10n.light,
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 14,
-                ),
+                themeLabel,
+                style: TextStyle(color: textSecondary, fontSize: 14),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -262,3 +265,4 @@ class DrawerContent extends ConsumerWidget {
     );
   }
 }
+
