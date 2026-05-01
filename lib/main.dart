@@ -10,9 +10,11 @@ import 'package:mobile_expense_tracker/core/models/recurring_expense.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
 import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/features/home_screen.dart';
+import 'package:mobile_expense_tracker/features/onboarding/onboarding_screen.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
+import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -146,7 +148,18 @@ void main() async {
     debugPrint('Supabase initialization skipped: $e');
   }
 
-  runApp(const ProviderScope(child: ExpenseTrackerApp()));
+  final settingsBox = Hive.box('settings');
+  final showOnboarding = settingsBox.get('onboardingComplete', defaultValue: false) != true;
+
+  // Initialize notifications and schedule if enabled
+  await NotificationService.initialize();
+  if (settingsBox.get('reminderEnabled', defaultValue: true) == true) {
+    final hour = settingsBox.get('reminderHour', defaultValue: 20) as int;
+    final minute = settingsBox.get('reminderMinute', defaultValue: 0) as int;
+    await NotificationService.scheduleDailyReminder(TimeOfDay(hour: hour, minute: minute));
+  }
+
+  runApp(ProviderScope(child: ExpenseTrackerApp(showOnboarding: showOnboarding)));
 }
 
 Future<void> _processRecurringExpenses() async {
@@ -240,7 +253,8 @@ Future<void> _processMonthlyCarryover() async {
 }
 
 class ExpenseTrackerApp extends ConsumerWidget {
-  const ExpenseTrackerApp({super.key});
+  final bool showOnboarding;
+  const ExpenseTrackerApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -263,7 +277,7 @@ class ExpenseTrackerApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const HomeScreen(),
+      home: showOnboarding ? const OnboardingScreen() : const HomeScreen(),
     );
   }
 }

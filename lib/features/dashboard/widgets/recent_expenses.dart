@@ -27,7 +27,6 @@ class RecentTransactionsList extends ConsumerWidget {
     final textPrimary = cs.onSurface;
     final textSecondary = cs.onSurface.withAlpha(153);
 
-    // Merge and sort by date descending, take 5
     final items = <_RecentItem>[
       ...recentExpenses.map((e) => _RecentItem.fromExpense(e)),
       ...recentIncomes.map((i) => _RecentItem.fromIncome(i)),
@@ -44,10 +43,7 @@ class RecentTransactionsList extends ConsumerWidget {
           border: Border.all(color: dividerColor),
         ),
         child: Center(
-          child: Text(
-            l10n.noExpensesYet,
-            style: TextStyle(color: textSecondary),
-          ),
+          child: Text(l10n.noExpensesYet, style: TextStyle(color: textSecondary)),
         ),
       );
     }
@@ -58,6 +54,7 @@ class RecentTransactionsList extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: dividerColor),
       ),
+      clipBehavior: Clip.antiAlias,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -70,47 +67,43 @@ class RecentTransactionsList extends ConsumerWidget {
           if (item.isIncome) {
             final income = item.income!;
             final incomeCategories = ref.watch(incomeCategoriesProvider);
-            final cat = getIncomeCategoryForSource(
-              income.source,
-              incomeCategories,
-            );
-            return ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
+            final cat = getIncomeCategoryForSource(income.source, incomeCategories);
+            return Dismissible(
+              key: Key(income.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
-              leading: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Color(cat.color).withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
+              onDismissed: (_) {
+                ref.read(incomesProvider.notifier).deleteIncome(income.id);
+              },
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Color(cat.color).withAlpha(25),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(IconConstants.getIcon(cat.iconName), color: Color(cat.color), size: 22),
                 ),
-                child: Icon(
-                  IconConstants.getIcon(cat.iconName),
-                  color: Color(cat.color),
-                  size: 22,
+                title: Text(
+                  income.note?.isNotEmpty == true ? income.note! : cat.name,
+                  style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              title: Text(
-                income.note?.isNotEmpty == true ? income.note! : cat.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: textPrimary,
+                subtitle: Text(
+                  DateFormat('MMM d, yyyy').format(income.date),
+                  style: TextStyle(color: textSecondary, fontSize: 12),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy').format(income.date),
-                style: TextStyle(color: textSecondary, fontSize: 12),
-              ),
-              trailing: Text(
-                '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF4CAF50),
-                  fontSize: 16,
+                trailing: Text(
+                  '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF4CAF50), fontSize: 16),
                 ),
               ),
             );
@@ -118,54 +111,46 @@ class RecentTransactionsList extends ConsumerWidget {
             final expense = item.expense!;
             Category category = categories.cast<Category>().firstWhere(
               (c) => c.id == expense.categoryId,
-              orElse: () => Category(
-                id: '',
-                name: '',
-                iconName: 'more_horiz',
-                color: 0xFFB8B8B8,
-              ),
+              orElse: () => Category(id: '', name: '', iconName: 'more_horiz', color: 0xFFB8B8B8),
             );
-            final displayName = category.name.isEmpty
-                ? l10n.unknown
-                : category.name;
+            final displayName = category.name.isEmpty ? l10n.unknown : category.name;
 
-            return ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
+            return Dismissible(
+              key: Key(expense.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
-              leading: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Color(category.color).withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
+              onDismissed: (_) {
+                ref.read(expensesProvider.notifier).deleteExpense(expense.id);
+              },
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Color(category.color).withAlpha(25),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(IconConstants.getIcon(category.iconName), color: Color(category.color), size: 22),
                 ),
-                child: Icon(
-                  IconConstants.getIcon(category.iconName),
-                  color: Color(category.color),
-                  size: 22,
+                title: Text(
+                  expense.note?.isNotEmpty == true ? expense.note! : displayName,
+                  style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              title: Text(
-                expense.note?.isNotEmpty == true ? expense.note! : displayName,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: textPrimary,
+                subtitle: Text(
+                  DateFormat('MMM d, yyyy').format(expense.date),
+                  style: TextStyle(color: textSecondary, fontSize: 12),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy').format(expense.date),
-                style: TextStyle(color: textSecondary, fontSize: 12),
-              ),
-              trailing: Text(
-                '-${currency.symbol}${expense.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFFF5252),
-                  fontSize: 16,
+                trailing: Text(
+                  '-${currency.symbol}${expense.amount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFFF5252), fontSize: 16),
                 ),
               ),
             );
@@ -192,4 +177,3 @@ class _RecentItem {
       isIncome = true,
       expense = null;
 }
-

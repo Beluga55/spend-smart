@@ -8,6 +8,7 @@ import 'package:mobile_expense_tracker/features/dashboard/widgets/budget_progres
 import 'package:mobile_expense_tracker/features/dashboard/widgets/category_chart.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/recent_expenses.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/spending_trends.dart';
+import 'package:mobile_expense_tracker/features/dashboard/widgets/streak_banner.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/month_selector.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/quick_add_sheet.dart';
 import 'package:mobile_expense_tracker/features/budget/budget_modal.dart';
@@ -130,6 +131,8 @@ class DashboardScreen extends ConsumerWidget {
                 currentAmount: monthlyTotal,
               ),
             ],
+
+            const StreakBanner(),
 
             const SizedBox(height: 24),
             _SectionHeader(title: l10n.spendingByCategory, textPrimary: textPrimary),
