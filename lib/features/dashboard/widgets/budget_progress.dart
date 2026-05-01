@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
+import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class BudgetProgressCard extends ConsumerWidget {
@@ -29,12 +29,16 @@ class BudgetProgressCard extends ConsumerWidget {
     final dailyAllowance = ref.watch(dailyAllowanceProvider);
     final projected = ref.watch(projectedSpendingProvider);
 
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final successColor = isDark ? AppTheme.darkSuccessColor : AppTheme.successColor;
-    final warningColor = isDark ? AppTheme.darkWarningColor : AppTheme.warningColor;
+    final cs = Theme.of(context).colorScheme;
+    final surfaceColor = cs.surface;
+    final dividerColor = cs.outline;
+    final textPrimary = cs.onSurface;
+    final textSecondary = cs.onSurface.withAlpha(153);
+    final isCat = ref.watch(themeStyleProvider) == ThemeStyle.catTheme;
+    final successColor = (isCat && !isDark)
+        ? const Color(0xFFF4978E)  // soft pink for cat light
+        : (isDark ? const Color(0xFF81C784) : const Color(0xFF4CAF50));
+    final warningColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFF57C00);
 
     final criticalColor = isDark ? Colors.white : Colors.red;
 
@@ -141,17 +145,16 @@ class BudgetProgressCard extends ConsumerWidget {
 
     return Row(
       children: [
-        Icon(
-          Icons.calendar_today,
-          size: 14,
-          color: textSecondary,
-        ),
+        Icon(Icons.calendar_today, size: 14, color: textSecondary),
         const SizedBox(width: 6),
-        Text(
-          'You can spend ${currency.symbol}${dailyAllowanceValue.toStringAsFixed(2)}/day',
-          style: TextStyle(
-            fontSize: 12,
-            color: isCritical ? criticalColor.withAlpha(179) : textSecondary,
+        Expanded(
+          child: Text(
+            'You can spend ${currency.symbol}${dailyAllowanceValue.toStringAsFixed(2)}/day',
+            style: TextStyle(
+              fontSize: 12,
+              color: isCritical ? criticalColor.withAlpha(179) : textSecondary,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -161,27 +164,26 @@ class BudgetProgressCard extends ConsumerWidget {
   Widget _buildProjectedSpending(dynamic currency, double projected, double budgetAmount, Color textPrimary, Color textSecondary) {
     if (budgetAmount <= 0) return const SizedBox.shrink();
 
-    final diff = projected - budgetAmount;
+    // Cap projection at 10x budget to avoid absurd numbers from front-loaded spending
+    final capped = projected.clamp(0, budgetAmount * 10);
+    final diff = capped - budgetAmount;
     final isOverProjected = diff > 0;
 
     return Row(
       children: [
-        Icon(
-          Icons.insights,
-          size: 14,
-          color: textSecondary,
-        ),
+        Icon(Icons.insights, size: 14, color: textSecondary),
         const SizedBox(width: 6),
-        Text(
-          isOverProjected
-            ? 'Projected: ${currency.symbol}${projected.toStringAsFixed(0)} (+${currency.symbol}${diff.toStringAsFixed(0)})'
-            : 'Projected: ${currency.symbol}${projected.toStringAsFixed(0)} (-${currency.symbol}${(-diff).toStringAsFixed(0)})',
-          style: TextStyle(
-            fontSize: 12,
-            color: textSecondary,
+        Expanded(
+          child: Text(
+            isOverProjected
+              ? 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (+${currency.symbol}${diff.toStringAsFixed(0)})'
+              : 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (-${currency.symbol}${(-diff).toStringAsFixed(0)})',
+            style: TextStyle(fontSize: 12, color: textSecondary),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
   }
 }
+

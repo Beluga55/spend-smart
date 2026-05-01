@@ -219,6 +219,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dark => 'Dark';
 
   @override
+  String get catLight => 'Cat Light 🐱';
+
+  @override
+  String get catDark => 'Cat Dark 🐱';
+
+  @override
   String get about => 'About';
 
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/summary_card.dart';
@@ -34,9 +33,9 @@ class DashboardScreen extends ConsumerWidget {
 
     final displayBudget = globalBudget?.limitAmount ?? 0;
 
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
       appBar: AppBar(
@@ -233,7 +232,6 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildSyncStatus(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncNotifierProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = Localizations.of<AppLocalizations>(context, AppLocalizations);
 
     IconData icon;
@@ -246,7 +244,7 @@ class DashboardScreen extends ConsumerWidget {
         break;
       case SyncStatus.pending:
         icon = Icons.cloud_upload_outlined;
-        color = isDark ? Colors.white70 : Colors.grey;
+        color = Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.grey;
         break;
       case SyncStatus.syncing:
         icon = Icons.cloud_sync_outlined;
@@ -299,3 +297,7 @@ class _SectionHeader extends StatelessWidget {
     );
   }
 }
+
+
+
+

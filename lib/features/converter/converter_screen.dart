@@ -37,10 +37,10 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
     final state = ref.watch(currencyConverterProvider);
     final currencies = ref.watch(currencyListProvider);
 
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     final fromCurrency = CurrencyConstants.getCurrency(state.fromCurrency);
     final toCurrency = CurrencyConstants.getCurrency(state.toCurrency);
@@ -410,9 +410,8 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
     Color textSecondary,
     Color surfaceColor,
   ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final dividerColor = Theme.of(context).colorScheme.outline;
 
     showModalBottomSheet(
       context: context,
@@ -541,3 +540,5 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
     }
   }
 }
+
+

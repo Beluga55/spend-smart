@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 
 class MonthSelector extends StatelessWidget {
   final DateTime selectedMonth;
@@ -14,12 +13,12 @@ class MonthSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final primaryColor = isDark ? Colors.white : AppTheme.primaryColor;
+    final cs = Theme.of(context).colorScheme;
+    final surfaceColor = cs.surface;
+    final dividerColor = cs.outline;
+    final textPrimary = cs.onSurface;
+    final textSecondary = cs.onSurface.withAlpha(153);
+    final primaryColor = cs.primary;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -93,3 +92,4 @@ class MonthSelector extends StatelessWidget {
     }
   }
 }
+

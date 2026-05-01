@@ -67,7 +67,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final categories = ref.watch(categoriesProvider);
     final search = ref.watch(searchProvider);
@@ -75,10 +74,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     final monthlyIncomes = ref.watch(monthlyIncomesProvider);
     final hasActiveFilters = search.hasFilters;
 
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
-    final primaryColor = isDark ? Colors.white : AppTheme.primaryColor;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     // Apply category filter to expenses only
     List<Expense> displayExpenses = _selectedCategoryId != null
@@ -106,7 +103,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             ),
       body: transactions.isEmpty
           ? _buildEmptyState(l10n, textSecondary, hasActiveFilters)
-          : _buildTransactionList(grouped, categories, l10n, isDark),
+          : _buildTransactionList(grouped, categories, l10n),
       floatingActionButton: FloatingActionButton(
         heroTag: 'transactions_fab',
         onPressed: () => _showQuickAdd(context),
@@ -220,11 +217,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     Map<DateTime, List<_Transaction>> grouped,
     List<Category> categories,
     AppLocalizations l10n,
-    bool isDark,
   ) {
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -279,17 +273,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   void _showQuickAdd(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
 
     showModalBottomSheet(
       context: context,
@@ -364,17 +351,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   void _showCategoryFilterSheet(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
     final categories = ref.read(categoriesProvider);
 
     showModalBottomSheet(
@@ -515,17 +495,12 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   void _checkBudgetAlert() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final budgetProgress = ref.read(globalBudgetProgressProvider);
     final budget = ref.read(globalBudgetProvider);
 
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     if (budget != null && budgetProgress >= 100) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -623,15 +598,22 @@ class _ExpenseTile extends ConsumerWidget {
     );
     final displayName = category.name.isEmpty ? l10n.unknown : category.name;
 
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
-    return Dismissible(
+    final cs = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cs.outline),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Dismissible(
       key: Key(expense.id),
       direction: DismissDirection.endToStart,
       background: Container(
@@ -697,6 +679,8 @@ class _ExpenseTile extends ConsumerWidget {
         ),
         onTap: () => _showEditExpenseModal(context, ref),
       ),
+    ),
+      ),
     );
   }
 
@@ -742,15 +726,22 @@ class _IncomeTile extends ConsumerWidget {
     final incomeCategories = ref.watch(incomeCategoriesProvider);
     final cat = getIncomeCategoryForSource(income.source, incomeCategories);
 
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
-    return Dismissible(
+    final cs = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cs.outline),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Dismissible(
       key: Key(income.id),
       direction: DismissDirection.endToStart,
       background: Container(
@@ -816,6 +807,8 @@ class _IncomeTile extends ConsumerWidget {
         ),
         onTap: () => _showEditIncomeModal(context, ref),
       ),
+    ),
+      ),
     );
   }
 
@@ -845,3 +838,7 @@ class _IncomeTile extends ConsumerWidget {
     );
   }
 }
+
+
+
+

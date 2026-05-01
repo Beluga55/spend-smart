@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -16,12 +15,12 @@ class CategoryChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
+    final cs = Theme.of(context).colorScheme;
+    final surfaceColor = cs.surface;
+    final dividerColor = cs.outline;
+    final textSecondary = cs.onSurface.withAlpha(153);
 
     if (categoryTotals.isEmpty) {
       return Container(

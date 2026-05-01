@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/constants/currency_constants.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -10,14 +9,13 @@ class CurrencyModal extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currentCurrency = ref.watch(currencyProvider);
 
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
-    final dividerColor = isDark ? AppTheme.darkDividerColor : AppTheme.dividerColor;
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final backgroundColor = isDark ? AppTheme.darkBackgroundColor : AppTheme.backgroundColor;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
       decoration: BoxDecoration(
@@ -94,7 +92,7 @@ class CurrencyModal extends ConsumerWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
@@ -124,7 +122,7 @@ class CurrencyModal extends ConsumerWidget {
                                 Text(
                                   currency.code,
                                   style: TextStyle(
-                                    color: isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary,
+                                    color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -149,3 +147,4 @@ class CurrencyModal extends ConsumerWidget {
     );
   }
 }
+

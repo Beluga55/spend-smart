@@ -33,9 +33,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     final categories = ref.watch(categoriesProvider);
     final globalBudget = ref.watch(globalBudgetProvider);
 
-    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
-    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.textSecondary;
-    final surfaceColor = isDark ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor;
+    final textPrimary = Theme.of(context).colorScheme.onSurface;
+    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final surfaceColor = Theme.of(context).colorScheme.surface;
 
     final currentMonthExpenses = expenses.where((e) =>
       e.date.month == _selectedMonth.month && e.date.year == _selectedMonth.year

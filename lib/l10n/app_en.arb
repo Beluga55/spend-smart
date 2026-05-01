@@ -82,6 +82,8 @@
   "theme": "Theme",
   "light": "Light",
   "dark": "Dark",
+  "catLight": "Cat Light 🐱",
+  "catDark": "Cat Dark 🐱",
   "about": "About",
   "developedBy": "Developed by Justin",
   "approachingMonthlyLimit": "Approaching monthly limit",

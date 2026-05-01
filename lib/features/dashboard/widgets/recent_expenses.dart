@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
@@ -16,25 +15,17 @@ class RecentTransactionsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
     final categories = ref.watch(categoriesProvider);
     final recentExpenses = ref.watch(recentExpensesProvider);
     final recentIncomes = ref.watch(recentIncomesProvider);
 
-    final surfaceColor = isDark
-        ? AppTheme.darkSurfaceColor
-        : AppTheme.surfaceColor;
-    final dividerColor = isDark
-        ? AppTheme.darkDividerColor
-        : AppTheme.dividerColor;
-    final textPrimary = isDark
-        ? AppTheme.darkTextPrimary
-        : AppTheme.textPrimary;
-    final textSecondary = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.textSecondary;
+    final cs = Theme.of(context).colorScheme;
+    final surfaceColor = cs.surface;
+    final dividerColor = cs.outline;
+    final textPrimary = cs.onSurface;
+    final textSecondary = cs.onSurface.withAlpha(153);
 
     // Merge and sort by date descending, take 5
     final items = <_RecentItem>[
@@ -201,3 +192,4 @@ class _RecentItem {
       isIncome = true,
       expense = null;
 }
+
