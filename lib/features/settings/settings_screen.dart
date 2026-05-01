@@ -5,6 +5,8 @@ import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/backup_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
+import 'package:mobile_expense_tracker/core/services/notification_service.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
 import 'package:mobile_expense_tracker/core/services/recurring_sync_service.dart';
 import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
@@ -206,6 +208,60 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             backgroundColor: backgroundColor,
             dividerColor: dividerColor,
             onTap: () => _showThemeModal(context),
+          ),
+          const SizedBox(height: 16),
+          _buildSectionHeader('Notifications', textSecondary),
+          Builder(
+            builder: (context) {
+              final settingsBox = Hive.box('settings');
+              final reminderEnabled = settingsBox.get('reminderEnabled', defaultValue: true) as bool;
+              final reminderHour = settingsBox.get('reminderHour', defaultValue: 20) as int;
+              final reminderMinute = settingsBox.get('reminderMinute', defaultValue: 0) as int;
+              final timeDisplay = TimeOfDay(hour: reminderHour, minute: reminderMinute).format(context);
+              return Column(
+                children: [
+                  _buildSwitchTile(
+                    icon: reminderEnabled ? Icons.notifications_active : Icons.notifications_off_outlined,
+                    title: 'Daily Reminder',
+                    subtitle: reminderEnabled ? 'Every day at $timeDisplay' : 'Disabled',
+                    value: reminderEnabled,
+                    textPrimary: textPrimary,
+                    backgroundColor: backgroundColor,
+                    dividerColor: dividerColor,
+                    onChanged: (val) async {
+                      if (val) {
+                        await NotificationService.scheduleDailyReminder(
+                          TimeOfDay(hour: reminderHour, minute: reminderMinute),
+                        );
+                      } else {
+                        await NotificationService.cancelReminder();
+                      }
+                      setState(() {});
+                    },
+                  ),
+                  if (reminderEnabled)
+                    _buildSettingsTile(
+                      context: context,
+                      icon: Icons.access_time,
+                      title: 'Reminder Time',
+                      trailing: Text(timeDisplay, style: TextStyle(color: textSecondary)),
+                      textPrimary: textPrimary,
+                      backgroundColor: backgroundColor,
+                      dividerColor: dividerColor,
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay(hour: reminderHour, minute: reminderMinute),
+                        );
+                        if (picked != null) {
+                          await NotificationService.scheduleDailyReminder(picked);
+                          setState(() {});
+                        }
+                      },
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 32),
         ],
