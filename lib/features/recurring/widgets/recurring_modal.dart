@@ -44,7 +44,7 @@ class _RecurringModalState extends ConsumerState<RecurringModal> {
     _selectedEndDate = widget.recurring?.endDate;
 
     final categories = ref.read(categoriesProvider);
-    _selectedCategoryId = widget.recurring?.categoryId ?? categories.first.id;
+    _selectedCategoryId = widget.recurring?.categoryId ?? (categories.isNotEmpty ? categories.first.id : '');
   }
 
   @override
@@ -56,7 +56,6 @@ class _RecurringModalState extends ConsumerState<RecurringModal> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final categories = ref.watch(categoriesProvider);
     final isEditing = widget.recurring != null;
 
@@ -151,7 +150,7 @@ class _RecurringModalState extends ConsumerState<RecurringModal> {
                   _buildDateSelector(context, _selectedEndDate, false, textPrimary, textSecondary, backgroundColor, dividerColor),
                 ),
                 const SizedBox(height: 24),
-                _buildActionButtons(isDark, textPrimary, textSecondary, dividerColor),
+                _buildActionButtons(textPrimary, textSecondary, dividerColor),
               ],
               const SizedBox(height: 24),
               SizedBox(
@@ -514,7 +513,7 @@ class _RecurringModalState extends ConsumerState<RecurringModal> {
     );
   }
 
-  Widget _buildActionButtons(bool isDark, Color textPrimary, Color textSecondary, Color dividerColor) {
+  Widget _buildActionButtons(Color textPrimary, Color textSecondary, Color dividerColor) {
     return Row(
       children: [
         if (widget.onToggleActive != null)

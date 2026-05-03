@@ -14,7 +14,6 @@ class RecurringScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final recurringExpenses = ref.watch(recurringExpensesProvider);
     final categories = ref.watch(categoriesProvider);
@@ -77,7 +76,6 @@ class RecurringScreen extends ConsumerWidget {
                   category,
                   currency.symbol,
                   l10n,
-                  isDark,
                   textPrimary,
                   textSecondary,
                   surfaceColor,
@@ -101,7 +99,6 @@ class RecurringScreen extends ConsumerWidget {
     Category category,
     String currencySymbol,
     AppLocalizations l10n,
-    bool isDark,
     Color textPrimary,
     Color textSecondary,
     Color surfaceColor,

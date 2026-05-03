@@ -1351,6 +1351,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disabled'**
   String get reminderDisabled;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @appLock.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock'**
+  String get appLock;
+
+  /// No description provided for @appLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require biometric authentication to open the app'**
+  String get appLockSubtitle;
+
+  /// No description provided for @appLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'App Locked'**
+  String get appLocked;
+
+  /// No description provided for @authenticateToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to continue'**
+  String get authenticateToContinue;
+
+  /// No description provided for @unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlock;
+
+  /// No description provided for @biometricReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock SpendSmart'**
+  String get biometricReason;
+
+  /// No description provided for @biometricNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication is not available on this device'**
+  String get biometricNotAvailable;
+
+  /// No description provided for @biometricSetupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock enabled successfully'**
+  String get biometricSetupSuccess;
+
+  /// No description provided for @biometricSetupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to enable app lock'**
+  String get biometricSetupFailed;
+
+  /// No description provided for @wallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallets'**
+  String get wallets;
+
+  /// No description provided for @wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet;
+
+  /// No description provided for @addWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Wallet'**
+  String get addWallet;
+
+  /// No description provided for @editWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Wallet'**
+  String get editWallet;
+
+  /// No description provided for @walletName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Name'**
+  String get walletName;
+
+  /// No description provided for @enterWalletName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter wallet name'**
+  String get enterWalletName;
+
+  /// No description provided for @walletType.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Type'**
+  String get walletType;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @bankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account'**
+  String get bankAccount;
+
+  /// No description provided for @creditCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Card'**
+  String get creditCard;
+
+  /// No description provided for @eWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'E-Wallet'**
+  String get eWallet;
+
+  /// No description provided for @totalBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Balance'**
+  String get totalBalance;
+
+  /// No description provided for @myWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'My Wallets'**
+  String get myWallets;
+
+  /// No description provided for @noWalletsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallets yet'**
+  String get noWalletsYet;
+
+  /// No description provided for @tapToAddFirstWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your first wallet'**
+  String get tapToAddFirstWallet;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @defaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultLabel;
+
+  /// No description provided for @setAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as Default'**
+  String get setAsDefault;
+
+  /// No description provided for @deleteWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Wallet'**
+  String get deleteWallet;
+
+  /// No description provided for @areYouSureDeleteWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this wallet?'**
+  String get areYouSureDeleteWallet;
+
+  /// No description provided for @transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get transfer;
+
+  /// No description provided for @editTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Transfer'**
+  String get editTransfer;
+
+  /// No description provided for @deleteTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transfer'**
+  String get deleteTransfer;
+
+  /// No description provided for @areYouSureDeleteTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this transfer?'**
+  String get areYouSureDeleteTransfer;
+
+  /// No description provided for @transferBetweenWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Between Wallets'**
+  String get transferBetweenWallets;
+
+  /// No description provided for @fromWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'From Wallet'**
+  String get fromWallet;
+
+  /// No description provided for @toWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'To Wallet'**
+  String get toWallet;
+
+  /// No description provided for @recentTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transfers'**
+  String get recentTransfers;
+
+  /// No description provided for @selectWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Wallet'**
+  String get selectWallet;
+
+  /// No description provided for @noWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Wallet'**
+  String get noWallet;
+
+  /// No description provided for @walletNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet name is required'**
+  String get walletNameRequired;
+
+  /// No description provided for @insufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance in the selected wallet'**
+  String get insufficientBalance;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
 }
 
 class _AppLocalizationsDelegate

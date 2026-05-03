@@ -22,6 +22,9 @@ class Expense extends HiveObject {
   @HiveField(5)
   DateTime createdAt;
 
+  @HiveField(6)
+  String? walletId;
+
   Expense({
     required this.id,
     required this.amount,
@@ -29,6 +32,7 @@ class Expense extends HiveObject {
     required this.date,
     this.note,
     required this.createdAt,
+    this.walletId,
   });
 
   Expense copyWith({
@@ -38,6 +42,7 @@ class Expense extends HiveObject {
     DateTime? date,
     String? note,
     DateTime? createdAt,
+    String? walletId,
   }) {
     return Expense(
       id: id ?? this.id,
@@ -46,6 +51,7 @@ class Expense extends HiveObject {
       date: date ?? this.date,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
+      walletId: walletId ?? this.walletId,
     );
   }
 }

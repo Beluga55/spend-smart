@@ -661,4 +661,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderDisabled => 'Disabled';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get appLock => 'App Lock';
+
+  @override
+  String get appLockSubtitle =>
+      'Require biometric authentication to open the app';
+
+  @override
+  String get appLocked => 'App Locked';
+
+  @override
+  String get authenticateToContinue => 'Authenticate to continue';
+
+  @override
+  String get unlock => 'Unlock';
+
+  @override
+  String get biometricReason => 'Unlock SpendSmart';
+
+  @override
+  String get biometricNotAvailable =>
+      'Biometric authentication is not available on this device';
+
+  @override
+  String get biometricSetupSuccess => 'App lock enabled successfully';
+
+  @override
+  String get biometricSetupFailed => 'Failed to enable app lock';
+
+  @override
+  String get wallets => 'Wallets';
+
+  @override
+  String get wallet => 'Wallet';
+
+  @override
+  String get addWallet => 'Add Wallet';
+
+  @override
+  String get editWallet => 'Edit Wallet';
+
+  @override
+  String get walletName => 'Wallet Name';
+
+  @override
+  String get enterWalletName => 'Enter wallet name';
+
+  @override
+  String get walletType => 'Wallet Type';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get bankAccount => 'Bank Account';
+
+  @override
+  String get creditCard => 'Credit Card';
+
+  @override
+  String get eWallet => 'E-Wallet';
+
+  @override
+  String get totalBalance => 'Total Balance';
+
+  @override
+  String get myWallets => 'My Wallets';
+
+  @override
+  String get noWalletsYet => 'No wallets yet';
+
+  @override
+  String get tapToAddFirstWallet => 'Tap + to add your first wallet';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get defaultLabel => 'Default';
+
+  @override
+  String get setAsDefault => 'Set as Default';
+
+  @override
+  String get deleteWallet => 'Delete Wallet';
+
+  @override
+  String get areYouSureDeleteWallet =>
+      'Are you sure you want to delete this wallet?';
+
+  @override
+  String get transfer => 'Transfer';
+
+  @override
+  String get editTransfer => 'Edit Transfer';
+
+  @override
+  String get deleteTransfer => 'Delete Transfer';
+
+  @override
+  String get areYouSureDeleteTransfer =>
+      'Are you sure you want to delete this transfer?';
+
+  @override
+  String get transferBetweenWallets => 'Transfer Between Wallets';
+
+  @override
+  String get fromWallet => 'From Wallet';
+
+  @override
+  String get toWallet => 'To Wallet';
+
+  @override
+  String get recentTransfers => 'Recent Transfers';
+
+  @override
+  String get selectWallet => 'Select Wallet';
+
+  @override
+  String get noWallet => 'No Wallet';
+
+  @override
+  String get walletNameRequired => 'Wallet name is required';
+
+  @override
+  String get insufficientBalance =>
+      'Insufficient balance in the selected wallet';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get update => 'Update';
 }

@@ -9,17 +9,17 @@ class AppTheme {
   static const Color textPrimary = Color(0xFF000000);
   static const Color textSecondary = Color(0xFF666666);
   static const Color dividerColor = Color(0xFFE0E0E0);
-  static const Color errorColor = Color(0xFF000000);
-  static const Color successColor = Color(0xFF333333);
-  static const Color warningColor = Color(0xFF555555);
+  static const Color errorColor = Color(0xFFD32F2F);
+  static const Color successColor = Color(0xFF388E3C);
+  static const Color warningColor = Color(0xFFF57C00);
 
   static const Color darkBackgroundColor = Color(0xFF1A1A1A);
   static const Color darkSurfaceColor = Color(0xFF2D2D2D);
   static const Color darkTextPrimary = Color(0xFFFFFFFF);
   static const Color darkTextSecondary = Color(0xFFA0A0A0);
   static const Color darkDividerColor = Color(0xFF404040);
-  static const Color darkSuccessColor = Color(0xFFCCCCCC);
-  static const Color darkWarningColor = Color(0xFF999999);
+  static const Color darkSuccessColor = Color(0xFF81C784);
+  static const Color darkWarningColor = Color(0xFFFFB74D);
 
   // ── Calico cat palette ──────────────────────────────────────────────────────
   static const Color catPrimary = Color(0xFFF08080);
@@ -134,7 +134,7 @@ class AppTheme {
         surface: darkSurfaceColor,
         onSurface: darkTextPrimary,
         outline: darkDividerColor,
-        error: Colors.white,
+        error: Color(0xFFEF5350),
       ),
       scaffoldBackgroundColor: darkBackgroundColor,
       textTheme: _soraTextTheme.copyWith(

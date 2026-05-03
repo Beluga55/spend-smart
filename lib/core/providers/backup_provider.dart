@@ -9,6 +9,8 @@ import 'package:mobile_expense_tracker/core/models/budget.dart';
 import 'package:mobile_expense_tracker/core/models/saving_goal.dart';
 import 'package:mobile_expense_tracker/core/models/recurring_expense.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
+import 'package:mobile_expense_tracker/core/models/wallet.dart';
+import 'package:mobile_expense_tracker/core/models/wallet_transfer.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
@@ -21,6 +23,8 @@ class BackupData {
   final List<Map<String, dynamic>> savingGoals;
   final List<Map<String, dynamic>> recurringExpenses;
   final List<Map<String, dynamic>> incomes;
+  final List<Map<String, dynamic>> wallets;
+  final List<Map<String, dynamic>> walletTransfers;
   final DateTime exportedAt;
 
   BackupData({
@@ -30,11 +34,13 @@ class BackupData {
     required this.savingGoals,
     required this.recurringExpenses,
     required this.incomes,
+    required this.wallets,
+    required this.walletTransfers,
     required this.exportedAt,
   });
 
   Map<String, dynamic> toJson() => {
-    'version': 2,
+    'version': 3,
     'exportedAt': exportedAt.toIso8601String(),
     'expenses': expenses,
     'categories': categories,
@@ -42,6 +48,8 @@ class BackupData {
     'savingGoals': savingGoals,
     'recurringExpenses': recurringExpenses,
     'incomes': incomes,
+    'wallets': wallets,
+    'walletTransfers': walletTransfers,
   };
 
   factory BackupData.fromJson(Map<String, dynamic> json) {
@@ -54,6 +62,8 @@ class BackupData {
         json['recurringExpenses'] ?? [],
       ),
       incomes: List<Map<String, dynamic>>.from(json['incomes'] ?? []),
+      wallets: List<Map<String, dynamic>>.from(json['wallets'] ?? []),
+      walletTransfers: List<Map<String, dynamic>>.from(json['walletTransfers'] ?? []),
       exportedAt: DateTime.parse(json['exportedAt']),
     );
   }
@@ -67,6 +77,8 @@ class BackupService {
     final savingGoalBox = Hive.box<SavingGoal>('saving_goals');
     final recurringBox = Hive.box<RecurringExpense>('recurring_expenses');
     final incomeBox = Hive.box<Income>('incomes');
+    final walletBox = Hive.box<Wallet>('wallets');
+    final walletTransferBox = Hive.box<WalletTransfer>('wallet_transfers');
 
     return BackupData(
       expenses: expenseBox.values
@@ -78,6 +90,7 @@ class BackupService {
               'date': e.date.toIso8601String(),
               'note': e.note,
               'createdAt': e.createdAt.toIso8601String(),
+              'walletId': e.walletId,
             },
           )
           .toList(),
@@ -143,6 +156,33 @@ class BackupService {
               'date': i.date.toIso8601String(),
               'note': i.note,
               'createdAt': i.createdAt.toIso8601String(),
+              'walletId': i.walletId,
+            },
+          )
+          .toList(),
+      wallets: walletBox.values
+          .map(
+            (w) => {
+              'id': w.id,
+              'name': w.name,
+              'iconName': w.iconName,
+              'color': w.color,
+              'type': w.type,
+              'isDefault': w.isDefault,
+              'createdAt': w.createdAt.toIso8601String(),
+            },
+          )
+          .toList(),
+      walletTransfers: walletTransferBox.values
+          .map(
+            (t) => {
+              'id': t.id,
+              'fromWalletId': t.fromWalletId,
+              'toWalletId': t.toWalletId,
+              'amount': t.amount,
+              'date': t.date.toIso8601String(),
+              'note': t.note,
+              'createdAt': t.createdAt.toIso8601String(),
             },
           )
           .toList(),
@@ -225,6 +265,8 @@ class BackupService {
     final savingGoalBox = Hive.box<SavingGoal>('saving_goals');
     final recurringBox = Hive.box<RecurringExpense>('recurring_expenses');
     final incomeBox = Hive.box<Income>('incomes');
+    final walletBox = Hive.box<Wallet>('wallets');
+    final walletTransferBox = Hive.box<WalletTransfer>('wallet_transfers');
 
     await expenseBox.clear();
     await categoryBox.clear();
@@ -232,6 +274,8 @@ class BackupService {
     await savingGoalBox.clear();
     await recurringBox.clear();
     await incomeBox.clear();
+    await walletBox.clear();
+    await walletTransferBox.clear();
 
     for (final e in backupData.expenses) {
       final expense = Expense(
@@ -241,6 +285,7 @@ class BackupService {
         date: DateTime.parse(e['date']),
         note: e['note'],
         createdAt: DateTime.parse(e['createdAt']),
+        walletId: e['walletId'],
       );
       await expenseBox.put(expense.id, expense);
     }
@@ -311,8 +356,35 @@ class BackupService {
         date: DateTime.parse(i['date']),
         note: i['note'],
         createdAt: DateTime.parse(i['createdAt']),
+        walletId: i['walletId'],
       );
       await incomeBox.put(income.id, income);
+    }
+
+    for (final w in backupData.wallets) {
+      final wallet = Wallet(
+        id: w['id'],
+        name: w['name'],
+        iconName: w['iconName'],
+        color: w['color'],
+        type: w['type'],
+        isDefault: w['isDefault'] ?? false,
+        createdAt: DateTime.parse(w['createdAt']),
+      );
+      await walletBox.put(wallet.id, wallet);
+    }
+
+    for (final t in backupData.walletTransfers) {
+      final transfer = WalletTransfer(
+        id: t['id'],
+        fromWalletId: t['fromWalletId'],
+        toWalletId: t['toWalletId'],
+        amount: (t['amount'] as num).toDouble(),
+        date: DateTime.parse(t['date']),
+        note: t['note'],
+        createdAt: DateTime.parse(t['createdAt']),
+      );
+      await walletTransferBox.put(transfer.id, transfer);
     }
 
     // Re-seed default expense categories if none exist after restore
@@ -357,6 +429,24 @@ class BackupService {
           ),
         );
       }
+    }
+
+    // Re-seed default wallet if none exist after restore
+    if (walletBox.isEmpty) {
+      const uuid = Uuid();
+      final id = uuid.v4();
+      await walletBox.put(
+        id,
+        Wallet(
+          id: id,
+          name: 'Cash',
+          iconName: 'wallet',
+          color: 0xFF4CAF50,
+          type: 'cash',
+          isDefault: true,
+          createdAt: DateTime.now(),
+        ),
+      );
     }
   }
 }

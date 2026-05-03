@@ -280,7 +280,7 @@ class _SearchFilterModalState extends ConsumerState<SearchFilterModal> {
       context: context,
       initialDate: initialDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
 
     if (picked != null) {

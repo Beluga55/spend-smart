@@ -75,7 +75,7 @@ class RecurringSyncService {
     if (userId == null) return;
 
     final client = SupabaseService.client;
-    final expenseBox = Hive.box<Expense>('expenseBox');
+    final expenseBox = Hive.box<Expense>('expenses');
     final recurringBox = Hive.box<RecurringExpense>('recurring_expenses');
 
     final response = await client
@@ -120,5 +120,3 @@ class RecurringSyncService {
 final recurringSyncServiceProvider = Provider<RecurringSyncService>((ref) {
   return RecurringSyncService(ref);
 });
-
-final autoBackupProvider = StateProvider<bool>((ref) => true);

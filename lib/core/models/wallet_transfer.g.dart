@@ -1,50 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'income.dart';
+part of 'wallet_transfer.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class IncomeAdapter extends TypeAdapter<Income> {
+class WalletTransferAdapter extends TypeAdapter<WalletTransfer> {
   @override
-  final int typeId = 6;
+  final int typeId = 8;
 
   @override
-  Income read(BinaryReader reader) {
+  WalletTransfer read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Income(
+    return WalletTransfer(
       id: fields[0] as String,
-      amount: fields[1] as double,
-      source: fields[2] as String,
-      date: fields[3] as DateTime,
-      note: fields[4] as String?,
-      createdAt: fields[5] as DateTime,
-      walletId: fields[6] as String?,
+      fromWalletId: fields[1] as String,
+      toWalletId: fields[2] as String,
+      amount: fields[3] as double,
+      date: fields[4] as DateTime,
+      note: fields[5] as String?,
+      createdAt: fields[6] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Income obj) {
+  void write(BinaryWriter writer, WalletTransfer obj) {
     writer
       ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.amount)
+      ..write(obj.fromWalletId)
       ..writeByte(2)
-      ..write(obj.source)
+      ..write(obj.toWalletId)
       ..writeByte(3)
-      ..write(obj.date)
+      ..write(obj.amount)
       ..writeByte(4)
-      ..write(obj.note)
+      ..write(obj.date)
       ..writeByte(5)
-      ..write(obj.createdAt)
+      ..write(obj.note)
       ..writeByte(6)
-      ..write(obj.walletId);
+      ..write(obj.createdAt);
   }
 
   @override
@@ -53,7 +53,7 @@ class IncomeAdapter extends TypeAdapter<Income> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IncomeAdapter &&
+      other is WalletTransferAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

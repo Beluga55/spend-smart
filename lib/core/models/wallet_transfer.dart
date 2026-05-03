@@ -1,57 +1,57 @@
 import 'package:hive/hive.dart';
 
-part 'income.g.dart';
+part 'wallet_transfer.g.dart';
 
-@HiveType(typeId: 6)
-class Income extends HiveObject {
+@HiveType(typeId: 8)
+class WalletTransfer extends HiveObject {
   @HiveField(0)
   String id;
 
   @HiveField(1)
-  double amount;
+  String fromWalletId;
 
   @HiveField(2)
-  String source;
+  String toWalletId;
 
   @HiveField(3)
-  DateTime date;
+  double amount;
 
   @HiveField(4)
-  String? note;
+  DateTime date;
 
   @HiveField(5)
-  DateTime createdAt;
+  String? note;
 
   @HiveField(6)
-  String? walletId;
+  DateTime createdAt;
 
-  Income({
+  WalletTransfer({
     required this.id,
+    required this.fromWalletId,
+    required this.toWalletId,
     required this.amount,
-    required this.source,
     required this.date,
     this.note,
     required this.createdAt,
-    this.walletId,
   });
 
-  Income copyWith({
+  WalletTransfer copyWith({
     String? id,
+    String? fromWalletId,
+    String? toWalletId,
     double? amount,
-    String? source,
     DateTime? date,
     String? note,
     DateTime? createdAt,
-    String? walletId,
   }) {
-    return Income(
+    return WalletTransfer(
       id: id ?? this.id,
+      fromWalletId: fromWalletId ?? this.fromWalletId,
+      toWalletId: toWalletId ?? this.toWalletId,
       amount: amount ?? this.amount,
-      source: source ?? this.source,
       date: date ?? this.date,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
-      walletId: walletId ?? this.walletId,
     );
   }
 }

@@ -1,50 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'income.dart';
+part of 'wallet.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class IncomeAdapter extends TypeAdapter<Income> {
+class WalletAdapter extends TypeAdapter<Wallet> {
   @override
-  final int typeId = 6;
+  final int typeId = 7;
 
   @override
-  Income read(BinaryReader reader) {
+  Wallet read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Income(
+    return Wallet(
       id: fields[0] as String,
-      amount: fields[1] as double,
-      source: fields[2] as String,
-      date: fields[3] as DateTime,
-      note: fields[4] as String?,
-      createdAt: fields[5] as DateTime,
-      walletId: fields[6] as String?,
+      name: fields[1] as String,
+      iconName: fields[2] as String,
+      color: fields[3] as int,
+      type: fields[4] as String,
+      isDefault: fields[5] as bool,
+      createdAt: fields[6] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Income obj) {
+  void write(BinaryWriter writer, Wallet obj) {
     writer
       ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.amount)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.source)
+      ..write(obj.iconName)
       ..writeByte(3)
-      ..write(obj.date)
+      ..write(obj.color)
       ..writeByte(4)
-      ..write(obj.note)
+      ..write(obj.type)
       ..writeByte(5)
-      ..write(obj.createdAt)
+      ..write(obj.isDefault)
       ..writeByte(6)
-      ..write(obj.walletId);
+      ..write(obj.createdAt);
   }
 
   @override
@@ -53,7 +53,7 @@ class IncomeAdapter extends TypeAdapter<Income> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IncomeAdapter &&
+      other is WalletAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -6,6 +6,7 @@ import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/models/expense.dart';
+import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -347,7 +348,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
 
               final category = ref.watch(categoriesProvider).firstWhere(
                 (c) => c.id == categoryId,
-                orElse: () => throw Exception('Category not found'),
+                orElse: () => Category(
+                  id: categoryId,
+                  name: l10n.unknown,
+                  iconName: 'help_outline',
+                  color: 0xFF999999,
+                  isDefault: false,
+                  categoryType: 'expense',
+                ),
               );
 
               return Padding(
