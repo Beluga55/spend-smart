@@ -20,103 +20,108 @@ class ThemeModal extends ConsumerWidget {
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      padding: EdgeInsets.only(
-        left: 24,
-        top: 24,
-        right: 24,
-        bottom: 24 + MediaQuery.of(context).padding.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(color: dividerColor, borderRadius: BorderRadius.circular(2)),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Cat ears when cat theme is active
-          if (currentStyle == ThemeStyle.catTheme)
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 24,
+          top: 24,
+          right: 24,
+          bottom: 24 + MediaQuery.of(context).padding.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Center(
-              child: Text('🐱', style: TextStyle(fontSize: 36)),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: dividerColor, borderRadius: BorderRadius.circular(2)),
+              ),
             ),
-          if (currentStyle == ThemeStyle.catTheme) const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(l10n.theme, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary)),
-              IconButton(icon: Icon(Icons.close, color: textPrimary), onPressed: () => Navigator.pop(context)),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _ThemeOption(
-            label: l10n.light,
-            icon: Icons.light_mode_outlined,
-            swatch: AppTheme.backgroundColor,
-            swatchBorder: AppTheme.dividerColor,
-            isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.light,
-            textPrimary: textPrimary,
-            backgroundColor: backgroundColor,
-            dividerColor: dividerColor,
-            onTap: () {
-              ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, false);
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 12),
-          _ThemeOption(
-            label: l10n.dark,
-            icon: Icons.dark_mode_outlined,
-            swatch: AppTheme.darkBackgroundColor,
-            swatchBorder: AppTheme.darkDividerColor,
-            isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.dark,
-            textPrimary: textPrimary,
-            backgroundColor: backgroundColor,
-            dividerColor: dividerColor,
-            onTap: () {
-              ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, true);
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 12),
-          _ThemeOption(
-            label: l10n.catLight,
-            icon: Icons.wb_sunny_outlined,
-            swatch: AppTheme.catBackground,
-            swatchBorder: AppTheme.catPrimary,
-            isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.light,
-            textPrimary: textPrimary,
-            backgroundColor: backgroundColor,
-            dividerColor: dividerColor,
-            onTap: () {
-              ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, false);
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 12),
-          _ThemeOption(
-            label: l10n.catDark,
-            icon: Icons.nightlight_outlined,
-            swatch: AppTheme.catDarkBackground,
-            swatchBorder: AppTheme.catDarkPrimary,
-            isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.dark,
-            textPrimary: textPrimary,
-            backgroundColor: backgroundColor,
-            dividerColor: dividerColor,
-            onTap: () {
-              ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, true);
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
+            const SizedBox(height: 20),
+            // Cat ears when cat theme is active
+            if (currentStyle == ThemeStyle.catTheme)
+              Center(
+                child: Text('🐱', style: TextStyle(fontSize: 36)),
+              ),
+            if (currentStyle == ThemeStyle.catTheme) const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(l10n.theme, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary)),
+                IconButton(icon: Icon(Icons.close, color: textPrimary), onPressed: () => Navigator.pop(context)),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _ThemeOption(
+              label: l10n.light,
+              icon: Icons.light_mode_outlined,
+              swatch: AppTheme.backgroundColor,
+              swatchBorder: AppTheme.dividerColor,
+              isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.light,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, false);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _ThemeOption(
+              label: l10n.dark,
+              icon: Icons.dark_mode_outlined,
+              swatch: AppTheme.darkBackgroundColor,
+              swatchBorder: AppTheme.darkDividerColor,
+              isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.dark,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, true);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _ThemeOption(
+              label: l10n.catLight,
+              icon: Icons.wb_sunny_outlined,
+              swatch: AppTheme.catBackground,
+              swatchBorder: AppTheme.catPrimary,
+              isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.light,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, false);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _ThemeOption(
+              label: l10n.catDark,
+              icon: Icons.nightlight_outlined,
+              swatch: AppTheme.catDarkBackground,
+              swatchBorder: AppTheme.catDarkPrimary,
+              isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.dark,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, true);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -187,5 +192,3 @@ class _ThemeOption extends StatelessWidget {
     );
   }
 }
-
-

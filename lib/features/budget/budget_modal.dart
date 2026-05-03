@@ -45,7 +45,7 @@ class _BudgetModalState extends ConsumerState<BudgetModal>
     final l10n = AppLocalizations.of(context)!;
     final globalBudget = ref.watch(globalBudgetProvider);
     final categoryBudgets = ref.watch(categoryBudgetsProvider);
-    final categories = ref.watch(categoriesProvider);
+    final categories = ref.watch(expenseCategoriesProvider);
     final selectedMonth = ref.watch(selectedMonthProvider);
 
     final surfaceColor = Theme.of(context).colorScheme.surface;

@@ -635,4 +635,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recentTransactions => '最近交易';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get dailyReminder => '每日提醒';
+
+  @override
+  String get reminderTime => '提醒时间';
+
+  @override
+  String reminderEveryDayAt(String time) {
+    return '每天 $time';
+  }
+
+  @override
+  String get reminderDisabled => '已禁用';
 }

@@ -210,7 +210,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onTap: () => _showThemeModal(context),
           ),
           const SizedBox(height: 16),
-          _buildSectionHeader('Notifications', textSecondary),
+          _buildSectionHeader(l10n.notifications, textSecondary),
           Builder(
             builder: (context) {
               final settingsBox = Hive.box('settings');
@@ -222,8 +222,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   _buildSwitchTile(
                     icon: reminderEnabled ? Icons.notifications_active : Icons.notifications_off_outlined,
-                    title: 'Daily Reminder',
-                    subtitle: reminderEnabled ? 'Every day at $timeDisplay' : 'Disabled',
+                    title: l10n.dailyReminder,
+                    subtitle: reminderEnabled ? l10n.reminderEveryDayAt(timeDisplay) : l10n.reminderDisabled,
                     value: reminderEnabled,
                     textPrimary: textPrimary,
                     backgroundColor: backgroundColor,
@@ -243,7 +243,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     _buildSettingsTile(
                       context: context,
                       icon: Icons.access_time,
-                      title: 'Reminder Time',
+                      title: l10n.reminderTime,
                       trailing: Text(timeDisplay, style: TextStyle(color: textSecondary)),
                       textPrimary: textPrimary,
                       backgroundColor: backgroundColor,
@@ -669,6 +669,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (context) => const ThemeModal(),
     );
   }

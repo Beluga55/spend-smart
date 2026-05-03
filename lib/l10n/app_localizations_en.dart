@@ -644,4 +644,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recentTransactions => 'Recent Transactions';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get dailyReminder => 'Daily Reminder';
+
+  @override
+  String get reminderTime => 'Reminder Time';
+
+  @override
+  String reminderEveryDayAt(String time) {
+    return 'Every day at $time';
+  }
+
+  @override
+  String get reminderDisabled => 'Disabled';
 }

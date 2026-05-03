@@ -619,7 +619,7 @@ class _ExpenseTile extends ConsumerWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: errorColor,
+        color: Colors.red,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       confirmDismiss: (direction) async {
@@ -627,7 +627,7 @@ class _ExpenseTile extends ConsumerWidget {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(l10n.deleteExpense),
-            content: Text(l10n.areYouSureDeleteExpense),
+            content: Text(l10n.areYouSureDeleteExpense, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -747,7 +747,7 @@ class _IncomeTile extends ConsumerWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: errorColor,
+        color: Colors.red,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       confirmDismiss: (direction) async {
@@ -755,7 +755,7 @@ class _IncomeTile extends ConsumerWidget {
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(l10n.deleteIncome),
-            content: Text(l10n.areYouSureDeleteIncome),
+            content: Text(l10n.areYouSureDeleteIncome, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),

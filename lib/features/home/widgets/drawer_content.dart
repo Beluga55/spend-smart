@@ -120,6 +120,7 @@ class DrawerContent extends ConsumerWidget {
                 showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
+                  useSafeArea: true,
                   builder: (context) => const ThemeModal(),
                 );
               },

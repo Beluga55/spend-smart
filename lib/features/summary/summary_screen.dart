@@ -58,7 +58,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         title: Text(l10n.monthlySummary),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -237,7 +237,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     final maxSpending = weeklySpending.isEmpty ? 1.0 : weeklySpending.reduce((a, b) => a > b ? a : b);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
@@ -317,7 +317,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     final total = expenses.fold(0.0, (sum, e) => sum + e.amount);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
@@ -424,7 +424,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: BorderRadius.circular(16),

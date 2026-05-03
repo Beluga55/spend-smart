@@ -1,4 +1,4 @@
-{
+﻿{
   "@@locale": "zh",
   "appTitle": "支出追踪",
   "dashboard": "仪表盘",
@@ -257,5 +257,15 @@
   "transactions": "交易记录",
   "expenseCategories": "添加支出分类",
   "incomeCategories": "添加收入分类",
-  "recentTransactions": "最近交易"
+  "recentTransactions": "最近交易",
+  "notifications": "通知",
+  "dailyReminder": "每日提醒",
+  "reminderTime": "提醒时间",
+  "reminderEveryDayAt": "每天 {time}",
+  "@reminderEveryDayAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "reminderDisabled": "已禁用"
 }

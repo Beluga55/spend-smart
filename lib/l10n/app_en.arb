@@ -257,5 +257,15 @@
   "transactions": "Transactions",
   "expenseCategories": "Add Expense Category",
   "incomeCategories": "Add Income Category",
-  "recentTransactions": "Recent Transactions"
+  "recentTransactions": "Recent Transactions",
+  "notifications": "Notifications",
+  "dailyReminder": "Daily Reminder",
+  "reminderTime": "Reminder Time",
+  "reminderEveryDayAt": "Every day at {time}",
+  "@reminderEveryDayAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "reminderDisabled": "Disabled"
 }

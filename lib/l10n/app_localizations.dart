@@ -1321,6 +1321,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recent Transactions'**
   String get recentTransactions;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @dailyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reminder'**
+  String get dailyReminder;
+
+  /// No description provided for @reminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder Time'**
+  String get reminderTime;
+
+  /// No description provided for @reminderEveryDayAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day at {time}'**
+  String reminderEveryDayAt(String time);
+
+  /// No description provided for @reminderDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get reminderDisabled;
 }
 
 class _AppLocalizationsDelegate
