@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_expense_tracker/features/home/widgets/drawer_content.dart';
 import 'package:mobile_expense_tracker/features/dashboard/dashboard_screen.dart';
 import 'package:mobile_expense_tracker/features/expenses/expenses_screen.dart';
+import 'package:mobile_expense_tracker/features/wallets/wallets_screen.dart';
 import 'package:mobile_expense_tracker/features/categories/categories_screen.dart';
 import 'package:mobile_expense_tracker/features/saving_goals/saving_goals_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     ExpensesScreen(),
+    WalletsScreen(),
     CategoriesScreen(),
     SavingGoalsScreen(),
   ];
@@ -44,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.receipt_long_outlined),
               activeIcon: const Icon(Icons.receipt_long),
               label: l10n.transactions,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.account_balance_wallet_outlined),
+              activeIcon: const Icon(Icons.account_balance_wallet),
+              label: l10n.wallets,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.category_outlined),

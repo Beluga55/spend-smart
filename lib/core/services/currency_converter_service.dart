@@ -70,6 +70,8 @@ class CurrencyConverterService {
     final fromRate = rates[from] ?? 1.0;
     final toRate = rates[to] ?? 1.0;
 
+    if (fromRate == 0.0) return 0.0;
+
     final amountInBase = amount / fromRate;
     return amountInBase * toRate;
   }

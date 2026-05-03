@@ -22,7 +22,7 @@ class CategoryAdapter extends TypeAdapter<Category> {
       iconName: fields[2] as String,
       color: fields[3] as int,
       isDefault: fields[4] as bool,
-      categoryType: (fields[5] as String?) ?? 'expense',
+      categoryType: fields[5] as String,
     );
   }
 

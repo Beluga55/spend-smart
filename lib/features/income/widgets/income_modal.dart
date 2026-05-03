@@ -7,6 +7,7 @@ import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
+import 'package:mobile_expense_tracker/core/providers/wallet_provider.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 /// Get the income category for display. Falls back to matching by name, then placeholder.
@@ -34,7 +35,7 @@ Category getIncomeCategoryForSource(
 
 class IncomeModal extends ConsumerStatefulWidget {
   final Income? income;
-  final Function(double amount, String source, DateTime date, String? note)
+  final Function(double amount, String source, DateTime date, String? note, String? walletId)
   onSave;
   final VoidCallback? onDelete;
 
@@ -55,6 +56,7 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
   late TextEditingController _noteController;
   late String _selectedSource;
   late DateTime _selectedDate;
+  String? _selectedWalletId;
 
   @override
   void initState() {
@@ -64,6 +66,7 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
     );
     _noteController = TextEditingController(text: widget.income?.note ?? '');
     _selectedDate = widget.income?.date ?? DateTime.now();
+    _selectedWalletId = widget.income?.walletId;
 
     final incomeCategories = ref.read(incomeCategoriesProvider);
     _selectedSource =
@@ -84,6 +87,7 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
     final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.income != null;
     final incomeCategories = ref.watch(incomeCategoriesProvider);
+    final wallets = ref.watch(walletsProvider);
 
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
@@ -198,11 +202,13 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(cat.name),
+                        Text(cat.name, style: TextStyle(color: textPrimary)),
                       ],
                     ),
                   );
                 }).toList(),
+                style: TextStyle(color: textPrimary),
+                dropdownColor: surfaceColor,
                 onChanged: (value) {
                   if (value != null) setState(() => _selectedSource = value);
                 },
@@ -263,6 +269,56 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
                   fillColor: backgroundColor,
                 ),
               ),
+              const SizedBox(height: 20),
+              Text(
+                l10n.wallet,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: _selectedWalletId,
+                decoration: InputDecoration(
+                  hintText: l10n.selectWallet,
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: null,
+                    child: Text(l10n.noWallet),
+                  ),
+                  ...wallets.map((wallet) {
+                    return DropdownMenuItem(
+                      value: wallet.id,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: Color(wallet.color).withAlpha(25),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              IconConstants.getIcon(wallet.iconName),
+                              color: Color(wallet.color),
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(wallet.name, style: TextStyle(color: textPrimary)),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+                style: TextStyle(color: textPrimary),
+                dropdownColor: surfaceColor,
+                onChanged: (value) {
+                  setState(() => _selectedWalletId = value);
+                },
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -298,7 +354,7 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
           ? null
           : _noteController.text.trim();
 
-      widget.onSave(amount, _selectedSource, _selectedDate, note);
+      widget.onSave(amount, _selectedSource, _selectedDate, note, _selectedWalletId);
       Navigator.pop(context);
     }
   }

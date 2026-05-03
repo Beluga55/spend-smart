@@ -8,6 +8,8 @@ import 'package:mobile_expense_tracker/core/models/budget.dart';
 import 'package:mobile_expense_tracker/core/models/saving_goal.dart';
 import 'package:mobile_expense_tracker/core/models/recurring_expense.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
+import 'package:mobile_expense_tracker/core/models/wallet.dart';
+import 'package:mobile_expense_tracker/core/models/wallet_transfer.dart';
 import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/features/home_screen.dart';
 import 'package:mobile_expense_tracker/features/onboarding/onboarding_screen.dart';
@@ -15,6 +17,8 @@ import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
+import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
+import 'package:mobile_expense_tracker/features/lock/lock_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -32,6 +36,8 @@ void main() async {
   Hive.registerAdapter(RecurringExpenseAdapter());
   Hive.registerAdapter(RecurringFrequencyAdapter());
   Hive.registerAdapter(IncomeAdapter());
+  Hive.registerAdapter(WalletAdapter());
+  Hive.registerAdapter(WalletTransferAdapter());
 
   await Hive.openBox<Expense>('expenses');
   await Hive.openBox<Category>('categories');
@@ -39,6 +45,8 @@ void main() async {
   await Hive.openBox<SavingGoal>('saving_goals');
   await Hive.openBox<RecurringExpense>('recurring_expenses');
   await Hive.openBox<Income>('incomes');
+  await Hive.openBox<Wallet>('wallets');
+  await Hive.openBox<WalletTransfer>('wallet_transfers');
   await Hive.openBox('settings');
 
   final categoryBox = Hive.box<Category>('categories');
@@ -127,6 +135,25 @@ void main() async {
     await categoryBox.delete(key);
   }
 
+  // Seed default wallet if none exist
+  final walletBox = Hive.box<Wallet>('wallets');
+  if (walletBox.isEmpty) {
+    const uuid = Uuid();
+    final id = uuid.v4();
+    await walletBox.put(
+      id,
+      Wallet(
+        id: id,
+        name: 'Cash',
+        iconName: 'wallet',
+        color: 0xFF4CAF50,
+        type: 'cash',
+        isDefault: true,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
   await _processRecurringExpenses();
   await _processMonthlyCarryover();
 
@@ -178,22 +205,26 @@ Future<void> _processRecurringExpenses() async {
     );
     if (startDay.isAfter(today)) continue;
 
-    if (recurring.lastCreated == null ||
-        recurring.lastCreated!.month != now.month ||
-        recurring.lastCreated!.year != now.year) {
+    // Generate all missed occurrences with correct dates
+    var current = recurring;
+    var nextDate = current.lastCreated == null ? startDay : current.getNextDueDate();
+
+    while (nextDate != null && !nextDate.isAfter(today)) {
       const uuid = Uuid();
       final expense = Expense(
         id: uuid.v4(),
-        amount: recurring.amount,
-        categoryId: recurring.categoryId,
-        date: today,
-        note: recurring.note,
+        amount: current.amount,
+        categoryId: current.categoryId,
+        date: nextDate,
+        note: current.note,
         createdAt: now,
       );
       await expenseBox.put(expense.id, expense);
 
-      final updated = recurring.copyWith(lastCreated: now);
-      await recurringBox.put(recurring.id, updated);
+      current = current.copyWith(lastCreated: nextDate);
+      await recurringBox.put(current.id, current);
+
+      nextDate = current.getNextDueDate();
     }
   }
 }
@@ -237,11 +268,22 @@ Future<void> _processMonthlyCarryover() async {
     final categoryBox = Hive.box<Category>('categories');
     final otherCat = categoryBox.values.firstWhere(
       (c) => c.name == 'Other' && c.categoryType == 'expense',
+      orElse: () => categoryBox.values.firstWhere(
+        (c) => c.categoryType == 'expense',
+        orElse: () => Category(
+          id: '',
+          name: 'Unknown',
+          iconName: 'help_outline',
+          color: 0xFF999999,
+          isDefault: true,
+          categoryType: 'expense',
+        ),
+      ),
     );
     final expense = Expense(
       id: uuid.v4(),
       amount: net.abs(),
-      categoryId: otherCat.id,
+      categoryId: otherCat.id.isEmpty ? 'unknown' : otherCat.id,
       date: firstOfMonth,
       note: 'Deficit from $monthLabel',
       createdAt: now,
@@ -252,12 +294,29 @@ Future<void> _processMonthlyCarryover() async {
   await settings.put('carryoverMonth', currentMonthKey);
 }
 
-class ExpenseTrackerApp extends ConsumerWidget {
+class ExpenseTrackerApp extends ConsumerStatefulWidget {
   final bool showOnboarding;
   const ExpenseTrackerApp({super.key, required this.showOnboarding});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExpenseTrackerApp> createState() => _ExpenseTrackerAppState();
+}
+
+class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
+  bool _isLocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLocked = BiometricService.isEnabled();
+  }
+
+  void _onUnlocked() {
+    setState(() => _isLocked = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeProvider);
     final themeStyle = ref.watch(themeStyleProvider);
@@ -277,7 +336,11 @@ class ExpenseTrackerApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: showOnboarding ? const OnboardingScreen() : const HomeScreen(),
+      home: _isLocked
+          ? LockScreen(onUnlocked: _onUnlocked)
+          : widget.showOnboarding
+              ? const OnboardingScreen()
+              : const HomeScreen(),
     );
   }
 }

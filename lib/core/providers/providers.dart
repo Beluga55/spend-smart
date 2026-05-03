@@ -44,6 +44,7 @@ class ExpensesNotifier extends StateNotifier<List<Expense>> {
     required String categoryId,
     required DateTime date,
     String? note,
+    String? walletId,
   }) async {
     const uuid = Uuid();
     final expense = Expense(
@@ -53,6 +54,7 @@ class ExpensesNotifier extends StateNotifier<List<Expense>> {
       date: date,
       note: note,
       createdAt: DateTime.now(),
+      walletId: walletId,
     );
     await _box.put(expense.id, expense);
     _refresh();
@@ -357,7 +359,7 @@ final monthlyHistoryProvider = Provider<Map<String, double>>((ref) {
     monthlyTotals[key] = (monthlyTotals[key] ?? 0) + expense.amount;
   }
 
-  final sortedKeys = monthlyTotals.keys.toList()..sort();
+  final sortedKeys = monthlyTotals.keys.toList()..sort((a, b) => b.compareTo(a));
   final result = <String, double>{};
   for (final key in sortedKeys.take(6)) {
     result[key] = monthlyTotals[key]!;
@@ -608,6 +610,7 @@ class IncomesNotifier extends StateNotifier<List<Income>> {
     required String source,
     required DateTime date,
     String? note,
+    String? walletId,
   }) async {
     const uuid = Uuid();
     final income = Income(
@@ -617,6 +620,7 @@ class IncomesNotifier extends StateNotifier<List<Income>> {
       date: date,
       note: note,
       createdAt: DateTime.now(),
+      walletId: walletId,
     );
     await _box.put(income.id, income);
     _refresh();

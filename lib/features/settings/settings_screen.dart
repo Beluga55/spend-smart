@@ -6,9 +6,10 @@ import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/backup_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
+import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
-import 'package:mobile_expense_tracker/core/services/recurring_sync_service.dart';
+
 import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/theme_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/language_modal.dart';
@@ -35,7 +36,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
     final currentTheme = ref.watch(themeProvider);
@@ -45,10 +45,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ? l10n.chinese
         : l10n.english;
     final autoBackup = ref.watch(autoBackupProvider);
-    final syncState = ref.watch(syncNotifierProvider);
     final authState = ref.watch(authStateProvider);
 
-    final surfaceColor = Theme.of(context).colorScheme.surface;
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final dividerColor = Theme.of(context).colorScheme.outline;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
@@ -260,6 +258,56 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       },
                     ),
                 ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildSectionHeader(l10n.security, textSecondary),
+          Builder(
+            builder: (context) {
+              final biometricEnabled = BiometricService.isEnabled();
+              return _buildSwitchTile(
+                icon: biometricEnabled ? Icons.lock : Icons.lock_open,
+                title: l10n.appLock,
+                subtitle: biometricEnabled ? l10n.appLockSubtitle : l10n.reminderDisabled,
+                value: biometricEnabled,
+                textPrimary: textPrimary,
+                backgroundColor: backgroundColor,
+                dividerColor: dividerColor,
+                onChanged: (val) async {
+                  if (val) {
+                    final supported = await BiometricService.isDeviceSupported();
+                    final canCheck = await BiometricService.canCheckBiometrics();
+                    if (!supported || !canCheck) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.biometricNotAvailable)),
+                        );
+                      }
+                      return;
+                    }
+                    final authenticated = await BiometricService.authenticate(
+                      localizedReason: l10n.biometricReason,
+                    );
+                    if (authenticated) {
+                      await BiometricService.setEnabled(true);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.biometricSetupSuccess)),
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.biometricSetupFailed)),
+                        );
+                      }
+                    }
+                  } else {
+                    await BiometricService.setEnabled(false);
+                  }
+                  setState(() {});
+                },
               );
             },
           ),
@@ -607,6 +655,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildCountRow(
             l10n.recurringExpenses,
             data.recurringExpenses.length,
+            textPrimary,
+            textSecondary,
+          ),
+          _buildCountRow(
+            l10n.wallets,
+            data.wallets.length,
             textPrimary,
             textSecondary,
           ),

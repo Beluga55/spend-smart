@@ -78,3 +78,5 @@ final isOnlineProvider = Provider<bool>((ref) {
     orElse: () => true,
   );
 });
+
+final autoBackupProvider = StateProvider<bool>((ref) => true);

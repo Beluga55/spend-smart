@@ -22,7 +22,6 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final selectedMonth = ref.watch(selectedMonthProvider);
     final monthlyTotal = ref.watch(monthlyTotalProvider);
@@ -195,12 +194,13 @@ class DashboardScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
-        onSave: (amount, categoryId, date, note) {
+        onSave: (amount, categoryId, date, note, walletId) {
           ref.read(expensesProvider.notifier).addExpense(
             amount: amount,
             categoryId: categoryId,
             date: date,
             note: note,
+            walletId: walletId,
           );
           final selected = ref.read(selectedMonthProvider);
           if (date.year != selected.year || date.month != selected.month) {
@@ -217,12 +217,13 @@ class DashboardScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => IncomeModal(
-        onSave: (amount, source, date, note) {
+        onSave: (amount, source, date, note, walletId) {
           ref.read(incomesProvider.notifier).addIncome(
             amount: amount,
             source: source,
             date: date,
             note: note,
+            walletId: walletId,
           );
           final selected = ref.read(selectedMonthProvider);
           if (date.year != selected.year || date.month != selected.month) {

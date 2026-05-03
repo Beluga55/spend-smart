@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/models/saving_goal.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -376,24 +375,8 @@ class _SavingGoalModalState extends State<SavingGoalModal> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: _saveGoal,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark
-                                  ? Colors.white
-                                  : AppTheme.primaryColor,
-                              foregroundColor: isDark
-                                  ? Colors.black
-                                  : Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
                             child: Text(
                               isEditing ? l10n.save : l10n.addSavingGoal,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
                             ),
                           ),
                         ),

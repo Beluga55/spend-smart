@@ -310,7 +310,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   child: _QuickTile(
                     icon: Icons.arrow_upward_rounded,
                     label: l10n.addExpense,
-                    color: const Color(0xFFFF5252),
+                    color: Theme.of(context).colorScheme.error,
                     textPrimary: textPrimary,
                     dividerColor: dividerColor,
                     onTap: () {
@@ -324,7 +324,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   child: _QuickTile(
                     icon: Icons.arrow_downward_rounded,
                     label: l10n.addIncome,
-                    color: const Color(0xFF4CAF50),
+                    color: AppTheme.successColor,
                     textPrimary: textPrimary,
                     dividerColor: dividerColor,
                     onTap: () {
@@ -459,7 +459,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
-        onSave: (amount, categoryId, date, note) {
+        onSave: (amount, categoryId, date, note, walletId) {
           ref
               .read(expensesProvider.notifier)
               .addExpense(
@@ -467,6 +467,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 categoryId: categoryId,
                 date: date,
                 note: note,
+                walletId: walletId,
               );
           _checkBudgetAlert();
         },
@@ -480,7 +481,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => IncomeModal(
-        onSave: (amount, source, date, note) {
+        onSave: (amount, source, date, note, walletId) {
           ref
               .read(incomesProvider.notifier)
               .addIncome(
@@ -488,6 +489,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 source: source,
                 date: date,
                 note: note,
+                walletId: walletId,
               );
         },
       ),
@@ -619,8 +621,8 @@ class _ExpenseTile extends ConsumerWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
+        color: Theme.of(context).colorScheme.error,
+        child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
       ),
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -671,9 +673,9 @@ class _ExpenseTile extends ConsumerWidget {
         ),
         trailing: Text(
           '-${currency.symbol}${expense.amount.toStringAsFixed(2)}',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: Color(0xFFFF5252),
+            color: Theme.of(context).colorScheme.error,
             fontSize: 16,
           ),
         ),
@@ -691,7 +693,7 @@ class _ExpenseTile extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
         expense: expense,
-        onSave: (amount, categoryId, date, note) {
+        onSave: (amount, categoryId, date, note, walletId) {
           ref
               .read(expensesProvider.notifier)
               .updateExpense(
@@ -700,6 +702,7 @@ class _ExpenseTile extends ConsumerWidget {
                   categoryId: categoryId,
                   date: date,
                   note: note,
+                  walletId: walletId,
                 ),
               );
         },
@@ -747,8 +750,8 @@ class _IncomeTile extends ConsumerWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
+        color: Theme.of(context).colorScheme.error,
+        child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
       ),
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -799,9 +802,9 @@ class _IncomeTile extends ConsumerWidget {
         ),
         trailing: Text(
           '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: Color(0xFF4CAF50),
+            color: AppTheme.successColor,
             fontSize: 16,
           ),
         ),
@@ -819,7 +822,7 @@ class _IncomeTile extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => IncomeModal(
         income: income,
-        onSave: (amount, source, date, note) {
+        onSave: (amount, source, date, note, walletId) {
           ref
               .read(incomesProvider.notifier)
               .updateIncome(
@@ -828,6 +831,7 @@ class _IncomeTile extends ConsumerWidget {
                   source: source,
                   date: date,
                   note: note,
+                  walletId: walletId,
                 ),
               );
         },

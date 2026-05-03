@@ -652,4 +652,136 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reminderDisabled => '已禁用';
+
+  @override
+  String get security => '安全';
+
+  @override
+  String get appLock => '应用锁';
+
+  @override
+  String get appLockSubtitle => '打开应用时需要生物识别认证';
+
+  @override
+  String get appLocked => '应用已锁定';
+
+  @override
+  String get authenticateToContinue => '请验证身份以继续';
+
+  @override
+  String get unlock => '解锁';
+
+  @override
+  String get biometricReason => '解锁 SpendSmart';
+
+  @override
+  String get biometricNotAvailable => '此设备不支持生物识别认证';
+
+  @override
+  String get biometricSetupSuccess => '应用锁已成功启用';
+
+  @override
+  String get biometricSetupFailed => '启用应用锁失败';
+
+  @override
+  String get wallets => '钱包';
+
+  @override
+  String get wallet => '钱包';
+
+  @override
+  String get addWallet => '添加钱包';
+
+  @override
+  String get editWallet => '编辑钱包';
+
+  @override
+  String get walletName => '钱包名称';
+
+  @override
+  String get enterWalletName => '输入钱包名称';
+
+  @override
+  String get walletType => '钱包类型';
+
+  @override
+  String get cash => '现金';
+
+  @override
+  String get bankAccount => '银行账户';
+
+  @override
+  String get creditCard => '信用卡';
+
+  @override
+  String get eWallet => '电子钱包';
+
+  @override
+  String get totalBalance => '总余额';
+
+  @override
+  String get myWallets => '我的钱包';
+
+  @override
+  String get noWalletsYet => '暂无钱包';
+
+  @override
+  String get tapToAddFirstWallet => '点击 + 添加您的第一个钱包';
+
+  @override
+  String get balance => '余额';
+
+  @override
+  String get defaultLabel => '默认';
+
+  @override
+  String get setAsDefault => '设为默认';
+
+  @override
+  String get deleteWallet => '删除钱包';
+
+  @override
+  String get areYouSureDeleteWallet => '确定要删除此钱包吗？';
+
+  @override
+  String get transfer => '转账';
+
+  @override
+  String get editTransfer => '编辑转账';
+
+  @override
+  String get deleteTransfer => '删除转账';
+
+  @override
+  String get areYouSureDeleteTransfer => '确定要删除此转账吗？';
+
+  @override
+  String get transferBetweenWallets => '钱包间转账';
+
+  @override
+  String get fromWallet => '转出钱包';
+
+  @override
+  String get toWallet => '转入钱包';
+
+  @override
+  String get recentTransfers => '最近转账';
+
+  @override
+  String get selectWallet => '选择钱包';
+
+  @override
+  String get noWallet => '无钱包';
+
+  @override
+  String get walletNameRequired => '钱包名称不能为空';
+
+  @override
+  String get insufficientBalance => '所选钱包余额不足';
+
+  @override
+  String get edit => '编辑';
+
+  @override
+  String get update => '更新';
 }

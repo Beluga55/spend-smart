@@ -81,7 +81,6 @@ class RecurringExpense extends HiveObject {
 
   DateTime? getNextDueDate() {
     final DateTime baseDate = lastCreated ?? startDate;
-    final DateTime now = DateTime.now();
     DateTime nextDue;
 
     switch (frequency) {
@@ -92,10 +91,10 @@ class RecurringExpense extends HiveObject {
         nextDue = baseDate.add(const Duration(days: 7));
         break;
       case RecurringFrequency.monthly:
-        nextDue = DateTime(baseDate.year, baseDate.month + 1, baseDate.day);
+        nextDue = _addMonthsSafe(baseDate, 1);
         break;
       case RecurringFrequency.yearly:
-        nextDue = DateTime(baseDate.year + 1, baseDate.month, baseDate.day);
+        nextDue = _addYearsSafe(baseDate, 1);
         break;
     }
 
@@ -104,6 +103,24 @@ class RecurringExpense extends HiveObject {
     }
 
     return nextDue;
+  }
+
+  DateTime _addMonthsSafe(DateTime date, int months) {
+    final targetMonth = date.month + months;
+    final targetYear = date.year + (targetMonth - 1) ~/ 12;
+    final actualMonth = ((targetMonth - 1) % 12) + 1;
+    final lastDayOfMonth = DateTime(targetYear, actualMonth + 1, 0).day;
+    final targetDay = date.day > lastDayOfMonth ? lastDayOfMonth : date.day;
+    return DateTime(targetYear, actualMonth, targetDay);
+  }
+
+  DateTime _addYearsSafe(DateTime date, int years) {
+    final targetYear = date.year + years;
+    if (date.month == 2 && date.day == 29) {
+      final isLeap = (targetYear % 4 == 0 && targetYear % 100 != 0) || (targetYear % 400 == 0);
+      if (!isLeap) return DateTime(targetYear, 2, 28);
+    }
+    return DateTime(targetYear, date.month, date.day);
   }
 
   bool isDue() {
