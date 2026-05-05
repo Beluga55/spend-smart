@@ -780,6 +780,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get insufficientBalance => '所选钱包余额不足';
 
   @override
+  String get showStreakBanner => '显示每日打卡';
+
+  @override
+  String get showStreakBannerSubtitle => '在仪表板显示打卡横幅';
+
+  @override
   String get edit => '编辑';
 
   @override

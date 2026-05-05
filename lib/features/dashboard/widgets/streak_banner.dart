@@ -16,6 +16,9 @@ class _StreakBannerState extends ConsumerState<StreakBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final showBanner = Hive.box('settings').get('showStreakBanner', defaultValue: true) as bool;
+    if (!showBanner) return const SizedBox.shrink();
+
     final streak = ref.watch(spendingStreakProvider)['streak'] ?? 0;
     if (streak < 2 || _dismissed) return const SizedBox.shrink();
 

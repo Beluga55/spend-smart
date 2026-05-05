@@ -1604,6 +1604,18 @@ abstract class AppLocalizations {
   /// **'Insufficient balance in the selected wallet'**
   String get insufficientBalance;
 
+  /// No description provided for @showStreakBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Show daily streak'**
+  String get showStreakBanner;
+
+  /// No description provided for @showStreakBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display streak banner on dashboard'**
+  String get showStreakBannerSubtitle;
+
   /// No description provided for @edit.
   ///
   /// In en, this message translates to:

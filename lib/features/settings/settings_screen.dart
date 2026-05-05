@@ -207,6 +207,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             dividerColor: dividerColor,
             onTap: () => _showThemeModal(context),
           ),
+          Builder(
+            builder: (context) {
+              final showStreak = Hive.box('settings').get('showStreakBanner', defaultValue: true) as bool;
+              return _buildSwitchTile(
+                icon: Icons.local_fire_department_outlined,
+                title: l10n.showStreakBanner,
+                subtitle: l10n.showStreakBannerSubtitle,
+                value: showStreak,
+                textPrimary: textPrimary,
+                backgroundColor: backgroundColor,
+                dividerColor: dividerColor,
+                onChanged: (val) {
+                  Hive.box('settings').put('showStreakBanner', val);
+                  setState(() {});
+                },
+              );
+            },
+          ),
           const SizedBox(height: 16),
           _buildSectionHeader(l10n.notifications, textSecondary),
           Builder(

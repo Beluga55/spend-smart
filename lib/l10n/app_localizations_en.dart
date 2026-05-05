@@ -794,6 +794,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Insufficient balance in the selected wallet';
 
   @override
+  String get showStreakBanner => 'Show daily streak';
+
+  @override
+  String get showStreakBannerSubtitle => 'Display streak banner on dashboard';
+
+  @override
   String get edit => 'Edit';
 
   @override

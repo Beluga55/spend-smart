@@ -8,6 +8,7 @@ import 'package:mobile_expense_tracker/features/dashboard/widgets/budget_progres
 import 'package:mobile_expense_tracker/features/dashboard/widgets/category_chart.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/recent_expenses.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/spending_trends.dart';
+import 'package:mobile_expense_tracker/features/dashboard/widgets/top_categories.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/streak_banner.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/month_selector.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/quick_add_sheet.dart';
@@ -73,6 +74,7 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const StreakBanner(),
             MonthSelector(
               selectedMonth: selectedMonth,
               onMonthChanged: (month) {
@@ -131,16 +133,15 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
 
-            const StreakBanner(),
-
             const SizedBox(height: 24),
             _SectionHeader(title: l10n.spendingByCategory, textPrimary: textPrimary),
             const SizedBox(height: 12),
             CategoryChart(categoryTotals: categoryTotals, categories: categories),
 
             const SizedBox(height: 24),
-            _SectionHeader(title: l10n.dailySpending, textPrimary: textPrimary),
-            const SizedBox(height: 12),
+            const TopCategoriesList(),
+
+            const SizedBox(height: 24),
             const SpendingTrendsChart(),
 
             const SizedBox(height: 24),

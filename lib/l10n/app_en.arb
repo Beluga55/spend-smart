@@ -310,6 +310,8 @@
   "noWallet": "No Wallet",
   "walletNameRequired": "Wallet name is required",
   "insufficientBalance": "Insufficient balance in the selected wallet",
+  "showStreakBanner": "Show daily streak",
+  "showStreakBannerSubtitle": "Display streak banner on dashboard",
   "edit": "Edit",
   "update": "Update"
 }

@@ -310,6 +310,8 @@
   "noWallet": "无钱包",
   "walletNameRequired": "钱包名称不能为空",
   "insufficientBalance": "所选钱包余额不足",
+  "showStreakBanner": "显示每日打卡",
+  "showStreakBannerSubtitle": "在仪表板显示打卡横幅",
   "edit": "编辑",
   "update": "更新"
 }

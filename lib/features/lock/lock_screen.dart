@@ -18,7 +18,9 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _authenticate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _authenticate();
+    });
   }
 
   @override
@@ -90,8 +92,14 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
               ),
               const SizedBox(height: 48),
               ElevatedButton.icon(
-                onPressed: _authenticating ? null : _authenticate,
-                icon: const Icon(Icons.fingerprint, size: 24),
+                onPressed: _authenticate,
+                icon: _authenticating
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.fingerprint, size: 24),
                 label: Text(l10n.unlock),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(

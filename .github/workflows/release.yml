@@ -43,7 +43,46 @@ jobs:
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/SpendSmart-${{ github.ref_name }}.apk
 
       - name: Create GitHub Release
+        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           files: build/app/outputs/flutter-apk/SpendSmart-${{ github.ref_name }}.apk
           generate_release_notes: true
+
+      - name: Get Release Notes
+        id: release_notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY=$(gh api repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq '.body')
+          BODY=$(echo "$BODY" | head -c 4000)
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          jq -n \
+            --arg content "@everyone" \
+            --arg title "SpendSmart ${{ github.ref_name }} Released" \
+            --arg description "${{ steps.release_notes.outputs.body }}" \
+            --arg url "${{ steps.create_release.outputs.url }}" \
+            --arg download "[Download APK](${{ steps.create_release.outputs.url }})" \
+            --arg version "${{ github.ref_name }}" \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)" \
+            '{
+              content: $content,
+              embeds: [{
+                title: $title,
+                description: $description,
+                url: $url,
+                color: 3066993,
+                fields: [
+                  { name: "Download", value: $download, inline: true },
+                  { name: "Version", value: $version, inline: true }
+                ],
+                timestamp: $timestamp
+              }]
+            }' | curl -s -H "Content-Type: application/json" -d @- "$DISCORD_WEBHOOK"
