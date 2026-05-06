@@ -123,12 +123,12 @@ class CategoriesNotifier extends StateNotifier<List<Category>> {
 
 final expenseCategoriesProvider = Provider<List<Category>>((ref) {
   final categories = ref.watch(categoriesProvider);
-  return categories.where((c) => c.categoryType == 'expense').toList();
+  return categories.where((c) => c.effectiveType == 'expense').toList();
 });
 
 final incomeCategoriesProvider = Provider<List<Category>>((ref) {
   final categories = ref.watch(categoriesProvider);
-  return categories.where((c) => c.categoryType == 'income').toList();
+  return categories.where((c) => c.effectiveType == 'income').toList();
 });
 
 final globalBudgetProvider =

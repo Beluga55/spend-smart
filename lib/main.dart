@@ -21,6 +21,7 @@ import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
+import 'package:mobile_expense_tracker/core/database/database_migration_service.dart';
 import 'package:mobile_expense_tracker/features/lock/lock_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +56,9 @@ void main() async {
   await openBoxSafe<Wallet>('wallets');
   await openBoxSafe<WalletTransfer>('wallet_transfers');
   await openBoxSafeUntyped('settings');
+
+  // Run migrations to patch old schema before business logic touches the data.
+  await runMigrations();
 
   runApp(
     const ProviderScope(
@@ -165,7 +169,7 @@ class _AppInitializerState extends State<AppInitializer> {
 
     // Seed default income categories if they don't exist yet (migration)
     final hasIncomeCategories = categoryBox.values.any(
-      (c) => c.categoryType == 'income',
+      (c) => c.effectiveType == 'income',
     );
     if (!hasIncomeCategories) {
       const uuid = Uuid();
@@ -204,7 +208,7 @@ class _AppInitializerState extends State<AppInitializer> {
     for (final key in categoryBox.keys) {
       final cat = categoryBox.get(key);
       if (cat != null) {
-        final uniqueKey = '${cat.name.toLowerCase()}_${cat.categoryType}';
+        final uniqueKey = '${cat.name.toLowerCase()}_${cat.effectiveType}';
         if (seen.contains(uniqueKey)) {
           dupeKeys.add(key);
         } else {
@@ -362,9 +366,9 @@ class _AppInitializerState extends State<AppInitializer> {
     } else if (net < 0) {
       final categoryBox = Hive.box<Category>('categories');
       final otherCat = categoryBox.values.firstWhere(
-        (c) => c.name == 'Other' && c.categoryType == 'expense',
+        (c) => c.name == 'Other' && c.effectiveType == 'expense',
         orElse: () => categoryBox.values.firstWhere(
-          (c) => c.categoryType == 'expense',
+          (c) => c.effectiveType == 'expense',
           orElse: () => Category(
             id: '',
             name: 'Unknown',

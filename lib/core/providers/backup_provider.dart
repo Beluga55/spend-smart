@@ -102,7 +102,7 @@ class BackupService {
               'iconName': c.iconName,
               'color': c.color,
               'isDefault': c.isDefault,
-              'categoryType': c.categoryType,
+              'categoryType': c.effectiveType,
             },
           )
           .toList(),
@@ -389,7 +389,7 @@ class BackupService {
 
     // Re-seed default expense categories if none exist after restore
     final hasExpenseCategories = categoryBox.values.any(
-      (c) => c.categoryType == 'expense',
+      (c) => c.effectiveType == 'expense',
     );
     if (!hasExpenseCategories) {
       const uuid = Uuid();
@@ -411,7 +411,7 @@ class BackupService {
 
     // Re-seed default income categories if none exist after restore
     final hasIncomeCategories = categoryBox.values.any(
-      (c) => c.categoryType == 'income',
+      (c) => c.effectiveType == 'income',
     );
     if (!hasIncomeCategories) {
       const uuid = Uuid();

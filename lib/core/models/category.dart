@@ -20,7 +20,7 @@ class Category extends HiveObject {
   bool isDefault;
 
   @HiveField(5)
-  String categoryType; // 'expense' or 'income'
+  String? categoryType; // 'expense' or 'income'
 
   Category({
     required this.id,
@@ -30,6 +30,9 @@ class Category extends HiveObject {
     this.isDefault = false,
     this.categoryType = 'expense',
   });
+
+  /// Safe accessor that never returns null.
+  String get effectiveType => categoryType ?? 'expense';
 
   Category copyWith({
     String? id,
