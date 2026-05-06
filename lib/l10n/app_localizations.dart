@@ -1627,6 +1627,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get update;
+
+  /// No description provided for @expenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense deleted'**
+  String get expenseDeleted;
+
+  /// No description provided for @incomeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Income deleted'**
+  String get incomeDeleted;
+
+  /// No description provided for @walletDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet deleted'**
+  String get walletDeleted;
+
+  /// No description provided for @transferDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer deleted'**
+  String get transferDeleted;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get updateAvailable;
+
+  /// No description provided for @installUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Install Update'**
+  String get installUpdate;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
+
+  /// No description provided for @downloadingUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update…'**
+  String get downloadingUpdate;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @currentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Version'**
+  String get currentVersion;
+
+  /// No description provided for @upToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to date'**
+  String get upToDate;
+
+  /// No description provided for @newVersionAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'New version {version} is available'**
+  String newVersionAvailable(String version);
 }
 
 class _AppLocalizationsDelegate

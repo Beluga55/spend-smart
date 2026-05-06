@@ -804,4 +804,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get update => 'Update';
+
+  @override
+  String get expenseDeleted => 'Expense deleted';
+
+  @override
+  String get incomeDeleted => 'Income deleted';
+
+  @override
+  String get walletDeleted => 'Wallet deleted';
+
+  @override
+  String get transferDeleted => 'Transfer deleted';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get updateAvailable => 'Update available';
+
+  @override
+  String get installUpdate => 'Install Update';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get downloadingUpdate => 'Downloading update…';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get currentVersion => 'Current Version';
+
+  @override
+  String get upToDate => 'Up to date';
+
+  @override
+  String newVersionAvailable(String version) {
+    return 'New version $version is available';
+  }
 }

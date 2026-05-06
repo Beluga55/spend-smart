@@ -313,5 +313,23 @@
   "showStreakBanner": "Show daily streak",
   "showStreakBannerSubtitle": "Display streak banner on dashboard",
   "edit": "Edit",
-  "update": "Update"
+  "update": "Update",
+  "expenseDeleted": "Expense deleted",
+  "incomeDeleted": "Income deleted",
+  "walletDeleted": "Wallet deleted",
+  "transferDeleted": "Transfer deleted",
+  "undo": "Undo",
+  "updateAvailable": "Update available",
+  "installUpdate": "Install Update",
+  "updateLater": "Later",
+  "downloadingUpdate": "Downloading update…",
+  "checkForUpdates": "Check for Updates",
+  "currentVersion": "Current Version",
+  "upToDate": "Up to date",
+  "newVersionAvailable": "New version {version} is available",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  }
 }

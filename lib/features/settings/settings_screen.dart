@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
@@ -9,6 +11,7 @@ import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
+import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
 
 import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/theme_modal.dart';
@@ -329,6 +332,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             },
           ),
+          const SizedBox(height: 16),
+          _buildSectionHeader('About', textSecondary),
+          _buildUpdateTile(context, textPrimary, backgroundColor, dividerColor, textSecondary),
           const SizedBox(height: 32),
         ],
       ),
@@ -811,6 +817,175 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             context,
           ).showSnackBar(SnackBar(content: Text('${l10n.unlinkError}: $e')));
         }
+      }
+    }
+  }
+
+  Widget _buildUpdateTile(BuildContext context, Color textPrimary,
+      Color backgroundColor, Color dividerColor, Color textSecondary) {
+    final updateState = ref.watch(updateProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    String statusText;
+    Widget? trailing;
+
+    switch (updateState) {
+      case UpdateState.checking:
+        statusText = 'Checking…';
+        trailing = const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+        break;
+      case UpdateState.available:
+        final version = ref.read(updateProvider.notifier).latestUpdate?.version ?? '';
+        statusText = l10n.newVersionAvailable(version);
+        trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
+        break;
+      case UpdateState.downloading:
+        final progress = ref.read(updateProvider.notifier).downloadProgress;
+        statusText = l10n.downloadingUpdate;
+        trailing = Text('${(progress * 100).toStringAsFixed(0)}%',
+            style: TextStyle(color: textSecondary));
+        break;
+      case UpdateState.ready:
+        statusText = 'Ready to install';
+        trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
+        break;
+      case UpdateState.upToDate:
+        statusText = l10n.upToDate;
+        break;
+      default:
+        statusText = l10n.checkForUpdates;
+        break;
+    }
+
+    return _buildSettingsTile(
+      context: context,
+      icon: Icons.system_update,
+      title: l10n.checkForUpdates,
+      trailing: trailing,
+      textPrimary: textPrimary,
+      backgroundColor: backgroundColor,
+      dividerColor: dividerColor,
+      subtitle: statusText,
+      onTap: () => _handleUpdateTap(context),
+    );
+  }
+
+  void _handleUpdateTap(BuildContext context) async {
+    final notifier = ref.read(updateProvider.notifier);
+    final state = ref.read(updateProvider);
+
+    if (state == UpdateState.available) {
+      _showUpdateDownloadDialog(context);
+    } else if (state == UpdateState.ready) {
+      _installApk(notifier.apkPath!);
+    } else if (state != UpdateState.checking && state != UpdateState.downloading) {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      await notifier.checkForUpdate(currentVersion);
+
+      final newState = ref.read(updateProvider);
+      if (newState == UpdateState.available) {
+        _showUpdateDownloadDialog(context);
+      } else if (newState == UpdateState.upToDate && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.upToDate)),
+        );
+      }
+    }
+  }
+
+  void _showUpdateDownloadDialog(BuildContext context) {
+    final notifier = ref.read(updateProvider.notifier);
+    final info = notifier.latestUpdate!;
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.updateAvailable),
+        content: Text(l10n.newVersionAvailable(info.version)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.updateLater),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _startDownload(context);
+            },
+            child: Text(l10n.installUpdate),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _startDownload(BuildContext context) {
+    final notifier = ref.read(updateProvider.notifier);
+    notifier.downloadUpdate();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Consumer(
+        builder: (context, ref, child) {
+          final state = ref.watch(updateProvider);
+
+          if (state == UpdateState.ready && notifier.apkPath != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(ctx).pop();
+              _installApk(notifier.apkPath!);
+            });
+            return const AlertDialog(
+              title: Text('Ready'),
+              content: Text('Opening installer…'),
+            );
+          }
+
+          if (state == UpdateState.error) {
+            return AlertDialog(
+              title: Text('Download Failed'),
+              content: Text(notifier.errorMessage ?? 'Unknown error'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          }
+
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context)!.downloadingUpdate),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                LinearProgressIndicator(value: notifier.downloadProgress),
+                const SizedBox(height: 12),
+                Text('${(notifier.downloadProgress * 100).toStringAsFixed(0)}%'),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _installApk(String path) async {
+    try {
+      const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+      await channel.invokeMethod('installApk', {'path': path});
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to install update')),
+        );
       }
     }
   }

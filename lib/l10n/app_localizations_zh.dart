@@ -790,4 +790,45 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get update => '更新';
+
+  @override
+  String get expenseDeleted => '支出已删除';
+
+  @override
+  String get incomeDeleted => '收入已删除';
+
+  @override
+  String get walletDeleted => '钱包已删除';
+
+  @override
+  String get transferDeleted => '转账已删除';
+
+  @override
+  String get undo => '撤销';
+
+  @override
+  String get updateAvailable => '有新版本可用';
+
+  @override
+  String get installUpdate => '安装更新';
+
+  @override
+  String get updateLater => '稍后';
+
+  @override
+  String get downloadingUpdate => '正在下载更新…';
+
+  @override
+  String get checkForUpdates => '检查更新';
+
+  @override
+  String get currentVersion => '当前版本';
+
+  @override
+  String get upToDate => '已是最新版本';
+
+  @override
+  String newVersionAvailable(String version) {
+    return '新版本 $version 可用';
+  }
 }

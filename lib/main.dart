@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,10 +22,13 @@ import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
+import 'package:mobile_expense_tracker/core/services/update_service.dart';
+import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
 import 'package:mobile_expense_tracker/core/database/database_migration_service.dart';
 import 'package:mobile_expense_tracker/features/lock/lock_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -77,14 +81,14 @@ void _safeRegisterAdapter<T>(int typeId, TypeAdapter<T> Function() factory) {
   }
 }
 
-class AppInitializer extends StatefulWidget {
+class AppInitializer extends ConsumerStatefulWidget {
   const AppInitializer({super.key});
 
   @override
-  State<AppInitializer> createState() => _AppInitializerState();
+  ConsumerState<AppInitializer> createState() => _AppInitializerState();
 }
 
-class _AppInitializerState extends State<AppInitializer> {
+class _AppInitializerState extends ConsumerState<AppInitializer> {
   bool _initialized = false;
   bool _showOnboarding = false;
   String? _initError;
@@ -119,6 +123,7 @@ class _AppInitializerState extends State<AppInitializer> {
           _showOnboarding = !onboardingComplete;
           _initialized = true;
         });
+        _checkForAppUpdate();
       }
     } catch (e, stack) {
       debugPrint('Initialization error: $e');
@@ -272,6 +277,9 @@ class _AppInitializerState extends State<AppInitializer> {
     // Initialize notifications (fast, local)
     await NotificationService.initialize();
 
+    // Request notification permission before scheduling
+    await NotificationService.requestPermission();
+
     // Schedule reminder if enabled
     final settingsBox = Hive.box('settings');
     if (settingsBox.get('reminderEnabled', defaultValue: true) == true) {
@@ -281,11 +289,6 @@ class _AppInitializerState extends State<AppInitializer> {
         TimeOfDay(hour: hour, minute: minute),
       );
     }
-
-    // Request notification permission after UI is visible
-    NotificationService.requestPermission().catchError((e) {
-      debugPrint('Notification permission request failed: $e');
-    });
   }
 
   Future<void> _processRecurringExpenses() async {
@@ -391,6 +394,111 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     await settings.put('carryoverMonth', currentMonthKey);
+  }
+
+  Future<void> _checkForAppUpdate() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      await ref.read(updateProvider.notifier).checkForUpdate(currentVersion);
+      final info = ref.read(updateProvider.notifier).latestUpdate;
+      if (info != null && mounted) {
+        _showUpdateDialog(info);
+      }
+    } catch (_) {}
+  }
+
+  void _showUpdateDialog(UpdateInfo info) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Update Available'),
+        content: Text(
+          'New version ${info.version} is available.\n\n'
+          '${info.releaseNotes.isNotEmpty ? info.releaseNotes : ''}',
+          maxLines: 6,
+          overflow: TextOverflow.ellipsis,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Later'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _downloadAndInstall(info);
+            },
+            child: const Text('Install Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _downloadAndInstall(UpdateInfo info) {
+    if (!mounted) return;
+    final notifier = ref.read(updateProvider.notifier);
+    notifier.downloadUpdate();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Consumer(
+        builder: (context, ref, child) {
+          final state = ref.watch(updateProvider);
+
+          if (state == UpdateState.ready && notifier.apkPath != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(ctx).pop();
+              _installApk(notifier.apkPath!);
+            });
+            return const AlertDialog(
+              title: Text('Ready'),
+              content: Text('Opening installer…'),
+            );
+          }
+
+          if (state == UpdateState.error) {
+            return AlertDialog(
+              title: const Text('Download Failed'),
+              content: Text(notifier.errorMessage ?? 'Unknown error'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          }
+
+          return AlertDialog(
+            title: const Text('Downloading Update'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Please wait while the update downloads…'),
+                const SizedBox(height: 16),
+                LinearProgressIndicator(value: notifier.downloadProgress),
+                const SizedBox(height: 8),
+                Text('${(notifier.downloadProgress * 100).toStringAsFixed(0)}%'),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _installApk(String path) async {
+    try {
+      const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+      await channel.invokeMethod('installApk', {'path': path});
+    } catch (e) {
+      debugPrint('Install error: $e');
+    }
   }
 
   @override

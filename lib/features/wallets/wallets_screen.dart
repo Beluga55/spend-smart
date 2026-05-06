@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:mobile_expense_tracker/core/models/wallet.dart';
 import 'package:mobile_expense_tracker/core/models/wallet_transfer.dart';
 import 'package:mobile_expense_tracker/core/providers/wallet_provider.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
@@ -301,31 +303,22 @@ class WalletsScreen extends ConsumerWidget {
           ),
           child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
         ),
-        confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(l10n.deleteWallet),
-              content: Text(l10n.areYouSureDeleteWallet),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(l10n.cancel),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
-                  ),
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text(l10n.delete),
-                ),
-              ],
+        onDismissed: (_) {
+          final deleted = wallet;
+          final box = Hive.box<Wallet>('wallets');
+          ref.read(walletsProvider.notifier).deleteWallet(wallet.id);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.walletDeleted),
+              action: SnackBarAction(
+                label: l10n.undo,
+                onPressed: () {
+                  box.put(deleted.id, deleted);
+                },
+              ),
+              duration: const Duration(seconds: 5),
             ),
           );
-        },
-        onDismissed: (direction) {
-          ref.read(walletsProvider.notifier).deleteWallet(wallet.id);
         },
         child: InkWell(
           onTap: () => _showEditWalletModal(context, wallet),
@@ -362,31 +355,22 @@ class WalletsScreen extends ConsumerWidget {
           ),
           child: Icon(Icons.delete, color: onErrorColor),
         ),
-        confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(l10n.deleteTransfer),
-              content: Text(l10n.areYouSureDeleteTransfer),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(l10n.cancel),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: errorColor,
-                    foregroundColor: onErrorColor,
-                  ),
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text(l10n.delete),
-                ),
-              ],
+        onDismissed: (_) {
+          final deleted = transfer;
+          final box = Hive.box<WalletTransfer>('wallet_transfers');
+          ref.read(walletTransfersProvider.notifier).deleteTransfer(transfer.id);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.transferDeleted),
+              action: SnackBarAction(
+                label: l10n.undo,
+                onPressed: () {
+                  box.put(deleted.id, deleted);
+                },
+              ),
+              duration: const Duration(seconds: 5),
             ),
           );
-        },
-        onDismissed: (direction) {
-          ref.read(walletTransfersProvider.notifier).deleteTransfer(transfer.id);
         },
         child: InkWell(
           onTap: () => _showEditTransferModal(context, transfer),

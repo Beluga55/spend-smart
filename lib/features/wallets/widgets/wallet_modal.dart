@@ -115,7 +115,12 @@ class _WalletModalState extends ConsumerState<WalletModal> {
           // Form content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 20 + MediaQuery.of(context).padding.bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

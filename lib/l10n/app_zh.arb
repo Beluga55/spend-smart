@@ -313,5 +313,23 @@
   "showStreakBanner": "显示每日打卡",
   "showStreakBannerSubtitle": "在仪表板显示打卡横幅",
   "edit": "编辑",
-  "update": "更新"
+  "update": "更新",
+  "expenseDeleted": "支出已删除",
+  "incomeDeleted": "收入已删除",
+  "walletDeleted": "钱包已删除",
+  "transferDeleted": "转账已删除",
+  "undo": "撤销",
+  "updateAvailable": "有新版本可用",
+  "installUpdate": "安装更新",
+  "updateLater": "稍后",
+  "downloadingUpdate": "正在下载更新…",
+  "checkForUpdates": "检查更新",
+  "currentVersion": "当前版本",
+  "upToDate": "已是最新版本",
+  "newVersionAvailable": "新版本 {version} 可用",
+  "@newVersionAvailable": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  }
 }

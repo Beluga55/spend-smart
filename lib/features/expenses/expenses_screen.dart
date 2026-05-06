@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
@@ -589,7 +590,6 @@ class _ExpenseTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
 
@@ -602,7 +602,6 @@ class _ExpenseTile extends ConsumerWidget {
 
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
-    final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     final cs = Theme.of(context).colorScheme;
 
@@ -624,27 +623,22 @@ class _ExpenseTile extends ConsumerWidget {
         color: Theme.of(context).colorScheme.error,
         child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
       ),
-      confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(l10n.deleteExpense),
-            content: Text(l10n.areYouSureDeleteExpense, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.delete, style: TextStyle(color: errorColor)),
-              ),
-            ],
+      onDismissed: (_) {
+        final deleted = expense;
+        final box = Hive.box<Expense>('expenses');
+        ref.read(expensesProvider.notifier).deleteExpense(expense.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.expenseDeleted),
+            action: SnackBarAction(
+              label: l10n.undo,
+              onPressed: () {
+                box.put(deleted.id, deleted);
+              },
+            ),
+            duration: const Duration(seconds: 5),
           ),
         );
-      },
-      onDismissed: (direction) {
-        ref.read(expensesProvider.notifier).deleteExpense(expense.id);
       },
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -723,7 +717,6 @@ class _IncomeTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
     final incomeCategories = ref.watch(incomeCategoriesProvider);
@@ -731,7 +724,6 @@ class _IncomeTile extends ConsumerWidget {
 
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
-    final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     final cs = Theme.of(context).colorScheme;
 
@@ -753,27 +745,22 @@ class _IncomeTile extends ConsumerWidget {
         color: Theme.of(context).colorScheme.error,
         child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
       ),
-      confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(l10n.deleteIncome),
-            content: Text(l10n.areYouSureDeleteIncome, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(l10n.delete, style: TextStyle(color: errorColor)),
-              ),
-            ],
+      onDismissed: (_) {
+        final deleted = income;
+        final box = Hive.box<Income>('incomes');
+        ref.read(incomesProvider.notifier).deleteIncome(income.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.incomeDeleted),
+            action: SnackBarAction(
+              label: l10n.undo,
+              onPressed: () {
+                box.put(deleted.id, deleted);
+              },
+            ),
+            duration: const Duration(seconds: 5),
           ),
         );
-      },
-      onDismissed: (direction) {
-        ref.read(incomesProvider.notifier).deleteIncome(income.id);
       },
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

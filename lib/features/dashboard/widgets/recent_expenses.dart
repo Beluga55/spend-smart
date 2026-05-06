@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
@@ -78,7 +79,21 @@ class RecentTransactionsList extends ConsumerWidget {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
               onDismissed: (_) {
+                final deleted = income;
+                final box = Hive.box<Income>('incomes');
                 ref.read(incomesProvider.notifier).deleteIncome(income.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.incomeDeleted),
+                    action: SnackBarAction(
+                      label: l10n.undo,
+                      onPressed: () {
+                        box.put(deleted.id, deleted);
+                      },
+                    ),
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
               },
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -125,7 +140,21 @@ class RecentTransactionsList extends ConsumerWidget {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
               onDismissed: (_) {
+                final deleted = expense;
+                final box = Hive.box<Expense>('expenses');
                 ref.read(expensesProvider.notifier).deleteExpense(expense.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.expenseDeleted),
+                    action: SnackBarAction(
+                      label: l10n.undo,
+                      onPressed: () {
+                        box.put(deleted.id, deleted);
+                      },
+                    ),
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
               },
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
