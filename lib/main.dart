@@ -20,6 +20,7 @@ import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
+import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
 import 'package:mobile_expense_tracker/features/lock/lock_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
@@ -31,31 +32,45 @@ void main() async {
 
   await Hive.initFlutter();
 
-  Hive.registerAdapter(ExpenseAdapter());
-  Hive.registerAdapter(CategoryAdapter());
-  Hive.registerAdapter(BudgetAdapter());
-  Hive.registerAdapter(SavingGoalAdapter());
-  Hive.registerAdapter(RecurringExpenseAdapter());
-  Hive.registerAdapter(RecurringFrequencyAdapter());
-  Hive.registerAdapter(IncomeAdapter());
-  Hive.registerAdapter(WalletAdapter());
-  Hive.registerAdapter(WalletTransferAdapter());
+  // Register adapters safely — typeId conflicts from old builds can crash here
+  _safeRegisterAdapter<Expense>(0, () => ExpenseAdapter());
+  _safeRegisterAdapter<Category>(1, () => CategoryAdapter());
+  _safeRegisterAdapter<Budget>(2, () => BudgetAdapter());
+  _safeRegisterAdapter<SavingGoal>(3, () => SavingGoalAdapter());
+  _safeRegisterAdapter<RecurringExpense>(4, () => RecurringExpenseAdapter());
+  _safeRegisterAdapter<RecurringFrequency>(5, () => RecurringFrequencyAdapter());
+  _safeRegisterAdapter<Income>(6, () => IncomeAdapter());
+  _safeRegisterAdapter<Wallet>(7, () => WalletAdapter());
+  _safeRegisterAdapter<WalletTransfer>(8, () => WalletTransferAdapter());
 
-  await Hive.openBox<Expense>('expenses');
-  await Hive.openBox<Category>('categories');
-  await Hive.openBox<Budget>('budgets');
-  await Hive.openBox<SavingGoal>('saving_goals');
-  await Hive.openBox<RecurringExpense>('recurring_expenses');
-  await Hive.openBox<Income>('incomes');
-  await Hive.openBox<Wallet>('wallets');
-  await Hive.openBox<WalletTransfer>('wallet_transfers');
-  await Hive.openBox('settings');
+  // Open all boxes with corruption recovery.
+  // This is the #1 cause of "stuck on splash screen" after app updates
+  // on Samsung and other devices — old Hive data no longer deserializes.
+  await openBoxSafe<Expense>('expenses');
+  await openBoxSafe<Category>('categories');
+  await openBoxSafe<Budget>('budgets');
+  await openBoxSafe<SavingGoal>('saving_goals');
+  await openBoxSafe<RecurringExpense>('recurring_expenses');
+  await openBoxSafe<Income>('incomes');
+  await openBoxSafe<Wallet>('wallets');
+  await openBoxSafe<WalletTransfer>('wallet_transfers');
+  await openBoxSafeUntyped('settings');
 
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: AppInitializer(),
     ),
   );
+}
+
+void _safeRegisterAdapter<T>(int typeId, TypeAdapter<T> Function() factory) {
+  try {
+    if (!Hive.isAdapterRegistered(typeId)) {
+      Hive.registerAdapter(factory());
+    }
+  } catch (e) {
+    debugPrint('[Hive] Adapter registration error for typeId $typeId: $e');
+  }
 }
 
 class AppInitializer extends StatefulWidget {
@@ -68,13 +83,11 @@ class AppInitializer extends StatefulWidget {
 class _AppInitializerState extends State<AppInitializer> {
   bool _initialized = false;
   bool _showOnboarding = false;
+  String? _initError;
 
   @override
   void initState() {
     super.initState();
-    // Wait for the first frame to render before starting heavy init.
-    // This guarantees the splash screen is visible immediately and
-    // prevents Samsung's strict ANR detection from firing.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeApp();
     });
@@ -82,8 +95,6 @@ class _AppInitializerState extends State<AppInitializer> {
 
   Future<void> _initializeApp() async {
     try {
-      // Yield to the UI thread between heavy steps so the splash screen
-      // remains responsive and Samsung's choreographer doesn't flag us.
       await _seedData();
       await Future.delayed(Duration.zero);
 
@@ -108,9 +119,9 @@ class _AppInitializerState extends State<AppInitializer> {
     } catch (e, stack) {
       debugPrint('Initialization error: $e');
       debugPrint(stack.toString());
-      // Even if init fails, show the app so the user isn't stuck on splash
       if (mounted) {
         setState(() {
+          _initError = e.toString();
           _showOnboarding = false;
           _initialized = true;
         });
@@ -268,7 +279,6 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     // Request notification permission after UI is visible
-    // This is deferred to avoid blocking startup on Samsung devices
     NotificationService.requestPermission().catchError((e) {
       debugPrint('Notification permission request failed: $e');
     });
@@ -388,6 +398,49 @@ class _AppInitializerState extends State<AppInitializer> {
       );
     }
 
+    // If init failed catastrophically, show a minimal error screen
+    // instead of a blank screen so users know what happened
+    if (_initError != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Unable to start app',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _initError!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _initError = null;
+                        _initialized = false;
+                      });
+                      _initializeApp();
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ExpenseTrackerApp(showOnboarding: _showOnboarding);
   }
 }
@@ -442,4 +495,3 @@ class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
     );
   }
 }
-
