@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mobile_expense_tracker/core/models/category.dart';
 
 /// Current database schema version.
 /// Increment this whenever you add a migration.
@@ -76,49 +77,35 @@ Future<void> _runMigration(int targetVersion) async {
 /// - `walletId` field on Expense and Income (nullable)
 /// - WalletTransfer model and its box
 /// - dbVersion tracking itself
+///
+/// Note: We access already-open typed boxes directly. The Map-patching
+/// approach does not work with typed Hive boxes — values are deserialized
+/// objects, not Maps. Missing fields are handled by defensive adapters
+/// (nullable fields default to null) and the `effectiveType` getter.
 Future<void> _migrateFromV0(Box<dynamic> settings) async {
   developer.log(
-    '[Migration] v0 → v1: Ensuring new fields have sensible defaults...',
+    '[Migration] v0 → v1: Running...',
     name: 'DatabaseMigration',
   );
   await _migrateV0toV1();
 }
 
 Future<void> _migrateV0toV1() async {
-  // 1. Ensure every Category has a categoryType.
-  final categoryBox = Hive.box<dynamic>('categories');
+  // 1. Ensure Category objects without categoryType get a default.
+  //    The adapter already reads missing field[5] as null, but rewriting
+  //    ensures the on-disk bytes match the current schema for future proofing.
+  final categoryBox = Hive.box<Category>('categories');
   for (final key in categoryBox.keys.toList()) {
     final cat = categoryBox.get(key);
-    if (cat is! Map) continue;
-    if (cat['categoryType'] == null) {
-      cat['categoryType'] = 'expense';
-      await categoryBox.put(key, cat);
+    if (cat == null) continue;
+    if (cat.categoryType == null) {
+      final updated = cat.copyWith(categoryType: 'expense');
+      await categoryBox.put(key, updated);
     }
   }
 
-  // 2. Ensure expense/note and income/note fields exist as null if missing.
-  //    (Defensive only — generated adapters already handle missing nullable fields.)
-  final expenseBox = Hive.box<dynamic>('expenses');
-  for (final key in expenseBox.keys.toList()) {
-    final e = expenseBox.get(key);
-    if (e is! Map) continue;
-    if (!e.containsKey('walletId')) {
-      e['walletId'] = null;
-      await expenseBox.put(key, e);
-    }
-  }
-
-  final incomeBox = Hive.box<dynamic>('incomes');
-  for (final key in incomeBox.keys.toList()) {
-    final i = incomeBox.get(key);
-    if (i is! Map) continue;
-    if (!i.containsKey('walletId')) {
-      i['walletId'] = null;
-      await incomeBox.put(key, i);
-    }
-  }
-
-  // 3. Create empty wallet_transfers box if missing (new in v1).
+  // 2. Ensure wallet_transfers box exists (new in v1).
+  //    Do NOT try to open it again if already open.
   if (!Hive.isBoxOpen('wallet_transfers')) {
     await Hive.openBox<dynamic>('wallet_transfers');
   }
