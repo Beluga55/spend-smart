@@ -25,6 +25,9 @@ class Expense extends HiveObject {
   @HiveField(6)
   String? walletId;
 
+  @HiveField(7)
+  String? receiptImagePath;
+
   Expense({
     required this.id,
     required this.amount,
@@ -33,6 +36,7 @@ class Expense extends HiveObject {
     this.note,
     required this.createdAt,
     this.walletId,
+    this.receiptImagePath,
   });
 
   Expense copyWith({
@@ -43,6 +47,7 @@ class Expense extends HiveObject {
     String? note,
     DateTime? createdAt,
     String? walletId,
+    String? receiptImagePath,
   }) {
     return Expense(
       id: id ?? this.id,
@@ -52,6 +57,7 @@ class Expense extends HiveObject {
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       walletId: walletId ?? this.walletId,
+      receiptImagePath: receiptImagePath ?? this.receiptImagePath,
     );
   }
 }

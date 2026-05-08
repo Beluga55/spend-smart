@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_expense_tracker/core/config/env.dart';
 import 'icon_constants.dart';
 
 class AppConstants {
   static const String appName = 'Expense Tracker';
 
-  // Supabase Configuration
-  static const String supabaseUrl = 'https://gvjqpsyypiyathjhjkrz.supabase.co';
-  static const String supabaseAnonKey =
-      'sb_publishable_CNz49j_lu7pC1zjm6i_9Zg_Vj5wQe8j';
+  // Supabase Configuration — loaded from .env
+  static String get supabaseUrl => Env.supabaseUrl;
+  static String get supabaseAnonKey => Env.supabaseAnonKey;
 
-  // Google OAuth Web Client ID (from Google Cloud Console → Credentials)
-  // This is the *web* client ID, NOT the Android client ID
-  static const String googleWebClientId =
-      '370726002669-du5eg8hhhk2laj8nt1eqove9vfufkt8c.apps.googleusercontent.com';
+  // Google OAuth Web Client ID — loaded from .env
+  static String get googleWebClientId => Env.googleWebClientId;
+
+  // AI API Keys — loaded from .env
+  static String get geminiApiKey => Env.geminiApiKey;
+  static String get nvidiaApiKey => Env.nvidiaApiKey;
+
+  // Placeholder sentinels — used to detect unconfigured keys.
+  static const String geminiApiKeyPlaceholder = 'YOUR_GEMINI_KEY_HERE';
+  static const String nvidiaApiKeyPlaceholder = 'nvapi-YOUR_KEY_HERE';
 
   static const List<DefaultCategory> defaultCategories = [
     DefaultCategory(name: 'Food', iconName: 'restaurant', color: 0xFFFF6B6B),

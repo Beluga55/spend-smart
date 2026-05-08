@@ -45,6 +45,7 @@ class ExpensesNotifier extends StateNotifier<List<Expense>> {
     required DateTime date,
     String? note,
     String? walletId,
+    String? receiptImagePath,
   }) async {
     const uuid = Uuid();
     final expense = Expense(
@@ -55,6 +56,7 @@ class ExpensesNotifier extends StateNotifier<List<Expense>> {
       note: note,
       createdAt: DateTime.now(),
       walletId: walletId,
+      receiptImagePath: receiptImagePath,
     );
     await _box.put(expense.id, expense);
     _refresh();

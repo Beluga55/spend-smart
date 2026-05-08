@@ -25,6 +25,20 @@ flutter gen-l10n
 flutter pub run flutter_launcher_icons:main
 ```
 
+## Environment Secrets (`.env`)
+
+All API keys and secrets live in `.env` — never commit this file. It is already in `.gitignore`.
+
+```bash
+# 1. Copy the template
+cp .env.example .env
+
+# 2. Fill in real keys (SUPABASE_URL, SUPABASE_ANON_KEY, GOOGLE_WEB_CLIENT_ID, NVIDIA_API_KEY)
+# 3. Build as normal — `main()` loads `.env` before any service needs it.
+```
+
+**Security note:** `.env` is bundled as a Flutter asset, so it keeps secrets out of *git* but not out of the APK. For production-grade hardening use `--dart-define` or a remote config service instead.
+
 ## Release Workflow
 
 1. Bump `version` in `pubspec.yaml` (format: `major.minor.patch+buildNumber`)
@@ -53,9 +67,17 @@ CI requires secrets: `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS`, `KEYSTORE
 - `analysis_options.yaml` uses `package:flutter_lints/flutter.yaml` — standard Flutter lints, no custom overrides.
 - `avoid_print` is active but not enforced in `lib/core/services/` where `debugPrint` is used.
 
+## Features
+
+- **Receipt Scanning** — Camera/gallery → Google ML Kit OCR → NVIDIA AI parsing.  Tap "Scan Receipt" in the expense modal.
+- **AI Auto-Categorization** — Tap the refresh icon next to the category dropdown to get an AI-suggested category.
+- **AI Monthly Insights** — Appears on the dashboard when the NVIDIA API key is configured and the feature is enabled.
+- **Home Screen Widget** — Android widget showing total balance and today's income/expense.  Long-press home screen to add.
+
 ## Gotchas
 
 - **Icon asset**: `flutter_launcher_icons` points to `android/app/src/main/res/icon.jpg`. This file must exist or icon generation fails.
 - **Android label**: `SpendSmart` (not `mobile_expense_tracker`). Manifest is at `android/app/src/main/AndroidManifest.xml`.
 - **Splash screen**: Custom Flutter widget at `lib/features/splash/splash_screen.dart`, shown during background init. The native Android splash (`LaunchTheme`) is a plain white background only.
 - **Samsung-specific**: The app defers heavy init until after `runApp()` and adds `Future.delayed(Duration.zero)` yields between steps to avoid ANR on One UI's strict choreographer.
+- **Widget SharedPreferences name**: The Kotlin `HomeWidgetProvider` must read from `"HomeWidgetPreferences"` (the name used internally by the `home_widget` package), not a custom name.

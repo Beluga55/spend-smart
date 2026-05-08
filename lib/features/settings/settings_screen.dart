@@ -12,10 +12,12 @@ import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
+import 'package:mobile_expense_tracker/core/providers/ai_provider.dart';
 
 import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/theme_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/language_modal.dart';
+import 'package:mobile_expense_tracker/features/settings/ai_settings_modal.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -331,6 +333,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 },
               );
             },
+          ),
+          const SizedBox(height: 16),
+          _buildSectionHeader('AI Assistant', textSecondary),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.auto_awesome,
+            title: 'AI Settings',
+            subtitle: ref.watch(aiSettingsProvider).hasAnyKey
+                ? 'Tap to manage features'
+                : 'Get AI-powered receipt scanning & insights',
+            textPrimary: textPrimary,
+            backgroundColor: backgroundColor,
+            dividerColor: dividerColor,
+            onTap: () => _showAISettingsModal(context),
           ),
           const SizedBox(height: 16),
           _buildSectionHeader('About', textSecondary),
@@ -752,6 +768,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  void _showAISettingsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AISettingsModal(),
+    );
+  }
+
   void _signInWithGoogle(
     BuildContext context,
     WidgetRef ref,
@@ -861,16 +886,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         break;
     }
 
-    return _buildSettingsTile(
-      context: context,
-      icon: Icons.system_update,
-      title: l10n.checkForUpdates,
-      trailing: trailing,
-      textPrimary: textPrimary,
-      backgroundColor: backgroundColor,
-      dividerColor: dividerColor,
-      subtitle: statusText,
-      onTap: () => _handleUpdateTap(context),
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final version = snapshot.data?.version ?? '';
+        final build = snapshot.data?.buildNumber ?? '';
+        final versionLabel = version.isNotEmpty ? 'v$version+$build' : '';
+        final subtitle = versionLabel.isNotEmpty
+            ? '$statusText · Current: $versionLabel'
+            : statusText;
+
+        return _buildSettingsTile(
+          context: context,
+          icon: Icons.system_update,
+          title: l10n.checkForUpdates,
+          trailing: trailing,
+          textPrimary: textPrimary,
+          backgroundColor: backgroundColor,
+          dividerColor: dividerColor,
+          subtitle: subtitle,
+          onTap: () => _handleUpdateTap(context),
+        );
+      },
     );
   }
 

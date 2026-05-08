@@ -23,6 +23,8 @@ import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
 import 'package:mobile_expense_tracker/core/services/update_service.dart';
+import 'package:mobile_expense_tracker/core/services/home_widget_service.dart';
+import 'package:mobile_expense_tracker/core/config/env.dart';
 import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
 import 'package:mobile_expense_tracker/core/database/database_migration_service.dart';
 import 'package:mobile_expense_tracker/features/lock/lock_screen.dart';
@@ -34,6 +36,9 @@ import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load secrets from .env before anything else needs them.
+  await Env.load();
 
   await Hive.initFlutter();
 
@@ -273,6 +278,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     } catch (e) {
       debugPrint('Anonymous sign-in failed or timed out: $e');
     }
+
+    // Initialize home widget background callback
+    await HomeWidgetService.initialize();
 
     // Initialize notifications (fast, local)
     await NotificationService.initialize();

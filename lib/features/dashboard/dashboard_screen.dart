@@ -10,6 +10,7 @@ import 'package:mobile_expense_tracker/features/dashboard/widgets/recent_expense
 import 'package:mobile_expense_tracker/features/dashboard/widgets/spending_trends.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/top_categories.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/streak_banner.dart';
+import 'package:mobile_expense_tracker/features/dashboard/widgets/ai_insights_card.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/month_selector.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/quick_add_sheet.dart';
 import 'package:mobile_expense_tracker/features/budget/budget_modal.dart';
@@ -82,6 +83,8 @@ class DashboardScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
+
+            const AIInsightsCard(),
 
             if (budgetAlerts.isNotEmpty)
               ...budgetAlerts.entries.map(
@@ -195,13 +198,14 @@ class DashboardScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
-        onSave: (amount, categoryId, date, note, walletId) {
+        onSave: (amount, categoryId, date, note, walletId, receiptImagePath) {
           ref.read(expensesProvider.notifier).addExpense(
             amount: amount,
             categoryId: categoryId,
             date: date,
             note: note,
             walletId: walletId,
+            receiptImagePath: receiptImagePath,
           );
           final selected = ref.read(selectedMonthProvider);
           if (date.year != selected.year || date.month != selected.month) {

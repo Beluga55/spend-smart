@@ -91,6 +91,7 @@ class BackupService {
               'note': e.note,
               'createdAt': e.createdAt.toIso8601String(),
               'walletId': e.walletId,
+              'receiptImagePath': e.receiptImagePath,
             },
           )
           .toList(),
@@ -286,6 +287,7 @@ class BackupService {
         note: e['note'],
         createdAt: DateTime.parse(e['createdAt']),
         walletId: e['walletId'],
+        receiptImagePath: e['receiptImagePath'],
       );
       await expenseBox.put(expense.id, expense);
     }

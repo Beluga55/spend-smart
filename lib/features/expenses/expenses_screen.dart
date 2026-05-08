@@ -460,7 +460,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
-        onSave: (amount, categoryId, date, note, walletId) {
+        onSave: (amount, categoryId, date, note, walletId, receiptImagePath) {
           ref
               .read(expensesProvider.notifier)
               .addExpense(
@@ -469,6 +469,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 date: date,
                 note: note,
                 walletId: walletId,
+                receiptImagePath: receiptImagePath,
               );
           _checkBudgetAlert();
         },
@@ -712,7 +713,7 @@ class _ExpenseTile extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
         expense: expense,
-        onSave: (amount, categoryId, date, note, walletId) {
+        onSave: (amount, categoryId, date, note, walletId, receiptImagePath) {
           ref
               .read(expensesProvider.notifier)
               .updateExpense(
@@ -722,6 +723,7 @@ class _ExpenseTile extends ConsumerWidget {
                   date: date,
                   note: note,
                   walletId: walletId,
+                  receiptImagePath: receiptImagePath,
                 ),
               );
         },
