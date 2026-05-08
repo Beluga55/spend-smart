@@ -36,6 +36,9 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
+      - name: Create .env file
+        run: touch .env
+
       - name: Build release APK
         run: flutter build apk --release
 
