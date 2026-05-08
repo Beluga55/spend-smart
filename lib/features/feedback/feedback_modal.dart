@@ -39,15 +39,14 @@ class _FeedbackModalState extends ConsumerState<FeedbackModal> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.only(
-        left: 24,
-        top: 24,
-        right: 24,
-        bottom: 24 + MediaQuery.of(context).padding.bottom,
+        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Center(
             child: Container(
               width: 40,
@@ -175,6 +174,7 @@ class _FeedbackModalState extends ConsumerState<FeedbackModal> {
           const SizedBox(height: 8),
         ],
       ),
+    ),
     );
   }
 

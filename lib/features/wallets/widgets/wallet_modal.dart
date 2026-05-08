@@ -73,12 +73,15 @@ class _WalletModalState extends ConsumerState<WalletModal> {
     final dividerColor = Theme.of(context).colorScheme.outline;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Header
           Container(
@@ -119,7 +122,7 @@ class _WalletModalState extends ConsumerState<WalletModal> {
                 left: 20,
                 right: 20,
                 top: 20,
-                bottom: 20 + MediaQuery.of(context).padding.bottom,
+                bottom: 20 + MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
