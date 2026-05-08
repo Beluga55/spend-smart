@@ -9,6 +9,7 @@ import 'package:mobile_expense_tracker/features/settings/language_modal.dart';
 import 'package:mobile_expense_tracker/features/recurring/recurring_screen.dart';
 import 'package:mobile_expense_tracker/features/summary/summary_screen.dart';
 import 'package:mobile_expense_tracker/features/converter/converter_screen.dart';
+import 'package:mobile_expense_tracker/features/feedback/feedback_modal.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class DrawerContent extends ConsumerWidget {
@@ -176,6 +177,26 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ConverterScreen()),
+                );
+              },
+              textPrimary: textPrimary,
+              surfaceColor: surfaceColor,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+            ),
+            const SizedBox(height: 8),
+            _buildDrawerItem(
+              context: context,
+              icon: Icons.feedback_outlined,
+              title: l10n.feedback,
+              trailing: const SizedBox(),
+              onTap: () {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const FeedbackModal(),
                 );
               },
               textPrimary: textPrimary,

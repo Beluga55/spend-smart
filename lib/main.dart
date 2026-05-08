@@ -296,6 +296,8 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     final expenseBox = Hive.box<Expense>('expenses');
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
+    const maxBacklogDays = 180;
+    const uuid = Uuid();
 
     for (final recurring in recurringBox.values) {
       if (!recurring.isActive) continue;
@@ -311,8 +313,8 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       var nextDate =
           current.lastCreated == null ? startDay : current.getNextDueDate();
 
-      while (nextDate != null && !nextDate.isAfter(today)) {
-        const uuid = Uuid();
+      int iterations = 0;
+      while (nextDate != null && !nextDate.isAfter(today) && iterations < maxBacklogDays) {
         final expense = Expense(
           id: uuid.v4(),
           amount: current.amount,
@@ -327,6 +329,11 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
         await recurringBox.put(current.id, current);
 
         nextDate = current.getNextDueDate();
+        iterations++;
+      }
+
+      if (iterations >= maxBacklogDays) {
+        debugPrint('[Recurring] Capped backlog at $maxBacklogDays days for "${current.note}"');
       }
     }
   }
@@ -336,26 +343,70 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     final now = DateTime.now();
     final currentMonthKey = '${now.year}-${now.month.toString().padLeft(2, '0')}';
 
-    if (settings.get('carryoverMonth') == currentMonthKey) return;
+    final lastProcessedStr = settings.get('carryoverMonth') as String?;
 
-    final prevYear = now.month == 1 ? now.year - 1 : now.year;
-    final prevMonth = now.month == 1 ? 12 : now.month - 1;
+    // Build the list of month keys to process.
+    // If we have a stored value, process all months from that month
+    // (exclusive) up to currentMonthKey (exclusive).
+    // If no stored value, only process the single previous month.
+    final monthsToProcess = <String>[];
 
+    if (lastProcessedStr == currentMonthKey) return;
+
+    // Determine starting month
+    DateTime cursor;
+    if (lastProcessedStr != null) {
+      final parts = lastProcessedStr.split('-');
+      cursor = DateTime(int.parse(parts[0]), int.parse(parts[1]));
+    } else {
+      // First run: only process previous month
+      final prevYear = now.month == 1 ? now.year - 1 : now.year;
+      final prevMonth = now.month == 1 ? 12 : now.month - 1;
+      monthsToProcess.add('$prevYear-${prevMonth.toString().padLeft(2, '0')}');
+      await _createCarryoverForMonth(prevYear, prevMonth, now);
+      await settings.put('carryoverMonth', currentMonthKey);
+      return;
+    }
+
+    // Walk forward from cursor (exclusive) to current month (exclusive)
+    while (true) {
+      final nextYear = cursor.month == 12 ? cursor.year + 1 : cursor.year;
+      final nextMonth = cursor.month == 12 ? 1 : cursor.month + 1;
+      final nextKey = '$nextYear-${nextMonth.toString().padLeft(2, '0')}';
+      if (nextKey == currentMonthKey) break;
+      monthsToProcess.add(nextKey);
+      cursor = DateTime(nextYear, nextMonth);
+    }
+
+    for (final monthKey in monthsToProcess) {
+      final parts = monthKey.split('-');
+      final year = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      await _createCarryoverForMonth(year, month, now);
+    }
+
+    await settings.put('carryoverMonth', currentMonthKey);
+  }
+
+  Future<void> _createCarryoverForMonth(int year, int month, DateTime now) async {
     final incomeBox = Hive.box<Income>('incomes');
     final expenseBox = Hive.box<Expense>('expenses');
 
-    final prevIncome = incomeBox.values
-        .where((i) => i.date.year == prevYear && i.date.month == prevMonth)
+    final monthIncome = incomeBox.values
+        .where((i) => i.date.year == year && i.date.month == month)
         .fold(0.0, (sum, i) => sum + i.amount);
 
-    final prevExpenses = expenseBox.values
-        .where((e) => e.date.year == prevYear && e.date.month == prevMonth)
+    final monthExpenses = expenseBox.values
+        .where((e) => e.date.year == year && e.date.month == month)
         .fold(0.0, (sum, e) => sum + e.amount);
 
-    final net = prevIncome - prevExpenses;
-    final monthLabel = DateFormat('MMMM yyyy').format(DateTime(prevYear, prevMonth));
-    const uuid = Uuid();
+    final net = monthIncome - monthExpenses;
+
+    if (net == 0) return;
+
+    final monthLabel = DateFormat('MMMM yyyy').format(DateTime(year, month));
     final firstOfMonth = DateTime(now.year, now.month, 1);
+    const uuid = Uuid();
 
     if (net > 0) {
       final income = Income(
@@ -366,7 +417,7 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
         createdAt: now,
       );
       await incomeBox.put(income.id, income);
-    } else if (net < 0) {
+    } else {
       final categoryBox = Hive.box<Category>('categories');
       final otherCat = categoryBox.values.firstWhere(
         (c) => c.name == 'Other' && c.effectiveType == 'expense',
@@ -392,8 +443,6 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       );
       await expenseBox.put(expense.id, expense);
     }
-
-    await settings.put('carryoverMonth', currentMonthKey);
   }
 
   Future<void> _checkForAppUpdate() async {

@@ -331,5 +331,14 @@
     "placeholders": {
       "version": {"type": "String"}
     }
-  }
+  },
+  "feedback": "反馈",
+  "sendFeedback": "发送反馈",
+  "bugReport": "问题报告",
+  "featureRequest": "功能建议",
+  "feedbackMessage": "请描述您的反馈...",
+  "feedbackSent": "感谢您的反馈！",
+  "feedbackError": "发送反馈失败",
+  "feedbackCategory": "类别",
+  "submit": "提交"
 }

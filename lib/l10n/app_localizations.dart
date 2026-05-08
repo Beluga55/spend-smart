@@ -1705,6 +1705,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New version {version} is available'**
   String newVersionAvailable(String version);
+
+  /// No description provided for @feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedback;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get sendFeedback;
+
+  /// No description provided for @bugReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug Report'**
+  String get bugReport;
+
+  /// No description provided for @featureRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature Request'**
+  String get featureRequest;
+
+  /// No description provided for @feedbackMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your feedback...'**
+  String get feedbackMessage;
+
+  /// No description provided for @feedbackSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your feedback!'**
+  String get feedbackSent;
+
+  /// No description provided for @feedbackError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send feedback'**
+  String get feedbackError;
+
+  /// No description provided for @feedbackCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get feedbackCategory;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate

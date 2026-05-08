@@ -831,4 +831,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String newVersionAvailable(String version) {
     return '新版本 $version 可用';
   }
+
+  @override
+  String get feedback => '反馈';
+
+  @override
+  String get sendFeedback => '发送反馈';
+
+  @override
+  String get bugReport => '问题报告';
+
+  @override
+  String get featureRequest => '功能建议';
+
+  @override
+  String get feedbackMessage => '请描述您的反馈...';
+
+  @override
+  String get feedbackSent => '感谢您的反馈！';
+
+  @override
+  String get feedbackError => '发送反馈失败';
+
+  @override
+  String get feedbackCategory => '类别';
+
+  @override
+  String get submit => '提交';
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
@@ -617,6 +617,31 @@ class _ExpenseTile extends ConsumerWidget {
         child: Dismissible(
       key: Key(expense.id),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(
+              l10n.deleteExpense,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
+            content: Text(
+              l10n.areYouSureDeleteExpense,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.delete),
+              ),
+            ],
+          ),
+        ) ?? false;
+      },
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
@@ -739,6 +764,31 @@ class _IncomeTile extends ConsumerWidget {
         child: Dismissible(
       key: Key(income.id),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(
+              l10n.deleteIncome,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
+            content: Text(
+              l10n.areYouSureDeleteIncome,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.delete),
+              ),
+            ],
+          ),
+        ) ?? false;
+      },
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),

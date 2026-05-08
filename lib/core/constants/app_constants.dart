@@ -5,8 +5,6 @@ class AppConstants {
   static const String appName = 'Expense Tracker';
 
   // Supabase Configuration
-  // TODO: Replace with your actual Supabase project URL and anon key
-  // Get these from: https://supabase.com/dashboard → Project Settings → API
   static const String supabaseUrl = 'https://gvjqpsyypiyathjhjkrz.supabase.co';
   static const String supabaseAnonKey =
       'sb_publishable_CNz49j_lu7pC1zjm6i_9Zg_Vj5wQe8j';

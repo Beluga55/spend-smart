@@ -46,7 +46,8 @@ class SavingGoal extends HiveObject {
   int? get daysRemaining {
     if (deadline == null) return null;
     final now = DateTime.now();
-    return deadline!.difference(now).inDays;
+    final days = deadline!.difference(now).inDays;
+    return days < 0 ? 0 : days;
   }
 
   SavingGoal copyWith({

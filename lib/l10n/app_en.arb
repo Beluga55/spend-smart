@@ -331,5 +331,14 @@
     "placeholders": {
       "version": {"type": "String"}
     }
-  }
+  },
+  "feedback": "Feedback",
+  "sendFeedback": "Send Feedback",
+  "bugReport": "Bug Report",
+  "featureRequest": "Feature Request",
+  "feedbackMessage": "Describe your feedback...",
+  "feedbackSent": "Thank you for your feedback!",
+  "feedbackError": "Failed to send feedback",
+  "feedbackCategory": "Category",
+  "submit": "Submit"
 }

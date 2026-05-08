@@ -72,11 +72,36 @@ class RecentTransactionsList extends ConsumerWidget {
             return Dismissible(
               key: Key(income.id),
               direction: DismissDirection.endToStart,
+              confirmDismiss: (direction) async {
+                return await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(
+                      l10n.deleteIncome,
+                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                    ),
+                    content: Text(
+                      l10n.areYouSureDeleteIncome,
+                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(l10n.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(l10n.delete),
+                      ),
+                    ],
+                  ),
+                ) ?? false;
+              },
               background: Container(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.only(right: 20),
-                color: Colors.red,
-                child: const Icon(Icons.delete, color: Colors.white),
+                color: Theme.of(context).colorScheme.error,
+                child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
               ),
               onDismissed: (_) {
                 final deleted = income;
@@ -133,11 +158,36 @@ class RecentTransactionsList extends ConsumerWidget {
             return Dismissible(
               key: Key(expense.id),
               direction: DismissDirection.endToStart,
+              confirmDismiss: (direction) async {
+                return await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(
+                      l10n.deleteExpense,
+                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                    ),
+                    content: Text(
+                      l10n.areYouSureDeleteExpense,
+                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(l10n.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(l10n.delete),
+                      ),
+                    ],
+                  ),
+                ) ?? false;
+              },
               background: Container(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.only(right: 20),
-                color: Colors.red,
-                child: const Icon(Icons.delete, color: Colors.white),
+                color: Theme.of(context).colorScheme.error,
+                child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
               ),
               onDismissed: (_) {
                 final deleted = expense;

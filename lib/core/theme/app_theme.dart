@@ -147,6 +147,9 @@ class AppTheme {
         titleLarge: _soraTextTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: darkTextPrimary),
         titleMedium: _soraTextTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: darkTextPrimary),
         titleSmall: _soraTextTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: darkTextPrimary),
+        bodyLarge: _soraTextTheme.bodyLarge?.copyWith(color: darkTextPrimary),
+        bodyMedium: _soraTextTheme.bodyMedium?.copyWith(color: darkTextPrimary),
+        bodySmall: _soraTextTheme.bodySmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkSurfaceColor,

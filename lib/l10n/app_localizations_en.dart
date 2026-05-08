@@ -845,4 +845,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String newVersionAvailable(String version) {
     return 'New version $version is available';
   }
+
+  @override
+  String get feedback => 'Feedback';
+
+  @override
+  String get sendFeedback => 'Send Feedback';
+
+  @override
+  String get bugReport => 'Bug Report';
+
+  @override
+  String get featureRequest => 'Feature Request';
+
+  @override
+  String get feedbackMessage => 'Describe your feedback...';
+
+  @override
+  String get feedbackSent => 'Thank you for your feedback!';
+
+  @override
+  String get feedbackError => 'Failed to send feedback';
+
+  @override
+  String get feedbackCategory => 'Category';
+
+  @override
+  String get submit => 'Submit';
 }
