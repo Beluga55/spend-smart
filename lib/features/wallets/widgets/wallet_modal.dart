@@ -78,52 +78,47 @@ class _WalletModalState extends ConsumerState<WalletModal> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: dividerColor, width: 1)),
-            ),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Icon(Icons.close, color: textSecondary, size: 24),
-                ),
-                const Spacer(),
-                Text(
-                  isEditing ? l10n.editWallet : l10n.addWallet,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                if (isEditing && !widget.wallet!.isDefault)
-                  GestureDetector(
-                    onTap: () => _deleteWallet(context, l10n),
-                    child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error, size: 24),
-                  )
-                else
-                  const SizedBox(width: 24),
-              ],
-            ),
-          ),
-          // Form content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: 20 + MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: dividerColor, width: 1)),
               ),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.close, color: textSecondary, size: 24),
+                  ),
+                  const Spacer(),
+                  Text(
+                    isEditing ? l10n.editWallet : l10n.addWallet,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (isEditing && !widget.wallet!.isDefault)
+                    GestureDetector(
+                      onTap: () => _deleteWallet(context, l10n),
+                      child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error, size: 24),
+                    )
+                  else
+                    const SizedBox(width: 24),
+                ],
+              ),
+            ),
+            // Form content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -371,8 +366,8 @@ class _WalletModalState extends ConsumerState<WalletModal> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
