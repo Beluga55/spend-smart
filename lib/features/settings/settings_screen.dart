@@ -829,8 +829,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     String statusText;
     Widget? trailing;
 
-    switch (updateState) {
-      case UpdateState.checking:
+    switch (updateState.status) {
+      case UpdateStatus.checking:
         statusText = 'Checking…';
         trailing = const SizedBox(
           width: 20,
@@ -838,22 +838,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           child: CircularProgressIndicator(strokeWidth: 2),
         );
         break;
-      case UpdateState.available:
-        final version = ref.read(updateProvider.notifier).latestUpdate?.version ?? '';
+      case UpdateStatus.available:
+        final version = updateState.latestUpdate?.version ?? '';
         statusText = l10n.newVersionAvailable(version);
         trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
         break;
-      case UpdateState.downloading:
-        final progress = ref.read(updateProvider.notifier).downloadProgress;
+      case UpdateStatus.downloading:
+        final progress = updateState.progress;
         statusText = l10n.downloadingUpdate;
         trailing = Text('${(progress * 100).toStringAsFixed(0)}%',
             style: TextStyle(color: textSecondary));
         break;
-      case UpdateState.ready:
+      case UpdateStatus.ready:
         statusText = 'Ready to install';
         trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
         break;
-      case UpdateState.upToDate:
+      case UpdateStatus.upToDate:
         statusText = l10n.upToDate;
         break;
       default:
@@ -878,19 +878,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final notifier = ref.read(updateProvider.notifier);
     final state = ref.read(updateProvider);
 
-    if (state == UpdateState.available) {
+    if (state.status == UpdateStatus.available) {
       _showUpdateDownloadDialog(context);
-    } else if (state == UpdateState.ready) {
-      _installApk(notifier.apkPath!);
-    } else if (state != UpdateState.checking && state != UpdateState.downloading) {
+    } else if (state.status == UpdateStatus.ready) {
+      _installApk(state.apkPath!);
+    } else if (state.status != UpdateStatus.checking && state.status != UpdateStatus.downloading) {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
       await notifier.checkForUpdate(currentVersion);
 
       final newState = ref.read(updateProvider);
-      if (newState == UpdateState.available) {
+      if (newState.status == UpdateStatus.available) {
         _showUpdateDownloadDialog(context);
-      } else if (newState == UpdateState.upToDate && mounted) {
+      } else if (newState.status == UpdateStatus.upToDate && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.upToDate)),
         );
@@ -899,8 +899,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showUpdateDownloadDialog(BuildContext context) {
-    final notifier = ref.read(updateProvider.notifier);
-    final info = notifier.latestUpdate!;
+    final info = ref.read(updateProvider).latestUpdate!;
     final l10n = AppLocalizations.of(context)!;
 
     showDialog(
@@ -936,10 +935,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         builder: (context, ref, child) {
           final state = ref.watch(updateProvider);
 
-          if (state == UpdateState.ready && notifier.apkPath != null) {
+          if (state.status == UpdateStatus.ready && state.apkPath != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(ctx).pop();
-              _installApk(notifier.apkPath!);
+              _installApk(state.apkPath!);
             });
             return const AlertDialog(
               title: Text('Ready'),
@@ -947,10 +946,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             );
           }
 
-          if (state == UpdateState.error) {
+          if (state.status == UpdateStatus.error) {
             return AlertDialog(
               title: Text('Download Failed'),
-              content: Text(notifier.errorMessage ?? 'Unknown error'),
+              content: Text(state.errorMessage ?? 'Unknown error'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -966,9 +965,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 8),
-                LinearProgressIndicator(value: notifier.downloadProgress),
+                LinearProgressIndicator(value: state.progress),
                 const SizedBox(height: 12),
-                Text('${(notifier.downloadProgress * 100).toStringAsFixed(0)}%'),
+                Text('${(state.progress * 100).toStringAsFixed(0)}%'),
               ],
             ),
           );

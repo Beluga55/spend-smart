@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/services/update_service.dart';
 
-enum UpdateState {
+enum UpdateStatus {
   idle,
   checking,
   available,
@@ -11,56 +11,96 @@ enum UpdateState {
   error,
 }
 
-class UpdateNotifier extends StateNotifier<UpdateState> {
-  UpdateInfo? latestUpdate;
-  double downloadProgress = 0;
-  String? errorMessage;
-  String? apkPath;
+class UpdateState {
+  final UpdateStatus status;
+  final double progress;
+  final String? errorMessage;
+  final String? apkPath;
+  final UpdateInfo? latestUpdate;
 
-  UpdateNotifier() : super(UpdateState.idle);
+  const UpdateState({
+    this.status = UpdateStatus.idle,
+    this.progress = 0,
+    this.errorMessage,
+    this.apkPath,
+    this.latestUpdate,
+  });
+
+  UpdateState copyWith({
+    UpdateStatus? status,
+    double? progress,
+    String? errorMessage,
+    String? apkPath,
+    UpdateInfo? latestUpdate,
+    bool clearError = false,
+    bool clearApkPath = false,
+    bool clearLatestUpdate = false,
+  }) {
+    return UpdateState(
+      status: status ?? this.status,
+      progress: progress ?? this.progress,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      apkPath: clearApkPath ? null : (apkPath ?? this.apkPath),
+      latestUpdate: clearLatestUpdate
+          ? null
+          : (latestUpdate ?? this.latestUpdate),
+    );
+  }
+}
+
+class UpdateNotifier extends StateNotifier<UpdateState> {
+  UpdateNotifier() : super(const UpdateState());
 
   Future<void> checkForUpdate(String currentVersion) async {
-    state = UpdateState.checking;
-    errorMessage = null;
+    state = state.copyWith(
+      status: UpdateStatus.checking,
+      clearError: true,
+    );
 
     final info = await UpdateService.checkForUpdate(currentVersion);
     if (info != null) {
-      latestUpdate = info;
-      state = UpdateState.available;
+      state = state.copyWith(
+        status: UpdateStatus.available,
+        latestUpdate: info,
+      );
     } else {
-      state = UpdateState.upToDate;
+      state = state.copyWith(
+        status: UpdateStatus.upToDate,
+        clearLatestUpdate: true,
+      );
     }
   }
 
   Future<void> downloadUpdate() async {
-    if (latestUpdate == null) return;
+    if (state.latestUpdate == null) return;
 
-    state = UpdateState.downloading;
-    downloadProgress = 0;
-    errorMessage = null;
+    state = state.copyWith(
+      status: UpdateStatus.downloading,
+      progress: 0,
+      clearError: true,
+    );
 
     try {
       final file = await UpdateService.downloadApk(
-        latestUpdate!.downloadUrl,
+        state.latestUpdate!.downloadUrl,
         (progress) {
-          downloadProgress = progress;
-          state = UpdateState.downloading;
+          state = state.copyWith(progress: progress);
         },
       );
-      apkPath = file.path;
-      state = UpdateState.ready;
+      state = state.copyWith(
+        status: UpdateStatus.ready,
+        apkPath: file.path,
+      );
     } catch (e) {
-      errorMessage = e.toString();
-      state = UpdateState.error;
+      state = state.copyWith(
+        status: UpdateStatus.error,
+        errorMessage: e.toString(),
+      );
     }
   }
 
   void reset() {
-    state = UpdateState.idle;
-    latestUpdate = null;
-    downloadProgress = 0;
-    errorMessage = null;
-    apkPath = null;
+    state = const UpdateState();
   }
 }
 

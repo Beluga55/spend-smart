@@ -450,7 +450,7 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
       await ref.read(updateProvider.notifier).checkForUpdate(currentVersion);
-      final info = ref.read(updateProvider.notifier).latestUpdate;
+      final info = ref.read(updateProvider).latestUpdate;
       if (info != null && mounted) {
         _showUpdateDialog(info);
       }
@@ -499,10 +499,10 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
         builder: (context, ref, child) {
           final state = ref.watch(updateProvider);
 
-          if (state == UpdateState.ready && notifier.apkPath != null) {
+          if (state.status == UpdateStatus.ready && state.apkPath != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(ctx).pop();
-              _installApk(notifier.apkPath!);
+              _installApk(state.apkPath!);
             });
             return const AlertDialog(
               title: Text('Ready'),
@@ -510,10 +510,10 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
             );
           }
 
-          if (state == UpdateState.error) {
+          if (state.status == UpdateStatus.error) {
             return AlertDialog(
               title: const Text('Download Failed'),
-              content: Text(notifier.errorMessage ?? 'Unknown error'),
+              content: Text(state.errorMessage ?? 'Unknown error'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -530,9 +530,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
               children: [
                 const Text('Please wait while the update downloads…'),
                 const SizedBox(height: 16),
-                LinearProgressIndicator(value: notifier.downloadProgress),
+                LinearProgressIndicator(value: state.progress),
                 const SizedBox(height: 8),
-                Text('${(notifier.downloadProgress * 100).toStringAsFixed(0)}%'),
+                Text('${(state.progress * 100).toStringAsFixed(0)}%'),
               ],
             ),
           );

@@ -207,6 +207,15 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: Colors.white, textStyle: GoogleFonts.sora(fontWeight: FontWeight.w600)),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: darkSurfaceColor,
+        titleTextStyle: GoogleFonts.sora(
+          color: darkTextPrimary, fontSize: 20, fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.sora(
+          color: darkTextPrimary, fontSize: 14,
+        ),
+      ),
     );
   }
 
@@ -399,6 +408,15 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: catDarkPrimary, textStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700)),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: catDarkSurface,
+        titleTextStyle: GoogleFonts.fredoka(
+          color: catDarkTextPrimary, fontSize: 20, fontWeight: FontWeight.w700,
+        ),
+        contentTextStyle: GoogleFonts.fredoka(
+          color: catDarkTextPrimary, fontSize: 14,
+        ),
       ),
     );
   }
