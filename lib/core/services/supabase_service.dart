@@ -72,7 +72,14 @@ class SupabaseService {
   /// Disconnect the Google account by signing out and
   /// reverting to a fresh anonymous session.
   static Future<void> unlinkGoogle() async {
-    await client.auth.signOut();
+    // Clear the native Google sign-in cache so the user can pick a
+    // different account (or none) the next time they link.
+    await GoogleSignIn.instance.signOut();
+
+    // Use local scope to avoid the server round-trip that can cause
+    // a race condition where the next request loses the base URL.
+    await client.auth.signOut(scope: supabase.SignOutScope.local);
+
     await client.auth.signInAnonymously();
   }
 

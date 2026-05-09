@@ -128,7 +128,7 @@ class AIInsightsCard extends ConsumerWidget {
         ),
       ),
       error: (e, _) => _errorCard(
-        'AI error: ${e.toString().split(':').first}',
+        'AI error: ${e.toString().split('\n').first}',
         textPrimary,
         textSecondary,
         bg,

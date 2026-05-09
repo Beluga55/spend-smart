@@ -135,7 +135,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
         // exact match failed — try partial
         try {
           match = categories.firstWhere(
-            (c) => c.name.toLowerCase().contains(cleaned.toLowerCase()),
+            (c) => cleaned.toLowerCase().contains(c.name.toLowerCase()),
           );
         } catch (_) {
           // partial failed too — no good match

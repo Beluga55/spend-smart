@@ -153,9 +153,9 @@ class GeminiAIService {
       text = match.group(1)!;
     }
 
-    // 2. Find first { ... } or [ ... ]
-    final objectMatch = RegExp(r'\{[\s\S]*\}').firstMatch(text);
-    final arrayMatch = RegExp(r'\[[\s\S]*\]').firstMatch(text);
+    // 2. Find first balanced { ... } or [ ... ]
+    final objectMatch = RegExp(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}').firstMatch(text);
+    final arrayMatch = RegExp(r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]').firstMatch(text);
 
     String? jsonStr;
     if (objectMatch != null) {

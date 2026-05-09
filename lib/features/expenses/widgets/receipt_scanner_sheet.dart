@@ -46,13 +46,16 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
           : await _ocrService.pickImageFromGallery();
 
       if (image == null) {
+        if (!mounted) return;
         setState(() => _isBusy = false);
         return;
       }
 
+      if (!mounted) return;
       setState(() => _imagePath = image.path);
 
       final text = await _ocrService.extractText(image);
+      if (!mounted) return;
       if (text.trim().isEmpty) {
         setState(() {
           _error = 'No text found in image. Try a clearer photo.';
@@ -68,6 +71,7 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
 
       await _parseWithAI(text);
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = 'Error: $e';
         _isBusy = false;
@@ -85,17 +89,19 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
     try {
       final service = ref.read(aiSettingsProvider.notifier).service;
       final result = await service.parseReceipt(text);
+      if (!mounted) return;
       setState(() {
         _parsedData = result;
         _provider = service.lastUsedProvider;
       });
     } catch (e) {
+      if (!mounted) return;
       final msg = e.toString();
       setState(() => _error = msg.contains('401')
           ? 'Invalid API key (401). Check your keys in Settings → AI Assistant.'
           : 'AI failed: $msg');
     } finally {
-      setState(() => _isBusy = false);
+      if (mounted) setState(() => _isBusy = false);
     }
   }
 

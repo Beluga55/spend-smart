@@ -143,23 +143,27 @@ class AIInsightsCache {
   final String insight;
   final String monthKey;
   final int cachedAt;
+  final String? provider;
 
   AIInsightsCache({
     required this.insight,
     required this.monthKey,
     required this.cachedAt,
+    this.provider,
   });
 
   Map<String, dynamic> toJson() => {
         'insight': insight,
         'monthKey': monthKey,
         'cachedAt': cachedAt,
+        'provider': provider,
       };
 
   factory AIInsightsCache.fromJson(Map<String, dynamic> json) => AIInsightsCache(
         insight: json['insight'] as String,
         monthKey: json['monthKey'] as String,
         cachedAt: json['cachedAt'] as int,
+        provider: json['provider'] as String?,
       );
 }
 
@@ -198,6 +202,7 @@ class AIInsightsNotifier extends StateNotifier<AsyncValue<String?>> {
           final cache = AIInsightsCache.fromJson(cacheData);
           final age = DateTime.now().millisecondsSinceEpoch - cache.cachedAt;
           if (cache.monthKey == _currentMonthKey && age < _cacheDurationMs) {
+            _lastProvider = cache.provider;
             state = AsyncValue.data(cache.insight);
             return;
           }
@@ -279,6 +284,7 @@ class AIInsightsNotifier extends StateNotifier<AsyncValue<String?>> {
         insight: insight,
         monthKey: _currentMonthKey,
         cachedAt: DateTime.now().millisecondsSinceEpoch,
+        provider: _lastProvider,
       );
       final settings = Hive.box('settings');
       await settings.put(_cacheKey, cache.toJson());
