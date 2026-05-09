@@ -22,10 +22,20 @@ class MainActivity : FlutterFragmentActivity() {
                     return@setMethodCallHandler
                 }
                 installApk(path, result)
+            } else if (call.method == "restartApp") {
+                restartApp()
+                result.success(true)
             } else {
                 result.notImplemented()
             }
         }
+    }
+
+    private fun restartApp() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)!!
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        Runtime.getRuntime().exit(0)
     }
 
     private fun installApk(path: String, result: MethodChannel.Result) {

@@ -833,8 +833,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirmed == true) {
       try {
         await SupabaseService.unlinkGoogle();
-        // Exit app — on next launch it will start with a fresh anonymous session
-        SystemNavigator.pop();
+        // Restart app — on next launch it will start with a fresh anonymous session
+        const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+        await channel.invokeMethod('restartApp');
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(
@@ -866,8 +867,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirmed == true) {
       try {
         await SupabaseService.forceRefreshAuth();
-        // Exit app — on next launch it will start with a fresh anonymous session
-        SystemNavigator.pop();
+        // Restart app — on next launch it will start with a fresh anonymous session
+        const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+        await channel.invokeMethod('restartApp');
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context)
