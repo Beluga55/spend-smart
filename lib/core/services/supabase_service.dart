@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 
@@ -109,8 +110,15 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    await client.auth.signOut(scope: supabase.SignOutScope.global);
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Clear the persisted Supabase session from SharedPreferences.
+    // supabase_flutter stores it under a key containing the project URL.
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys().where(
+        (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
+    for (final key in keys) {
+      await prefs.remove(key);
+    }
+    // Now sign in anonymously to get a fresh session
     await client.auth.signInAnonymously();
   }
 
