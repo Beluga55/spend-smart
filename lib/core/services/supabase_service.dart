@@ -82,10 +82,10 @@ class SupabaseService {
     // different account (or none) the next time they link.
     await GoogleSignIn.instance.signOut();
 
-    // Use local scope to avoid the server round-trip that can cause
-    // a race condition where the next request loses the base URL.
-    await client.auth.signOut(scope: supabase.SignOutScope.local);
-
+    // Sign in anonymously directly — this replaces the current session.
+    // We intentionally skip client.auth.signOut() because even with
+    // SignOutScope.local it resets internal GoTrue client state, causing
+    // "No host specified in URI /auth/v1/signup?" on the next request.
     await client.auth.signInAnonymously();
   }
 
