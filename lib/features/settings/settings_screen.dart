@@ -833,12 +833,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (confirmed == true) {
       try {
         await SupabaseService.unlinkGoogle();
-        ref.invalidate(authStateProvider);
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
-        }
+        // Exit app — on next launch it will start with a fresh anonymous session
+        SystemNavigator.pop();
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(
@@ -855,7 +851,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Reset Account State'),
         content: const Text(
-            'This will sign out and create a fresh anonymous session. '
+            'This will clear your login session and restart the app. '
             'Your expenses and data will NOT be deleted.'),
         actions: [
           TextButton(
@@ -863,18 +859,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: const Text('Cancel')),
           ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Reset')),
+              child: const Text('Reset & Restart')),
         ],
       ),
     );
     if (confirmed == true) {
       try {
         await SupabaseService.forceRefreshAuth();
-        ref.invalidate(authStateProvider);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Auth state reset successfully')));
-        }
+        // Exit app — on next launch it will start with a fresh anonymous session
+        SystemNavigator.pop();
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context)

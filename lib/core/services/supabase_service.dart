@@ -79,26 +79,16 @@ class SupabaseService {
   /// Disconnect the Google account by signing out and
   /// reverting to a fresh anonymous session.
   static Future<void> unlinkGoogle() async {
-    // Clear the native Google sign-in cache so the user can pick a
-    // different account (or none) the next time they link.
+    // Clear the native Google sign-in cache
     await GoogleSignIn.instance.signOut();
 
-    // Clear persisted session so the old JWT doesn't come back on restart
+    // Clear persisted Supabase session
     final prefs = await SharedPreferences.getInstance();
     final keys = prefs.getKeys().where(
         (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
     for (final key in keys) {
       await prefs.remove(key);
     }
-
-    // Dispose and re-initialize to get a clean GoTrue client
-    await supabase.Supabase.instance.dispose();
-    await supabase.Supabase.initialize(
-      url: AppConstants.supabaseUrl,
-      anonKey: AppConstants.supabaseAnonKey,
-    );
-
-    await client.auth.signInAnonymously();
   }
 
   static supabase.User? get currentUser => client.auth.currentUser;
@@ -121,22 +111,16 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    // Clear the persisted Supabase session from SharedPreferences
+    // Clear the persisted Supabase session from SharedPreferences.
+    // On next app launch, startup code will see no session and create
+    // a fresh anonymous one. We do NOT call signInAnonymously() here
+    // because the GoTrue client is in a broken state after session wipe.
     final prefs = await SharedPreferences.getInstance();
     final keys = prefs.getKeys().where(
         (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
     for (final key in keys) {
       await prefs.remove(key);
     }
-
-    // Dispose and re-initialize to get a completely fresh client
-    await supabase.Supabase.instance.dispose();
-    await supabase.Supabase.initialize(
-      url: AppConstants.supabaseUrl,
-      anonKey: AppConstants.supabaseAnonKey,
-    );
-
-    await client.auth.signInAnonymously();
   }
 
   static Stream<AuthState> get authStateChanges {
