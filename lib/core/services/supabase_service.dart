@@ -109,7 +109,7 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    await client.auth.signOut();
+    await client.auth.signOut(scope: supabase.SignOutScope.global);
     await Future.delayed(const Duration(milliseconds: 500));
     await client.auth.signInAnonymously();
   }

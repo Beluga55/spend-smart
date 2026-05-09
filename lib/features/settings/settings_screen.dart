@@ -79,7 +79,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildSectionHeader(l10n.account, textSecondary),
           if (!isAnonymous) ...[
-            Container(
+            GestureDetector(
+              onLongPress: () => _resetAuthState(context, ref),
+              child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -112,6 +114,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                 ],
               ),
+            ),
             ),
             _buildSettingsTile(
               context: context,
@@ -841,6 +844,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text('${l10n.unlinkError}: $e')));
+        }
+      }
+    }
+  }
+
+  void _resetAuthState(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reset Account State'),
+        content: const Text(
+            'This will sign out and create a fresh anonymous session. '
+            'Your expenses and data will NOT be deleted.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Reset')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      try {
+        await SupabaseService.forceRefreshAuth();
+        ref.invalidate(authStateProvider);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Auth state reset successfully')));
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Reset failed: $e')));
         }
       }
     }
