@@ -53,7 +53,7 @@ class SupabaseService {
   /// Sign in with Google using native Android/iOS flow,
   /// then authenticate with Supabase via ID token.
   static Future<supabase.AuthResponse> signInWithGoogle() async {
-    // Trigger the native sign-in flow — returns account directly
+    // google_sign_in 7.x: authenticate() returns the account directly
     final googleUser = await GoogleSignIn.instance.authenticate();
 
     final idToken = googleUser.authentication.idToken;
@@ -61,9 +61,15 @@ class SupabaseService {
       throw Exception('No ID token received from Google');
     }
 
+    // In 7.x, accessToken requires a separate authorization call
+    final authorization = await googleUser.authorizationClient
+        .authorizationForScopes(['email']);
+    final accessToken = authorization?.accessToken;
+
     final response = await client.auth.signInWithIdToken(
       provider: supabase.OAuthProvider.google,
       idToken: idToken,
+      accessToken: accessToken,
     );
 
     return response;
