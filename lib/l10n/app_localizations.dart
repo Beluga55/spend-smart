@@ -1759,6 +1759,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get submit;
+
+  /// No description provided for @aiChat.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get aiChat;
+
+  /// No description provided for @chatPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask or type a command...'**
+  String get chatPlaceholder;
+
+  /// No description provided for @chatWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SpendSmart AI'**
+  String get chatWelcomeTitle;
+
+  /// No description provided for @chatWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me about your spending, or tell me to add expenses and incomes.'**
+  String get chatWelcomeSubtitle;
+
+  /// No description provided for @chatClearTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Chat'**
+  String get chatClearTitle;
+
+  /// No description provided for @chatClearConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear the conversation?'**
+  String get chatClearConfirm;
+
+  /// No description provided for @chatClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get chatClear;
 }
 
 class _AppLocalizationsDelegate

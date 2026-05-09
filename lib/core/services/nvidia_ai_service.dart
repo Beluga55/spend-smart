@@ -165,4 +165,151 @@ class NvidiaAIService {
         'Transactions:\n$list\n\nQuestion: $query';
     return (await _chat(prompt, temp: 0.2, tokens: 256)).trim();
   }
+
+  /// Agent-style chat that can answer questions OR perform actions.
+  /// Returns a JSON map with keys: type, message, action (optional).
+  Future<Map<String, dynamic>> chat({
+    required String query,
+    required Map<String, dynamic> context,
+    required List<Map<String, dynamic>> history,
+  }) async {
+    final prompt = _buildChatPrompt(query, context, history);
+    final raw = await _chat(prompt, temp: 0.2, tokens: 1024);
+    return _extractChatResponse(raw);
+  }
+
+  String _buildChatPrompt(
+    String query,
+    Map<String, dynamic> context,
+    List<Map<String, dynamic>> history,
+  ) {
+    final categories = (context['categories'] as List<dynamic>? ?? [])
+        .map((c) => '- ${c['name']} (${c['type']})')
+        .join('\n');
+
+    final expenses = (context['expenses'] as List<dynamic>? ?? [])
+        .take(30)
+        .map((e) => '${e['date']} | ${e['category']} | \$${e['amount']} | ${e['note'] ?? ''}')
+        .join('\n');
+
+    final incomes = (context['incomes'] as List<dynamic>? ?? [])
+        .take(20)
+        .map((i) => '${i['date']} | ${i['source']} | \$${i['amount']} | ${i['note'] ?? ''}')
+        .join('\n');
+
+    final budgets = (context['budgets'] as List<dynamic>? ?? [])
+        .map((b) => '${b['name']}: \$${b['limit']}')
+        .join('\n');
+
+    final wallets = (context['wallets'] as List<dynamic>? ?? [])
+        .map((w) => '${w['name']}: \$${w['balance']}')
+        .join('\n');
+
+    final historyText = history.isEmpty
+        ? 'None'
+        : history
+            .map((h) => '${h['role']}: ${h['content']}')
+            .join('\n');
+
+    return
+        'You are SpendSmart AI, a personal finance assistant inside a mobile expense tracker app. '
+        'You can answer questions about the user\'s finances AND perform actions like creating expenses, incomes, or categories.\n\n'
+        '=== AVAILABLE DATA ===\n'
+        'Total Balance: \$${context['totalBalance'] ?? 0}\n'
+        'Monthly Expense Total: \$${context['monthlyExpenseTotal'] ?? 0}\n'
+        'Monthly Income Total: \$${context['monthlyIncomeTotal'] ?? 0}\n'
+        'Monthly Balance: \$${context['monthlyBalance'] ?? 0}\n\n'
+        'Categories:\n$categories\n\n'
+        'Recent Expenses (last 30):\n${expenses.isEmpty ? "None" : expenses}\n\n'
+        'Recent Incomes (last 20):\n${incomes.isEmpty ? "None" : incomes}\n\n'
+        'Budgets:\n${budgets.isEmpty ? "None" : budgets}\n\n'
+        'Wallets:\n${wallets.isEmpty ? "None" : wallets}\n\n'
+        '=== CONVERSATION HISTORY ===\n'
+        '$historyText\n\n'
+        '=== INSTRUCTIONS ===\n'
+        'Analyze the user message and classify the intent. '
+        'Respond with ONLY a JSON object (no markdown, no explanation, no ``` wrappers).\n\n'
+        'JSON format:\n'
+        '{\n'
+        '  "type": "answer" | "create_expense" | "create_income" | "create_category" | "delete_expense" | "delete_income" | "delete_category",\n'
+        '  "message": "friendly text reply to show the user",\n'
+        '  "action": { ... } // only for non-answer types\n'
+        '}\n\n'
+        'For "create_expense" action:\n'
+        '{\n'
+        '  "amount": number (required),\n'
+        '  "category": "exact category name from available categories (required)",\n'
+        '  "date": "YYYY-MM-DD" (use today if not specified),\n'
+        '  "note": "string or null"\n'
+        '}\n\n'
+        'For "create_income" action:\n'
+        '{\n'
+        '  "amount": number (required),\n'
+        '  "source": "exact source name from available income categories or a new one (required)",\n'
+        '  "date": "YYYY-MM-DD" (use today if not specified),\n'
+        '  "note": "string or null"\n'
+        '}\n\n'
+        'For "create_category" action:\n'
+        '{\n'
+        '  "name": "category name (required)",\n'
+        '  "iconName": "Material icon name like "restaurant" or "shopping_cart" (required)",\n'
+        '  "color": "hex color string like #FF5733 (required)",\n'
+        '  "categoryType": "expense" or "income" (required)\n'
+        '}\n\n'
+        'For "delete_expense" action:\n'
+        '{\n'
+        '  "amount": number (optional, helps find the right one),\n'
+        '  "category": "exact category name (optional)",\n'
+        '  "date": "YYYY-MM-DD" (optional),\n'
+        '  "note": "string or null" (optional, used for matching)\n'
+        '}\n\n'
+        'For "delete_income" action:\n'
+        '{\n'
+        '  "amount": number (optional),\n'
+        '  "source": "exact source name (optional)",\n'
+        '  "date": "YYYY-MM-DD" (optional),\n'
+        '  "note": "string or null" (optional)\n'
+        '}\n\n'
+        'For "delete_category" action:\n'
+        '{\n'
+        '  "name": "category name (required)"\n'
+        '}\n\n'
+        'Rules:\n'
+        '1. If creating an expense/income and the category/source does not exist, prefer to use create_category first in a separate message, or pick the closest existing match.\n'
+        '2. Use today\'s date (${DateTime.now().toIso8601String().split('T').first}) if the user does not specify a date.\n'
+        '3. Return ONLY raw JSON. No markdown code blocks. No extra text outside the JSON.\n'
+        '4. Keep the message concise, friendly, and actionable.\n'
+        '5. For answer type, the action field can be omitted or null.\n'
+        '6. For delete actions, be as specific as possible (amount + date + note) to avoid deleting the wrong item.\n'
+        '7. You cannot delete default categories or categories that have transactions.\n\n'
+        'User message: $query';
+  }
+
+  static Map<String, dynamic> _extractChatResponse(String raw) {
+    // 1. Strip markdown code blocks
+    var text = raw;
+    final codeBlock = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```');
+    final match = codeBlock.firstMatch(text);
+    if (match != null) {
+      text = match.group(1)!;
+    }
+
+    // 2. Find first balanced { ... }
+    final objectMatch = RegExp(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}').firstMatch(text);
+    if (objectMatch != null) {
+      final jsonStr = objectMatch.group(0);
+      try {
+        final parsed = jsonDecode(jsonStr!) as Map<String, dynamic>;
+        if (parsed.containsKey('type') && parsed.containsKey('message')) {
+          return parsed;
+        }
+      } catch (_) {}
+    }
+
+    // 3. Fallback — treat the whole thing as an answer
+    return {
+      'type': 'answer',
+      'message': raw.trim(),
+    };
+  }
 }

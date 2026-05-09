@@ -110,4 +110,18 @@ class UnifiedAIService {
       'answerSpendingQuery',
     );
   }
+
+  Future<Map<String, dynamic>> chat({
+    required String query,
+    required Map<String, dynamic> context,
+    required List<Map<String, dynamic>> history,
+  }) async {
+    final gemini = GeminiAIService(_geminiKey ?? '');
+    final nvidia = NvidiaAIService(_nvidiaKey ?? '');
+    return _tryPrimaryThenFallback(
+      () => gemini.chat(query: query, context: context, history: history),
+      () => nvidia.chat(query: query, context: context, history: history),
+      'chat',
+    );
+  }
 }

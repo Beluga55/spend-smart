@@ -13,16 +13,16 @@ class NotificationService {
     await _plugin.initialize(settings);
   }
 
-  static Future<void> requestPermission() async {
-    // Request notification permission on Android 13+
-    await _plugin
+  static Future<bool?> requestPermission() async {
+    // Returns true if granted, false if denied, null if pre-Android 13 (no-op)
+    return _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
 
   static Future<void> scheduleDailyReminder(TimeOfDay time) async {
-    await _plugin.cancelAll();
+    await _plugin.cancel(_notifId);
 
     const androidDetails = AndroidNotificationDetails(
       _channelId,

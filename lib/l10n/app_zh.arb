@@ -340,5 +340,12 @@
   "feedbackSent": "感谢您的反馈！",
   "feedbackError": "发送反馈失败",
   "feedbackCategory": "类别",
-  "submit": "提交"
+  "submit": "提交",
+  "aiChat": "AI 助手",
+  "chatPlaceholder": "询问或输入指令...",
+  "chatWelcomeTitle": "SpendSmart AI",
+  "chatWelcomeSubtitle": "询问您的消费情况，或让我帮您添加支出和收入。",
+  "chatClearTitle": "清空对话",
+  "chatClearConfirm": "确定要清空对话吗？",
+  "chatClear": "清空"
 }

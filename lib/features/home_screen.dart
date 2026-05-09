@@ -4,7 +4,7 @@ import 'package:mobile_expense_tracker/features/dashboard/dashboard_screen.dart'
 import 'package:mobile_expense_tracker/features/expenses/expenses_screen.dart';
 import 'package:mobile_expense_tracker/features/wallets/wallets_screen.dart';
 import 'package:mobile_expense_tracker/features/categories/categories_screen.dart';
-import 'package:mobile_expense_tracker/features/saving_goals/saving_goals_screen.dart';
+import 'package:mobile_expense_tracker/features/chat/chat_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ExpensesScreen(),
     WalletsScreen(),
     CategoriesScreen(),
-    SavingGoalsScreen(),
+    ChatScreen(),
   ];
 
   @override
@@ -58,9 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
               label: l10n.categories,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.savings_outlined),
-              activeIcon: const Icon(Icons.savings),
-              label: l10n.savingGoals,
+              icon: const Icon(Icons.auto_awesome_outlined),
+              activeIcon: const Icon(Icons.auto_awesome),
+              label: l10n.aiChat,
             ),
           ],
         ),

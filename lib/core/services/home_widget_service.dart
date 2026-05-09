@@ -41,6 +41,8 @@ class HomeWidgetService {
           )
           .fold<double>(0, (sum, i) => sum + i.amount);
 
+      debugPrint('[HomeWidget] Updating: balance=$totalBalance spent=$todayExpenses income=$todayIncome');
+
       await HomeWidget.saveWidgetData<String>(
         '${_widgetName}_balance',
         totalBalance.toStringAsFixed(2),
@@ -53,10 +55,12 @@ class HomeWidgetService {
         '${_widgetName}_todayIncome',
         todayIncome.toStringAsFixed(2),
       );
-      await HomeWidget.updateWidget(
+
+      final updateResult = await HomeWidget.updateWidget(
         name: _widgetName,
-        androidName: _widgetName,
+        androidName: 'HomeWidgetProvider',
       );
+      debugPrint('[HomeWidget] updateWidget result: $updateResult');
     } catch (e) {
       debugPrint('[HomeWidget] Update error: $e');
     }
@@ -79,8 +83,6 @@ class HomeWidgetService {
 
   @pragma('vm:entry-point')
   static Future<void> interactivityCallback(Uri? uri) async {
-    // Widget was tapped — the app opens automatically.
-    // The URI can be used to deep-link to a specific screen.
     if (uri != null) {
       debugPrint('[HomeWidget] Interacted with URI: $uri');
     }

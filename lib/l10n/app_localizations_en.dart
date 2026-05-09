@@ -872,4 +872,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submit => 'Submit';
+
+  @override
+  String get aiChat => 'AI Assistant';
+
+  @override
+  String get chatPlaceholder => 'Ask or type a command...';
+
+  @override
+  String get chatWelcomeTitle => 'SpendSmart AI';
+
+  @override
+  String get chatWelcomeSubtitle =>
+      'Ask me about your spending, or tell me to add expenses and incomes.';
+
+  @override
+  String get chatClearTitle => 'Clear Chat';
+
+  @override
+  String get chatClearConfirm =>
+      'Are you sure you want to clear the conversation?';
+
+  @override
+  String get chatClear => 'Clear';
 }

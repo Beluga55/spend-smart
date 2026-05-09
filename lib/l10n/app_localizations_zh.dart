@@ -858,4 +858,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get submit => '提交';
+
+  @override
+  String get aiChat => 'AI 助手';
+
+  @override
+  String get chatPlaceholder => '询问或输入指令...';
+
+  @override
+  String get chatWelcomeTitle => 'SpendSmart AI';
+
+  @override
+  String get chatWelcomeSubtitle => '询问您的消费情况，或让我帮您添加支出和收入。';
+
+  @override
+  String get chatClearTitle => '清空对话';
+
+  @override
+  String get chatClearConfirm => '确定要清空对话吗？';
+
+  @override
+  String get chatClear => '清空';
 }

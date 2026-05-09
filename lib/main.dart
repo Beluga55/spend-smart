@@ -119,6 +119,11 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
 
       await _initializeServices();
 
+      await Future.delayed(Duration.zero);
+
+      // Push initial data to the home screen widget
+      await HomeWidgetService.updateBalanceWidget();
+
       final settingsBox = Hive.box('settings');
       final onboardingComplete =
           settingsBox.get('onboardingComplete', defaultValue: false) == true;
@@ -294,7 +299,10 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     await NotificationService.initialize();
 
     // Request notification permission before scheduling
-    await NotificationService.requestPermission();
+    final permissionGranted = await NotificationService.requestPermission();
+    if (permissionGranted == false) {
+      debugPrint('[Notifications] Permission denied on Android 13+ — scheduled reminders will be blocked by OS');
+    }
 
     // Schedule reminder if enabled
     final settingsBox = Hive.box('settings');

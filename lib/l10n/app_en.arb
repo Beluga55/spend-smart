@@ -340,5 +340,12 @@
   "feedbackSent": "Thank you for your feedback!",
   "feedbackError": "Failed to send feedback",
   "feedbackCategory": "Category",
-  "submit": "Submit"
+  "submit": "Submit",
+  "aiChat": "AI Assistant",
+  "chatPlaceholder": "Ask or type a command...",
+  "chatWelcomeTitle": "SpendSmart AI",
+  "chatWelcomeSubtitle": "Ask me about your spending, or tell me to add expenses and incomes.",
+  "chatClearTitle": "Clear Chat",
+  "chatClearConfirm": "Are you sure you want to clear the conversation?",
+  "chatClear": "Clear"
 }

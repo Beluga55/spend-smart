@@ -49,7 +49,7 @@ class AISettingsModal extends ConsumerWidget {
             _featureRow(Icons.receipt_long, 'Receipt Scanning', AIFeature.receiptParsing, settings, ref, textPrimary),
             _featureRow(Icons.auto_fix_high, 'Auto-Categorize', AIFeature.autoCategorize, settings, ref, textPrimary),
             _featureRow(Icons.insights, 'Monthly Insights', AIFeature.monthlyInsights, settings, ref, textPrimary),
-            _featureRow(Icons.chat_bubble_outline, 'Spending Chat (coming soon)', AIFeature.chatQuery, settings, ref, textPrimary, enabled: false),
+            _featureRow(Icons.chat_bubble_outline, 'Spending Chat', AIFeature.chatQuery, settings, ref, textPrimary),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,

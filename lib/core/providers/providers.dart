@@ -5,6 +5,7 @@ import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/core/models/budget.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
 import 'package:mobile_expense_tracker/core/models/recurring_expense.dart';
+import 'package:mobile_expense_tracker/core/services/home_widget_service.dart';
 import 'package:uuid/uuid.dart';
 
 final expenseBoxProvider = Provider<Box<Expense>>((ref) {
@@ -60,16 +61,19 @@ class ExpensesNotifier extends StateNotifier<List<Expense>> {
     );
     await _box.put(expense.id, expense);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 
   Future<void> updateExpense(Expense expense) async {
     await _box.put(expense.id, expense);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 
   Future<void> deleteExpense(String id) async {
     await _box.delete(id);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 }
 
@@ -626,16 +630,19 @@ class IncomesNotifier extends StateNotifier<List<Income>> {
     );
     await _box.put(income.id, income);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 
   Future<void> updateIncome(Income income) async {
     await _box.put(income.id, income);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 
   Future<void> deleteIncome(String id) async {
     await _box.delete(id);
     _refresh();
+    HomeWidgetService.updateBalanceWidget();
   }
 }
 
