@@ -83,10 +83,21 @@ class SupabaseService {
     // different account (or none) the next time they link.
     await GoogleSignIn.instance.signOut();
 
-    // Sign in anonymously directly — this replaces the current session.
-    // We intentionally skip client.auth.signOut() because even with
-    // SignOutScope.local it resets internal GoTrue client state, causing
-    // "No host specified in URI /auth/v1/signup?" on the next request.
+    // Clear persisted session so the old JWT doesn't come back on restart
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys().where(
+        (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
+    for (final key in keys) {
+      await prefs.remove(key);
+    }
+
+    // Dispose and re-initialize to get a clean GoTrue client
+    await supabase.Supabase.instance.dispose();
+    await supabase.Supabase.initialize(
+      url: AppConstants.supabaseUrl,
+      anonKey: AppConstants.supabaseAnonKey,
+    );
+
     await client.auth.signInAnonymously();
   }
 
@@ -110,15 +121,21 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    // Clear the persisted Supabase session from SharedPreferences.
-    // supabase_flutter stores it under a key containing the project URL.
+    // Clear the persisted Supabase session from SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     final keys = prefs.getKeys().where(
         (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
     for (final key in keys) {
       await prefs.remove(key);
     }
-    // Now sign in anonymously to get a fresh session
+
+    // Dispose and re-initialize to get a completely fresh client
+    await supabase.Supabase.instance.dispose();
+    await supabase.Supabase.initialize(
+      url: AppConstants.supabaseUrl,
+      anonKey: AppConstants.supabaseAnonKey,
+    );
+
     await client.auth.signInAnonymously();
   }
 
