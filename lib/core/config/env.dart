@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Centralised environment configuration loaded from `.env`.
@@ -21,9 +22,29 @@ class Env {
       await dotenv.load(fileName: '.env');
       _loaded = true;
     } catch (e) {
-      debugPrint('[Env] Failed to load .env: $e');
-      // Allow the app to continue with empty values so that CI/build
-      // pipelines that don't have a .env file don't crash.
+      debugPrint('[Env] dotenv.load failed ($e), trying rootBundle fallback...');
+      // flutter_dotenv's file loader can fail in release APKs on Android.
+      // Fall back to rootBundle which is more reliable.
+      try {
+        final content = await rootBundle.loadString('.env');
+        final map = <String, String>{};
+        for (final line in content.split('\n')) {
+          final trimmed = line.trim();
+          if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
+          final idx = trimmed.indexOf('=');
+          if (idx == -1) continue;
+          final key = trimmed.substring(0, idx).trim();
+          final value = trimmed.substring(idx + 1).trim();
+          map[key] = value;
+        }
+        dotenv.testLoad(mergeWith: map);
+        _loaded = true;
+        debugPrint('[Env] Loaded ${map.length} keys via rootBundle.');
+      } catch (fallbackErr) {
+        debugPrint('[Env] rootBundle fallback also failed: $fallbackErr');
+        // Allow the app to continue with empty values so that CI/build
+        // pipelines that don't have a .env file don't crash.
+      }
     }
   }
 
