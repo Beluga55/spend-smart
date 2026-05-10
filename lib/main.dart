@@ -285,24 +285,13 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       debugPrint('Supabase initialization failed or timed out: $e');
     }
 
-    // Initialize Google Sign-In with timeout and error isolation.
-    // Only call if the serverClientId is non-empty; passing "" silently
-    // succeeds at the Dart level but makes authenticate() crash on Android
-    // with "serverClientId must be provided on Android".
-    final googleClientId = AppConstants.googleWebClientId;
-    if (googleClientId.isNotEmpty) {
-      debugPrint('[GoogleSignIn] Initializing with serverClientId: $googleClientId');
-      try {
-        await GoogleSignIn.instance
-            .initialize(serverClientId: googleClientId)
-            .timeout(const Duration(seconds: 5));
-        debugPrint('[GoogleSignIn] Initialization succeeded');
-      } catch (e) {
-        debugPrint('[GoogleSignIn] Initialization failed or timed out: $e');
-      }
-    } else {
-      debugPrint('[GoogleSignIn] SKIPPING initialize() — GOOGLE_WEB_CLIENT_ID is empty. '
-          'Check that the .env file (and the GitHub secret for CI builds) has a valid value.');
+    // Initialize Google Sign-In with timeout and error isolation
+    try {
+      await GoogleSignIn.instance
+          .initialize(serverClientId: AppConstants.googleWebClientId)
+          .timeout(const Duration(seconds: 5));
+    } catch (e) {
+      debugPrint('Google Sign-In initialization failed or timed out: $e');
     }
 
     // Create anonymous session if none exists

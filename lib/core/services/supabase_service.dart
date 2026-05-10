@@ -62,16 +62,6 @@ class SupabaseService {
   /// Sign in with Google using native Android/iOS flow,
   /// then authenticate with Supabase via ID token.
   static Future<supabase.AuthResponse> signInWithGoogle() async {
-    // Fail early with a clear message if GOOGLE_WEB_CLIENT_ID is missing,
-    // rather than letting the Android plugin throw the cryptic
-    // "serverClientId must be provided on Android" error.
-    if (AppConstants.googleWebClientId.isEmpty) {
-      throw Exception(
-        'Google Sign-In is not configured: GOOGLE_WEB_CLIENT_ID is empty. '
-        'Add it to .env (local) or the GOOGLE_WEB_CLIENT_ID GitHub secret (CI).',
-      );
-    }
-
     final googleUser = await GoogleSignIn.instance.authenticate();
 
     final idToken = googleUser.authentication.idToken;
