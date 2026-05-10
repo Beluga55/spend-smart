@@ -125,8 +125,9 @@ class SupabaseService {
     } catch (_) {}
   }
 
-  /// One-time migration: remove old Supabase auth keys from SharedPreferences
-  /// so they don't interfere with the new Hive storage.
+  /// One-time migration: move the existing Supabase session from
+  /// SharedPreferences to the new Hive-backed storage, then clean up
+  /// SharedPreferences so stale keys don't interfere.
   static Future<void> _migrateFromSharedPreferences() async {
     final settingsBox = Hive.box('settings');
     const migrationFlag = 'supabase_auth_migrated_to_hive';
@@ -140,6 +141,17 @@ class SupabaseService {
       final hostFirstSegment = Uri.parse(url).host.split('.').first;
       final sessionKey = 'sb-$hostFirstSegment-auth-token';
 
+      // 1. Migrate existing session into Hive so Supabase can recover it
+      final oldSession = prefs.getString(sessionKey);
+      if (oldSession != null && oldSession.isNotEmpty) {
+        const boxName = 'supabase_auth';
+        final authBox = Hive.isBoxOpen(boxName)
+            ? Hive.box<String>(boxName)
+            : await Hive.openBox<String>(boxName);
+        await authBox.put('persisted_session', oldSession);
+      }
+
+      // 2. Delete old SharedPreferences keys so they never conflict again
       await prefs.remove(sessionKey);
       await prefs.remove('supabase.auth.token-code-verifier');
       await prefs.remove('SUPABASE_PERSIST_SESSION_KEY');
