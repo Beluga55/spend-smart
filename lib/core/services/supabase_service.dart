@@ -64,7 +64,13 @@ class SupabaseService {
   /// then authenticate with Supabase via ID token.
   static Future<supabase.AuthResponse> signInWithGoogle() async {
     try {
-      // google_sign_in 7.x: authenticate() returns the account directly
+      // google_sign_in 7.x requires initialize() before authenticate().
+      // After disconnect()/signOut() the native SDK may lose its config,
+      // so we re-initialize every time to avoid
+      // "serverClientId must be provided on Android".
+      await GoogleSignIn.instance
+          .initialize(serverClientId: AppConstants.googleWebClientId);
+
       final googleUser = await GoogleSignIn.instance.authenticate();
 
       final idToken = googleUser.authentication.idToken;
@@ -93,12 +99,8 @@ class SupabaseService {
   /// Disconnect the Google account by signing out and
   /// reverting to a fresh anonymous session.
   static Future<void> unlinkGoogle() async {
-    // signOut() alone leaves cached credentials in Google Play Services,
-    // which can cause "reauth failed" on the next authenticate() call.
-    // disconnect() revokes access and fully clears the cache.
-    try {
-      await GoogleSignIn.instance.disconnect();
-    } catch (_) {}
+    // signOut() keeps the GoogleSignIn SDK initialized,
+    // so the next sign-in attempt can re-use the config.
     try {
       await GoogleSignIn.instance.signOut();
     } catch (_) {}
