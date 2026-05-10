@@ -82,13 +82,9 @@ class SupabaseService {
     // Clear the native Google sign-in cache
     await GoogleSignIn.instance.signOut();
 
-    // Clear persisted Supabase session
+    // Clear ALL SharedPreferences (Hive data is in files, not here)
     final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys().where(
-        (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
-    for (final key in keys) {
-      await prefs.remove(key);
-    }
+    await prefs.clear();
   }
 
   static supabase.User? get currentUser => client.auth.currentUser;
@@ -111,16 +107,11 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    // Clear the persisted Supabase session from SharedPreferences.
-    // On next app launch, startup code will see no session and create
-    // a fresh anonymous one. We do NOT call signInAnonymously() here
-    // because the GoTrue client is in a broken state after session wipe.
+    // Clear ALL SharedPreferences. This is safe because:
+    // - Expenses/incomes/wallets are in Hive files, not SharedPreferences
+    // - SharedPreferences only stores: Supabase session, settings, widget prefs
     final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys().where(
-        (k) => k.contains('supabase') || k.contains('sb-') || k.contains('auth-token'));
-    for (final key in keys) {
-      await prefs.remove(key);
-    }
+    await prefs.clear();
   }
 
   static Stream<AuthState> get authStateChanges {
