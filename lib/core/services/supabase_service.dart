@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
+import 'hive_supabase_storage.dart';
+import 'hive_gotrue_storage.dart';
 
 enum AuthStatus { initial, authenticated, unauthenticated, loading }
 
@@ -23,9 +26,14 @@ class SupabaseService {
       supabase.Supabase.instance.client;
 
   static Future<void> initialize() async {
+    await _migrateFromSharedPreferences();
     await supabase.Supabase.initialize(
       url: AppConstants.supabaseUrl,
       anonKey: AppConstants.supabaseAnonKey,
+      authOptions: supabase.FlutterAuthClientOptions(
+        localStorage: HiveSupabaseStorage(),
+        pkceAsyncStorage: HiveGotrueStorage(),
+      ),
     );
   }
 
@@ -84,9 +92,8 @@ class SupabaseService {
     try {
       await client.auth.signOut(scope: supabase.SignOutScope.local);
     } catch (_) {}
-    // Also nuke SharedPreferences as backup
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    // Also nuke Hive auth box as backup
+    await _clearAuthHiveBox();
   }
 
   static supabase.User? get currentUser => client.auth.currentUser;
@@ -109,15 +116,49 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    // Use Supabase's own internal storage to remove the session
-    // This is the same mechanism Supabase uses to persist/recover sessions
-    final prefs = await SharedPreferences.getInstance();
-    // Remove all keys - covers any possible key format
-    await prefs.clear();
+    // Clear Hive auth box to remove any persisted session
+    await _clearAuthHiveBox();
     // Also tell the GoTrue client to sign out locally (no network call)
     // This clears the in-memory session so it won't be re-persisted
     try {
       await client.auth.signOut(scope: supabase.SignOutScope.local);
+    } catch (_) {}
+  }
+
+  /// One-time migration: remove old Supabase auth keys from SharedPreferences
+  /// so they don't interfere with the new Hive storage.
+  static Future<void> _migrateFromSharedPreferences() async {
+    final settingsBox = Hive.box('settings');
+    const migrationFlag = 'supabase_auth_migrated_to_hive';
+    if (settingsBox.get(migrationFlag, defaultValue: false) == true) {
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final url = AppConstants.supabaseUrl;
+      final hostFirstSegment = Uri.parse(url).host.split('.').first;
+      final sessionKey = 'sb-$hostFirstSegment-auth-token';
+
+      await prefs.remove(sessionKey);
+      await prefs.remove('supabase.auth.token-code-verifier');
+      await prefs.remove('SUPABASE_PERSIST_SESSION_KEY');
+    } catch (_) {
+      // ignore
+    }
+
+    await settingsBox.put(migrationFlag, true);
+  }
+
+  static Future<void> _clearAuthHiveBox() async {
+    try {
+      const boxName = 'supabase_auth';
+      if (Hive.isBoxOpen(boxName)) {
+        await Hive.box<String>(boxName).clear();
+      } else {
+        final box = await Hive.openBox<String>(boxName);
+        await box.clear();
+      }
     } catch (_) {}
   }
 
