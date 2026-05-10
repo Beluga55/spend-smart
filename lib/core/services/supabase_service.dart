@@ -79,10 +79,12 @@ class SupabaseService {
   /// Disconnect the Google account by signing out and
   /// reverting to a fresh anonymous session.
   static Future<void> unlinkGoogle() async {
-    // Clear the native Google sign-in cache
     await GoogleSignIn.instance.signOut();
-
-    // Clear ALL SharedPreferences (Hive data is in files, not here)
+    // Sign out locally - clears in-memory session AND local storage
+    try {
+      await client.auth.signOut(scope: supabase.SignOutScope.local);
+    } catch (_) {}
+    // Also nuke SharedPreferences as backup
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
@@ -107,11 +109,16 @@ class SupabaseService {
   }
 
   static Future<void> forceRefreshAuth() async {
-    // Clear ALL SharedPreferences. This is safe because:
-    // - Expenses/incomes/wallets are in Hive files, not SharedPreferences
-    // - SharedPreferences only stores: Supabase session, settings, widget prefs
+    // Use Supabase's own internal storage to remove the session
+    // This is the same mechanism Supabase uses to persist/recover sessions
     final prefs = await SharedPreferences.getInstance();
+    // Remove all keys - covers any possible key format
     await prefs.clear();
+    // Also tell the GoTrue client to sign out locally (no network call)
+    // This clears the in-memory session so it won't be re-persisted
+    try {
+      await client.auth.signOut(scope: supabase.SignOutScope.local);
+    } catch (_) {}
   }
 
   static Stream<AuthState> get authStateChanges {

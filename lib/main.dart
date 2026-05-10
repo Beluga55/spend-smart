@@ -273,23 +273,15 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       debugPrint('Google Sign-In initialization failed or timed out: $e');
     }
 
-    // Validate existing session or create anonymous one
+    // Create anonymous session if none exists
     try {
       final currentSession = SupabaseService.client.auth.currentSession;
       if (currentSession == null) {
         await SupabaseService.signInAnonymously()
             .timeout(const Duration(seconds: 5));
-      } else {
-        // Refresh to validate the session is still valid on the server
-        await SupabaseService.client.auth.refreshSession()
-            .timeout(const Duration(seconds: 5));
       }
     } catch (e) {
-      debugPrint('Session validation failed, creating fresh anonymous: $e');
-      try {
-        await SupabaseService.forceRefreshAuth()
-            .timeout(const Duration(seconds: 5));
-      } catch (_) {}
+      debugPrint('Anonymous sign-in failed or timed out: $e');
     }
 
     // Initialize home widget background callback
