@@ -58,12 +58,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     final isAnonymous = authState.maybeWhen(
-      data: (state) => state.isAnonymous,
+      data: (state) {
+        // Trust Hive flag over Supabase session for display purposes
+        final settingsBox = Hive.box('settings');
+        final hiveLinked = settingsBox.get('googleLinked', defaultValue: false) as bool;
+        if (hiveLinked) return false; // not anonymous
+        return state.isAnonymous;
+      },
       orElse: () => true,
     );
 
     final linkedEmail = authState.maybeWhen(
-      data: (state) => state.user?.email,
+      data: (state) {
+        final settingsBox = Hive.box('settings');
+        return settingsBox.get('googleEmail') as String? ?? state.user?.email;
+      },
       orElse: () => null,
     );
 
@@ -786,9 +795,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     AppLocalizations l10n,
   ) async {
     try {
-      await SupabaseService.signInWithGoogle();
-      // The auth state will update automatically via the stream provider
-      // when the OAuth callback completes
+      final response = await SupabaseService.signInWithGoogle();
+      // Save linked state to Hive (reliable, survives any Supabase session bugs)
+      final settingsBox = Hive.box('settings');
+      await settingsBox.put('googleLinked', true);
+      await settingsBox.put('googleEmail', response.user?.email);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -832,8 +843,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (confirmed == true) {
       try {
+        // Clear our own auth state flag first (this is what the UI reads)
+        final settingsBox = Hive.box('settings');
+        await settingsBox.delete('googleLinked');
+        await settingsBox.delete('googleEmail');
         await SupabaseService.unlinkGoogle();
-        // Restart app — on next launch it will start with a fresh anonymous session
+        // Restart app
         const channel = MethodChannel('com.example.mobile_expense_tracker/update');
         await channel.invokeMethod('restartApp');
       } catch (e) {
@@ -866,6 +881,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     if (confirmed == true) {
       try {
+        // Clear our own auth state flag (this is what the UI reads)
+        final settingsBox = Hive.box('settings');
+        await settingsBox.delete('googleLinked');
+        await settingsBox.delete('googleEmail');
         await SupabaseService.forceRefreshAuth();
         // Restart app — on next launch it will start with a fresh anonymous session
         const channel = MethodChannel('com.example.mobile_expense_tracker/update');
