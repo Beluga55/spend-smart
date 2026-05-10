@@ -256,6 +256,27 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
   }
 
   Future<void> _initializeServices() async {
+    // NUCLEAR FIX: Reset auth state on every app version change.
+    // This guarantees we never carry a stale/corrupt auth session across
+    // updates (sideload, in-app updater, or Play Store).  Local data
+    // (expenses, categories, budgets, wallets) is fully preserved.
+    // The user simply taps "Sign in with Google" once after updating.
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      final settingsBox = Hive.box('settings');
+      final lastVersion = settingsBox.get('lastAppVersion') as String?;
+      if (lastVersion != currentVersion) {
+        debugPrint('[Auth] Version changed ($lastVersion → $currentVersion). Resetting auth state.');
+        await SupabaseService.forceRefreshAuth();
+        await settingsBox.delete('googleLinked');
+        await settingsBox.delete('googleEmail');
+        await settingsBox.put('lastAppVersion', currentVersion);
+      }
+    } catch (e) {
+      debugPrint('Version-based auth reset failed: $e');
+    }
+
     // Initialize Supabase with timeout (Samsung network can be slow/aggressive)
     try {
       await SupabaseService.initialize()
