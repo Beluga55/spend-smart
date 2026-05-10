@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
@@ -62,32 +63,46 @@ class SupabaseService {
   /// Sign in with Google using native Android/iOS flow,
   /// then authenticate with Supabase via ID token.
   static Future<supabase.AuthResponse> signInWithGoogle() async {
-    // google_sign_in 7.x: authenticate() returns the account directly
-    final googleUser = await GoogleSignIn.instance.authenticate();
+    try {
+      // google_sign_in 7.x: authenticate() returns the account directly
+      final googleUser = await GoogleSignIn.instance.authenticate();
 
-    final idToken = googleUser.authentication.idToken;
-    if (idToken == null) {
-      throw Exception('No ID token received from Google');
+      final idToken = googleUser.authentication.idToken;
+      if (idToken == null) {
+        throw Exception('No ID token received from Google');
+      }
+
+      // In 7.x, accessToken requires a separate authorization call
+      final authorization = await googleUser.authorizationClient
+          .authorizationForScopes(['email']);
+      final accessToken = authorization?.accessToken;
+
+      final response = await client.auth.signInWithIdToken(
+        provider: supabase.OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      return response;
+    } catch (e) {
+      debugPrint('[Google Sign-In] Error: $e');
+      rethrow;
     }
-
-    // In 7.x, accessToken requires a separate authorization call
-    final authorization = await googleUser.authorizationClient
-        .authorizationForScopes(['email']);
-    final accessToken = authorization?.accessToken;
-
-    final response = await client.auth.signInWithIdToken(
-      provider: supabase.OAuthProvider.google,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
-
-    return response;
   }
 
   /// Disconnect the Google account by signing out and
   /// reverting to a fresh anonymous session.
   static Future<void> unlinkGoogle() async {
-    await GoogleSignIn.instance.signOut();
+    // signOut() alone leaves cached credentials in Google Play Services,
+    // which can cause "reauth failed" on the next authenticate() call.
+    // disconnect() revokes access and fully clears the cache.
+    try {
+      await GoogleSignIn.instance.disconnect();
+    } catch (_) {}
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (_) {}
+
     // Sign out locally - clears in-memory session AND local storage
     try {
       await client.auth.signOut(scope: supabase.SignOutScope.local);
