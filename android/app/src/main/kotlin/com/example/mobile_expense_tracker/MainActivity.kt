@@ -34,8 +34,13 @@ class MainActivity : FlutterFragmentActivity() {
     private fun restartApp() {
         val intent = packageManager.getLaunchIntentForPackage(packageName)!!
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(intent)
-        Runtime.getRuntime().exit(0)
+        val pendingIntent = android.app.PendingIntent.getActivity(
+            this, 0, intent,
+            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_ONE_SHOT
+        )
+        val alarmManager = getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
+        alarmManager.set(android.app.AlarmManager.RTC, System.currentTimeMillis() + 200, pendingIntent)
+        android.os.Process.killProcess(android.os.Process.myPid())
     }
 
     private fun installApk(path: String, result: MethodChannel.Result) {
