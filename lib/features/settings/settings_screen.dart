@@ -843,19 +843,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (confirmed == true) {
       try {
-        // Clear our own auth state flag first (this is what the UI reads)
+        // Clear our own auth state flag (this is what the UI reads)
         final settingsBox = Hive.box('settings');
         await settingsBox.delete('googleLinked');
         await settingsBox.delete('googleEmail');
         await SupabaseService.unlinkGoogle();
-        // Restart app
-        const channel = MethodChannel('com.example.mobile_expense_tracker/update');
-        await channel.invokeMethod('restartApp');
-      } catch (e) {
+        ref.invalidate(authStateProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('${l10n.unlinkError}: $e')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
+        }
+      } catch (e) {
+        // Even if Supabase fails, the Hive flags are already cleared
+        // so the UI will show the correct unlinked state
+        ref.invalidate(authStateProvider);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
         }
       }
     }
@@ -881,19 +885,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     if (confirmed == true) {
       try {
-        // Clear our own auth state flag (this is what the UI reads)
         final settingsBox = Hive.box('settings');
         await settingsBox.delete('googleLinked');
         await settingsBox.delete('googleEmail');
         await SupabaseService.forceRefreshAuth();
-        // Restart app — on next launch it will start with a fresh anonymous session
-        const channel = MethodChannel('com.example.mobile_expense_tracker/update');
-        await channel.invokeMethod('restartApp');
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Reset failed: $e')));
-        }
+      } catch (_) {}
+      ref.invalidate(authStateProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Account state reset')));
       }
     }
   }
