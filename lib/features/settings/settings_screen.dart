@@ -59,11 +59,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final isAnonymous = authState.maybeWhen(
       data: (state) {
-        // Trust Hive flag over Supabase session for display purposes
         final settingsBox = Hive.box('settings');
         final hiveLinked = settingsBox.get('googleLinked', defaultValue: false) as bool;
-        if (hiveLinked) return false; // not anonymous
-        return state.isAnonymous;
+        // Trust Hive as source of truth - ignore Supabase session state
+        return !hiveLinked;
       },
       orElse: () => true,
     );
@@ -71,7 +70,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final linkedEmail = authState.maybeWhen(
       data: (state) {
         final settingsBox = Hive.box('settings');
-        return settingsBox.get('googleEmail') as String? ?? state.user?.email;
+        return settingsBox.get('googleEmail') as String?;
       },
       orElse: () => null,
     );
