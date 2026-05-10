@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
@@ -63,37 +62,35 @@ class SupabaseService {
   /// Sign in with Google using native Android/iOS flow,
   /// then authenticate with Supabase via ID token.
   static Future<supabase.AuthResponse> signInWithGoogle() async {
-    try {
-      // google_sign_in 7.x requires initialize() before authenticate().
-      // After disconnect()/signOut() the native SDK may lose its config,
-      // so we re-initialize every time to avoid
-      // "serverClientId must be provided on Android".
-      await GoogleSignIn.instance
-          .initialize(serverClientId: AppConstants.googleWebClientId);
-
-      final googleUser = await GoogleSignIn.instance.authenticate();
-
-      final idToken = googleUser.authentication.idToken;
-      if (idToken == null) {
-        throw Exception('No ID token received from Google');
-      }
-
-      // In 7.x, accessToken requires a separate authorization call
-      final authorization = await googleUser.authorizationClient
-          .authorizationForScopes(['email']);
-      final accessToken = authorization?.accessToken;
-
-      final response = await client.auth.signInWithIdToken(
-        provider: supabase.OAuthProvider.google,
-        idToken: idToken,
-        accessToken: accessToken,
+    // Fail early with a clear message if GOOGLE_WEB_CLIENT_ID is missing,
+    // rather than letting the Android plugin throw the cryptic
+    // "serverClientId must be provided on Android" error.
+    if (AppConstants.googleWebClientId.isEmpty) {
+      throw Exception(
+        'Google Sign-In is not configured: GOOGLE_WEB_CLIENT_ID is empty. '
+        'Add it to .env (local) or the GOOGLE_WEB_CLIENT_ID GitHub secret (CI).',
       );
-
-      return response;
-    } catch (e) {
-      debugPrint('[Google Sign-In] Error: $e');
-      rethrow;
     }
+
+    final googleUser = await GoogleSignIn.instance.authenticate();
+
+    final idToken = googleUser.authentication.idToken;
+    if (idToken == null) {
+      throw Exception('No ID token received from Google');
+    }
+
+    // In 7.x, accessToken requires a separate authorization call
+    final authorization = await googleUser.authorizationClient
+        .authorizationForScopes(['email']);
+    final accessToken = authorization?.accessToken;
+
+    final response = await client.auth.signInWithIdToken(
+      provider: supabase.OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    return response;
   }
 
   /// Disconnect the Google account by signing out and
