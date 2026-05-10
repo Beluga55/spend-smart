@@ -284,6 +284,25 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       debugPrint('Anonymous sign-in failed or timed out: $e');
     }
 
+    // Safety: if session recovery failed and we're now anonymous,
+    // but stale Hive flags still say Google-linked, clear them.
+    // This prevents the "Email linked but can't unlink" bug after updates.
+    try {
+      final user = SupabaseService.client.auth.currentUser;
+      final isAnonymous = user == null || user.isAnonymous;
+      if (isAnonymous) {
+        final settingsBox = Hive.box('settings');
+        final hiveLinked = settingsBox.get('googleLinked', defaultValue: false) == true;
+        if (hiveLinked) {
+          await settingsBox.delete('googleLinked');
+          await settingsBox.delete('googleEmail');
+          debugPrint('[Auth] Cleared stale googleLinked flags after anonymous recovery');
+        }
+      }
+    } catch (e) {
+      debugPrint('Auth flag cleanup failed: $e');
+    }
+
     // Initialize home widget background callback
     await HomeWidgetService.initialize();
 
