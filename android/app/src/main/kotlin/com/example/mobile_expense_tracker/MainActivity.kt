@@ -32,6 +32,12 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun restartApp() {
+        // Nuclear clear: wipe SharedPreferences at the native Android level
+        val prefsDir = java.io.File(applicationInfo.dataDir, "shared_prefs")
+        if (prefsDir.exists() && prefsDir.isDirectory) {
+            prefsDir.listFiles()?.forEach { it.delete() }
+        }
+
         val intent = packageManager.getLaunchIntentForPackage(packageName)!!
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val pendingIntent = android.app.PendingIntent.getActivity(
@@ -39,7 +45,7 @@ class MainActivity : FlutterFragmentActivity() {
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_ONE_SHOT
         )
         val alarmManager = getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
-        alarmManager.set(android.app.AlarmManager.RTC, System.currentTimeMillis() + 200, pendingIntent)
+        alarmManager.set(android.app.AlarmManager.RTC, System.currentTimeMillis() + 300, pendingIntent)
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
