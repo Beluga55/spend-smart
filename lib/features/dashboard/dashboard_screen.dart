@@ -11,6 +11,7 @@ import 'package:mobile_expense_tracker/features/dashboard/widgets/spending_trend
 import 'package:mobile_expense_tracker/features/dashboard/widgets/top_categories.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/streak_banner.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/ai_insights_card.dart';
+import 'package:mobile_expense_tracker/features/dashboard/widgets/groups_card.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/month_selector.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/quick_add_sheet.dart';
 import 'package:mobile_expense_tracker/features/budget/budget_modal.dart';
@@ -85,6 +86,7 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 16),
 
             const AIInsightsCard(),
+            const GroupsCard(),
 
             if (budgetAlerts.isNotEmpty)
               ...budgetAlerts.entries.map(

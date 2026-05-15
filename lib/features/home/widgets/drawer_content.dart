@@ -12,6 +12,7 @@ import 'package:mobile_expense_tracker/features/summary/summary_screen.dart';
 import 'package:mobile_expense_tracker/features/saving_goals/saving_goals_screen.dart';
 import 'package:mobile_expense_tracker/features/converter/converter_screen.dart';
 import 'package:mobile_expense_tracker/features/feedback/feedback_modal.dart';
+import 'package:mobile_expense_tracker/features/groups/groups_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class DrawerContent extends ConsumerWidget {
@@ -197,6 +198,24 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ConverterScreen()),
+                );
+              },
+              textPrimary: textPrimary,
+              surfaceColor: surfaceColor,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+            ),
+            const SizedBox(height: 8),
+            _buildDrawerItem(
+              context: context,
+              icon: Icons.group_outlined,
+              title: l10n.groups,
+              trailing: const SizedBox(),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupsScreen()),
                 );
               },
               textPrimary: textPrimary,
