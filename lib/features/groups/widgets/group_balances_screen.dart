@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/models/group.dart';
+import 'package:mobile_expense_tracker/core/providers/group_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/group_expense_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -16,7 +17,6 @@ class GroupBalancesScreen extends ConsumerWidget {
     final balances = ref.watch(groupBalancesProvider(group.id));
     final members = ref.watch(groupMembersProvider(group.id));
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final dividerColor = Theme.of(context).colorScheme.outline;
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final currentUserId = SupabaseService.client.auth.currentUser?.id;

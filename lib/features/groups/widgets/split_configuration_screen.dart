@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/core/models/expense.dart';
