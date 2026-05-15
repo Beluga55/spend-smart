@@ -28,6 +28,12 @@ class Expense extends HiveObject {
   @HiveField(7)
   String? receiptImagePath;
 
+  @HiveField(8)
+  String? groupId;
+
+  @HiveField(9)
+  String? groupExpenseId;
+
   Expense({
     required this.id,
     required this.amount,
@@ -37,6 +43,8 @@ class Expense extends HiveObject {
     required this.createdAt,
     this.walletId,
     this.receiptImagePath,
+    this.groupId,
+    this.groupExpenseId,
   });
 
   Expense copyWith({
@@ -48,6 +56,8 @@ class Expense extends HiveObject {
     DateTime? createdAt,
     String? walletId,
     String? receiptImagePath,
+    String? groupId,
+    String? groupExpenseId,
   }) {
     return Expense(
       id: id ?? this.id,
@@ -58,6 +68,8 @@ class Expense extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       walletId: walletId ?? this.walletId,
       receiptImagePath: receiptImagePath ?? this.receiptImagePath,
+      groupId: groupId ?? this.groupId,
+      groupExpenseId: groupExpenseId ?? this.groupExpenseId,
     );
   }
 }

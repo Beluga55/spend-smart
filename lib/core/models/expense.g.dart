@@ -25,13 +25,15 @@ class ExpenseAdapter extends TypeAdapter<Expense> {
       createdAt: fields[5] as DateTime,
       walletId: fields[6] as String?,
       receiptImagePath: fields[7] as String?,
+      groupId: fields[8] as String?,
+      groupExpenseId: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Expense obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +49,11 @@ class ExpenseAdapter extends TypeAdapter<Expense> {
       ..writeByte(6)
       ..write(obj.walletId)
       ..writeByte(7)
-      ..write(obj.receiptImagePath);
+      ..write(obj.receiptImagePath)
+      ..writeByte(8)
+      ..write(obj.groupId)
+      ..writeByte(9)
+      ..write(obj.groupExpenseId);
   }
 
   @override
