@@ -54,6 +54,8 @@ dependencies:
   google_mlkit_text_recognition: ^0.14.0
   flutter_dotenv: ^5.2.1
   shared_preferences: ^2.5.5
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.7
 
 dev_dependencies:
   flutter_test:
