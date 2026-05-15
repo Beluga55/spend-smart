@@ -11,6 +11,11 @@ import 'package:mobile_expense_tracker/core/models/recurring_expense.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
 import 'package:mobile_expense_tracker/core/models/wallet.dart';
 import 'package:mobile_expense_tracker/core/models/wallet_transfer.dart';
+import 'package:mobile_expense_tracker/core/models/group.dart';
+import 'package:mobile_expense_tracker/core/models/group_member.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense_split.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense_item.dart';
 import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/features/home_screen.dart';
 import 'package:mobile_expense_tracker/features/onboarding/onboarding_screen.dart';
@@ -52,6 +57,11 @@ void main() async {
   _safeRegisterAdapter<Income>(6, () => IncomeAdapter());
   _safeRegisterAdapter<Wallet>(7, () => WalletAdapter());
   _safeRegisterAdapter<WalletTransfer>(8, () => WalletTransferAdapter());
+  _safeRegisterAdapter<Group>(9, () => GroupAdapter());
+  _safeRegisterAdapter<GroupMember>(10, () => GroupMemberAdapter());
+  _safeRegisterAdapter<GroupExpense>(11, () => GroupExpenseAdapter());
+  _safeRegisterAdapter<GroupExpenseSplit>(12, () => GroupExpenseSplitAdapter());
+  _safeRegisterAdapter<GroupExpenseItem>(13, () => GroupExpenseItemAdapter());
 
   // Open all boxes with corruption recovery.
   // This is the #1 cause of "stuck on splash screen" after app updates
@@ -64,6 +74,11 @@ void main() async {
   await openBoxSafe<Income>('incomes');
   await openBoxSafe<Wallet>('wallets');
   await openBoxSafe<WalletTransfer>('wallet_transfers');
+  await openBoxSafe<Group>('groups');
+  await openBoxSafe<GroupMember>('group_members');
+  await openBoxSafe<GroupExpense>('group_expenses');
+  await openBoxSafe<GroupExpenseSplit>('group_expense_splits');
+  await openBoxSafe<GroupExpenseItem>('group_expense_items');
   await openBoxSafeUntyped('settings');
 
   // Run migrations to patch old schema before business logic touches the data.

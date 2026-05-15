@@ -2,10 +2,16 @@ import 'dart:developer' as developer;
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
+import 'package:mobile_expense_tracker/core/models/expense.dart';
+import 'package:mobile_expense_tracker/core/models/group.dart';
+import 'package:mobile_expense_tracker/core/models/group_member.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense_split.dart';
+import 'package:mobile_expense_tracker/core/models/group_expense_item.dart';
 
 /// Current database schema version.
 /// Increment this whenever you add a migration.
-const int currentDbVersion = 1;
+const int currentDbVersion = 2;
 
 const String _dbVersionKey = 'dbVersion';
 
@@ -60,9 +66,9 @@ Future<void> _runMigration(int targetVersion) async {
     case 1:
       await _migrateV0toV1();
       break;
-    // case 2:
-    //   await _migrateV1toV2();
-    //   break;
+    case 2:
+      await _migrateV1toV2();
+      break;
     default:
       throw UnimplementedError(
         'Migration to version $targetVersion is not implemented.',
@@ -112,6 +118,41 @@ Future<void> _migrateV0toV1() async {
 
   developer.log(
     '[Migration] v0 → v1 complete.',
+    name: 'DatabaseMigration',
+  );
+}
+
+Future<void> _migrateV1toV2() async {
+  developer.log(
+    '[Migration] v1 → v2: Adding group fields to Expense',
+    name: 'DatabaseMigration',
+  );
+
+  final expenseBox = Hive.box<Expense>('expenses');
+  for (final key in expenseBox.keys.toList()) {
+    final exp = expenseBox.get(key);
+    if (exp == null) continue;
+    await expenseBox.put(key, exp);
+  }
+
+  if (!Hive.isBoxOpen('groups')) {
+    await Hive.openBox<Group>('groups');
+  }
+  if (!Hive.isBoxOpen('group_members')) {
+    await Hive.openBox<GroupMember>('group_members');
+  }
+  if (!Hive.isBoxOpen('group_expenses')) {
+    await Hive.openBox<GroupExpense>('group_expenses');
+  }
+  if (!Hive.isBoxOpen('group_expense_splits')) {
+    await Hive.openBox<GroupExpenseSplit>('group_expense_splits');
+  }
+  if (!Hive.isBoxOpen('group_expense_items')) {
+    await Hive.openBox<GroupExpenseItem>('group_expense_items');
+  }
+
+  developer.log(
+    '[Migration] v1 → v2 complete.',
     name: 'DatabaseMigration',
   );
 }
