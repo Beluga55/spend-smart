@@ -895,4 +895,86 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatClear => 'Clear';
+
+  @override
+  String get groups => 'Groups';
+
+  @override
+  String get group => 'Group';
+
+  @override
+  String get noGroupsYet =>
+      'No groups yet. Create one to start splitting bills!';
+
+  @override
+  String get createGroup => 'Create Group';
+
+  @override
+  String get joinGroup => 'Join Group';
+
+  @override
+  String get groupName => 'Group Name';
+
+  @override
+  String get pleaseEnterGroupName => 'Please enter a group name';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get inviteCode => 'Invite Code';
+
+  @override
+  String get shareInviteCode => 'Share Invite Code';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get scanQRCode => 'Scan QR Code';
+
+  @override
+  String get enterCodeInstead => 'Enter code instead';
+
+  @override
+  String get join => 'Join';
+
+  @override
+  String get members => 'Members';
+
+  @override
+  String get balances => 'Balances';
+
+  @override
+  String get markAsSettled => 'Mark as Settled';
+
+  @override
+  String get addGroupExpense => 'Add Group Expense';
+
+  @override
+  String get splitConfiguration => 'Split Configuration';
+
+  @override
+  String get equalSplit => 'Equal Split';
+
+  @override
+  String get customAmounts => 'Custom Amounts';
+
+  @override
+  String get perItem => 'Per Item';
+
+  @override
+  String get distributeRemaining => 'Distribute Remaining';
+
+  @override
+  String get unassignedAmount => 'Unassigned amount';
+
+  @override
+  String get totalDoesNotMatch => 'Total does not match';
+
+  @override
+  String get more => 'more';
+
+  @override
+  String get pleaseSignInForGroups => 'Please sign in to use groups';
 }

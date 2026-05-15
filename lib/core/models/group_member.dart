@@ -28,6 +28,9 @@ class GroupMember extends HiveObject {
   @HiveField(7)
   DateTime updatedAt;
 
+  @HiveField(8)
+  String syncStatus;
+
   GroupMember({
     required this.id,
     required this.groupId,
@@ -37,6 +40,7 @@ class GroupMember extends HiveObject {
     this.role = 'member',
     this.isActive = true,
     required this.updatedAt,
+    this.syncStatus = 'pending',
   });
 
   GroupMember copyWith({
@@ -48,6 +52,7 @@ class GroupMember extends HiveObject {
     String? role,
     bool? isActive,
     DateTime? updatedAt,
+    String? syncStatus,
   }) {
     return GroupMember(
       id: id ?? this.id,
@@ -58,6 +63,7 @@ class GroupMember extends HiveObject {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
     );
   }
 }

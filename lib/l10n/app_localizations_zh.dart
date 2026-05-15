@@ -879,4 +879,85 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chatClear => '清空';
+
+  @override
+  String get groups => '群组';
+
+  @override
+  String get group => '群组';
+
+  @override
+  String get noGroupsYet => '还没有群组。创建一个开始分摊账单！';
+
+  @override
+  String get createGroup => '创建群组';
+
+  @override
+  String get joinGroup => '加入群组';
+
+  @override
+  String get groupName => '群组名称';
+
+  @override
+  String get pleaseEnterGroupName => '请输入群组名称';
+
+  @override
+  String get create => '创建';
+
+  @override
+  String get inviteCode => '邀请码';
+
+  @override
+  String get shareInviteCode => '分享邀请码';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get scanQRCode => '扫描二维码';
+
+  @override
+  String get enterCodeInstead => '改为输入代码';
+
+  @override
+  String get join => '加入';
+
+  @override
+  String get members => '成员';
+
+  @override
+  String get balances => '余额';
+
+  @override
+  String get markAsSettled => '标记为已结算';
+
+  @override
+  String get addGroupExpense => '添加群组支出';
+
+  @override
+  String get splitConfiguration => '分摊配置';
+
+  @override
+  String get equalSplit => '平均分摊';
+
+  @override
+  String get customAmounts => '自定义金额';
+
+  @override
+  String get perItem => '按项目';
+
+  @override
+  String get distributeRemaining => '分配剩余';
+
+  @override
+  String get unassignedAmount => '未分配金额';
+
+  @override
+  String get totalDoesNotMatch => '总额不匹配';
+
+  @override
+  String get more => '更多';
+
+  @override
+  String get pleaseSignInForGroups => '请登录以使用群组功能';
 }

@@ -24,13 +24,14 @@ class GroupAdapter extends TypeAdapter<Group> {
       inviteCode: fields[4] as String,
       isActive: fields[5] as bool,
       updatedAt: fields[6] as DateTime,
+      syncStatus: fields[7] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Group obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class GroupAdapter extends TypeAdapter<Group> {
       ..writeByte(5)
       ..write(obj.isActive)
       ..writeByte(6)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(7)
+      ..write(obj.syncStatus);
   }
 
   @override

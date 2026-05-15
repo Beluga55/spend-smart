@@ -24,13 +24,14 @@ class GroupExpenseSplitAdapter extends TypeAdapter<GroupExpenseSplit> {
       isSettled: fields[4] as bool,
       settledAt: fields[5] as DateTime?,
       updatedAt: fields[6] as DateTime,
+      syncStatus: fields[7] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroupExpenseSplit obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class GroupExpenseSplitAdapter extends TypeAdapter<GroupExpenseSplit> {
       ..writeByte(5)
       ..write(obj.settledAt)
       ..writeByte(6)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(7)
+      ..write(obj.syncStatus);
   }
 
   @override

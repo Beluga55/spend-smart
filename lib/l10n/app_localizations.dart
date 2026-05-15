@@ -1801,6 +1801,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get chatClear;
+
+  /// No description provided for @groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groups;
+
+  /// No description provided for @group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get group;
+
+  /// No description provided for @noGroupsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet. Create one to start splitting bills!'**
+  String get noGroupsYet;
+
+  /// No description provided for @createGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Group'**
+  String get createGroup;
+
+  /// No description provided for @joinGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Group'**
+  String get joinGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Name'**
+  String get groupName;
+
+  /// No description provided for @pleaseEnterGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a group name'**
+  String get pleaseEnterGroupName;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @inviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Code'**
+  String get inviteCode;
+
+  /// No description provided for @shareInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Invite Code'**
+  String get shareInviteCode;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @scanQRCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
+  String get scanQRCode;
+
+  /// No description provided for @enterCodeInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter code instead'**
+  String get enterCodeInstead;
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get members;
+
+  /// No description provided for @balances.
+  ///
+  /// In en, this message translates to:
+  /// **'Balances'**
+  String get balances;
+
+  /// No description provided for @markAsSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Settled'**
+  String get markAsSettled;
+
+  /// No description provided for @addGroupExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Group Expense'**
+  String get addGroupExpense;
+
+  /// No description provided for @splitConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Configuration'**
+  String get splitConfiguration;
+
+  /// No description provided for @equalSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Equal Split'**
+  String get equalSplit;
+
+  /// No description provided for @customAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Amounts'**
+  String get customAmounts;
+
+  /// No description provided for @perItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Item'**
+  String get perItem;
+
+  /// No description provided for @distributeRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribute Remaining'**
+  String get distributeRemaining;
+
+  /// No description provided for @unassignedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned amount'**
+  String get unassignedAmount;
+
+  /// No description provided for @totalDoesNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Total does not match'**
+  String get totalDoesNotMatch;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'more'**
+  String get more;
+
+  /// No description provided for @pleaseSignInForGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to use groups'**
+  String get pleaseSignInForGroups;
 }
 
 class _AppLocalizationsDelegate

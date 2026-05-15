@@ -25,6 +25,9 @@ class Group extends HiveObject {
   @HiveField(6)
   DateTime updatedAt;
 
+  @HiveField(7)
+  String syncStatus;
+
   Group({
     required this.id,
     required this.name,
@@ -33,6 +36,7 @@ class Group extends HiveObject {
     required this.inviteCode,
     this.isActive = true,
     required this.updatedAt,
+    this.syncStatus = 'pending',
   });
 
   Group copyWith({
@@ -43,6 +47,7 @@ class Group extends HiveObject {
     String? inviteCode,
     bool? isActive,
     DateTime? updatedAt,
+    String? syncStatus,
   }) {
     return Group(
       id: id ?? this.id,
@@ -52,6 +57,7 @@ class Group extends HiveObject {
       inviteCode: inviteCode ?? this.inviteCode,
       isActive: isActive ?? this.isActive,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
     );
   }
 }

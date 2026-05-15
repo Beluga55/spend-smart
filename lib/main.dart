@@ -29,6 +29,7 @@ import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
 import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
 import 'package:mobile_expense_tracker/core/services/update_service.dart';
 import 'package:mobile_expense_tracker/core/services/home_widget_service.dart';
+import 'package:mobile_expense_tracker/core/services/group_sync_service.dart';
 import 'package:mobile_expense_tracker/core/config/env.dart';
 import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
 import 'package:mobile_expense_tracker/core/database/database_migration_service.dart';
@@ -359,6 +360,14 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       await NotificationService.scheduleDailyReminder(
         TimeOfDay(hour: hour, minute: minute),
       );
+    }
+
+    // Sync group data with Supabase
+    try {
+      const groupSync = GroupSyncService();
+      await groupSync.syncAll().timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('Group sync failed: $e');
     }
   }
 

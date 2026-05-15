@@ -10,6 +10,8 @@ import 'package:mobile_expense_tracker/core/providers/wallet_provider.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/core/models/expense.dart';
 import 'package:mobile_expense_tracker/features/expenses/widgets/receipt_scanner_sheet.dart';
+import 'package:mobile_expense_tracker/features/groups/widgets/group_picker_sheet.dart';
+import 'package:mobile_expense_tracker/features/groups/widgets/group_expense_modal.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class ExpenseModal extends ConsumerStatefulWidget {
@@ -596,6 +598,37 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
             }
           }
           setState(() {});
+        },
+        onAddToGroup: (data) {
+          Navigator.pop(context); // close expense modal
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => GroupPickerSheet(
+              onGroupSelected: (groupId) {
+                final total = data['total'];
+                final date = data['date'];
+                final merchant = data['merchant'];
+                final items = data['items'];
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GroupExpenseModal(
+                      groupId: groupId,
+                      initialDescription: merchant,
+                      initialAmount: total is num ? total.toDouble() : null,
+                      initialDate: date is String ? DateTime.tryParse(date) : null,
+                      receiptItems: items is List
+                          ? items.map((e) => Map<String, dynamic>.from(e as Map)).toList()
+                          : null,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

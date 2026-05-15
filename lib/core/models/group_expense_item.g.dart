@@ -23,13 +23,14 @@ class GroupExpenseItemAdapter extends TypeAdapter<GroupExpenseItem> {
       amount: fields[3] as double,
       assignedToUserIds: (fields[4] as List).cast<String>(),
       updatedAt: fields[5] as DateTime,
+      syncStatus: fields[6] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroupExpenseItem obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class GroupExpenseItemAdapter extends TypeAdapter<GroupExpenseItem> {
       ..writeByte(4)
       ..write(obj.assignedToUserIds)
       ..writeByte(5)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(6)
+      ..write(obj.syncStatus);
   }
 
   @override

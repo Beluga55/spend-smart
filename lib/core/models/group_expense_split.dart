@@ -25,6 +25,9 @@ class GroupExpenseSplit extends HiveObject {
   @HiveField(6)
   DateTime updatedAt;
 
+  @HiveField(7)
+  String syncStatus;
+
   GroupExpenseSplit({
     required this.id,
     required this.groupExpenseId,
@@ -33,6 +36,7 @@ class GroupExpenseSplit extends HiveObject {
     this.isSettled = false,
     this.settledAt,
     required this.updatedAt,
+    this.syncStatus = 'pending',
   });
 
   GroupExpenseSplit copyWith({
@@ -43,6 +47,7 @@ class GroupExpenseSplit extends HiveObject {
     bool? isSettled,
     DateTime? settledAt,
     DateTime? updatedAt,
+    String? syncStatus,
   }) {
     return GroupExpenseSplit(
       id: id ?? this.id,
@@ -52,6 +57,7 @@ class GroupExpenseSplit extends HiveObject {
       isSettled: isSettled ?? this.isSettled,
       settledAt: settledAt ?? this.settledAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
     );
   }
 }

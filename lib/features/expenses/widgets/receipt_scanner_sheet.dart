@@ -7,8 +7,9 @@ import 'package:mobile_expense_tracker/core/providers/ai_provider.dart';
 
 class ReceiptScannerSheet extends ConsumerStatefulWidget {
   final Function(Map<String, dynamic> parsedData) onParsed;
+  final Function(Map<String, dynamic> parsedData)? onAddToGroup;
 
-  const ReceiptScannerSheet({super.key, required this.onParsed});
+  const ReceiptScannerSheet({super.key, required this.onParsed, this.onAddToGroup});
 
   @override
   ConsumerState<ReceiptScannerSheet> createState() =>
@@ -145,7 +146,12 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
               const SizedBox(height: 20),
             ],
             if (_parsedData != null) ...[
-              _ParsedCard(data: _parsedData!, provider: _provider, onUse: _useData),
+              _ParsedCard(
+                data: _parsedData!,
+                provider: _provider,
+                onUse: _useData,
+                onAddToGroup: widget.onAddToGroup != null ? _addToGroup : null,
+              ),
               const SizedBox(height: 20),
             ],
             if (_imagePath == null && !_isBusy) ...[
@@ -315,14 +321,20 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
     widget.onParsed(_parsedData!);
     Navigator.pop(context);
   }
+
+  void _addToGroup() {
+    widget.onAddToGroup!(_parsedData!);
+    Navigator.pop(context);
+  }
 }
 
 class _ParsedCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final String? provider;
   final VoidCallback onUse;
+  final VoidCallback? onAddToGroup;
 
-  const _ParsedCard({required this.data, this.provider, required this.onUse});
+  const _ParsedCard({required this.data, this.provider, required this.onUse, this.onAddToGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -335,6 +347,7 @@ class _ParsedCard extends StatelessWidget {
     final date = data['date']?.toString();
     final total = data['total']?.toString();
     final currency = data['currency']?.toString();
+    final items = data['items'] as List<dynamic>?;
 
     final hasAnyValue = merchant != null || date != null || total != null || currency != null;
 
@@ -375,6 +388,17 @@ class _ParsedCard extends StatelessWidget {
             _row(Icons.attach_money_outlined, 'Total', total != null ? '$total ${currency ?? ''}'.trim() : null, textPrimary, textSecondary),
             if (currency != null && total == null)
               _row(Icons.money_outlined, 'Currency', currency, textPrimary, textSecondary),
+            if (items != null && items.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text('Items (${items.length})', style: TextStyle(color: textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              ...items.take(3).map((item) => Text(
+                '- ${item['description']}: \$${item['amount']}',
+                style: TextStyle(color: textSecondary, fontSize: 12),
+              )),
+              if (items.length > 3)
+                Text('+ ${items.length - 3} more', style: TextStyle(color: textSecondary, fontSize: 11)),
+            ],
           ] else
             Text('Could not extract details. You can still save the image with the expense.', style: TextStyle(color: textSecondary, fontSize: 13)),
         ]),
@@ -388,6 +412,17 @@ class _ParsedCard extends StatelessWidget {
           label: const Text('Use This Data'),
         ),
       ),
+      if (onAddToGroup != null) ...[
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: onAddToGroup,
+            icon: const Icon(Icons.group_add),
+            label: const Text('Add to Group'),
+          ),
+        ),
+      ],
     ]);
   }
 

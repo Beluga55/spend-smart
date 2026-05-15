@@ -22,6 +22,9 @@ class GroupExpenseItem extends HiveObject {
   @HiveField(5)
   DateTime updatedAt;
 
+  @HiveField(6)
+  String syncStatus;
+
   GroupExpenseItem({
     required this.id,
     required this.groupExpenseId,
@@ -29,6 +32,7 @@ class GroupExpenseItem extends HiveObject {
     required this.amount,
     required this.assignedToUserIds,
     required this.updatedAt,
+    this.syncStatus = 'pending',
   });
 
   GroupExpenseItem copyWith({
@@ -38,6 +42,7 @@ class GroupExpenseItem extends HiveObject {
     double? amount,
     List<String>? assignedToUserIds,
     DateTime? updatedAt,
+    String? syncStatus,
   }) {
     return GroupExpenseItem(
       id: id ?? this.id,
@@ -46,6 +51,7 @@ class GroupExpenseItem extends HiveObject {
       amount: amount ?? this.amount,
       assignedToUserIds: assignedToUserIds ?? this.assignedToUserIds,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
     );
   }
 }

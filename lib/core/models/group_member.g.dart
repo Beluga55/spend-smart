@@ -25,13 +25,14 @@ class GroupMemberAdapter extends TypeAdapter<GroupMember> {
       role: fields[5] as String,
       isActive: fields[6] as bool,
       updatedAt: fields[7] as DateTime,
+      syncStatus: fields[8] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroupMember obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class GroupMemberAdapter extends TypeAdapter<GroupMember> {
       ..writeByte(6)
       ..write(obj.isActive)
       ..writeByte(7)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(8)
+      ..write(obj.syncStatus);
   }
 
   @override
