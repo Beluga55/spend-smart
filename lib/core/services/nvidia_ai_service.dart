@@ -110,7 +110,8 @@ class NvidiaAIService {
         '- "merchant": store or seller name (string, best guess if unclear)\n'
         '- "date": ISO date YYYY-MM-DD (guess from any date format found; use today if none)\n'
         '- "total": final paid amount as a number (look for "Total", "Grand Total", "Amount Due", "Balance", the largest number near the bottom)\n'
-        '- "currency": 3-letter ISO code (USD, EUR, GBP, CNY, JPY, MYR, SGD, etc.). Guess from currency symbols or location context. Use null if unknown.\n\n'
+        '- "currency": 3-letter ISO code (USD, EUR, GBP, CNY, JPY, MYR, SGD, etc.). Guess from currency symbols or location context. Use null if unknown.\n'
+        '- "items": optional array of line items, each with "description" (string) and "amount" (number). Only include if clearly visible.\n\n'
         'Rules:\n'
         '1. Return ONLY raw JSON. No ```json wrappers. No extra text.\n'
         '2. If a field is missing, use null (not "N/A" or "unknown").\n'
@@ -118,7 +119,7 @@ class NvidiaAIService {
         '4. For "date", convert any format (MM/DD/YYYY, DD-MM-YYYY, "Jan 5 2024", etc.) to YYYY-MM-DD.\n'
         '5. For "merchant", look at the top of the receipt. If multiple names exist, pick the store name (not the payment processor).\n\n'
         'Example response for a unclear receipt:\n'
-        '{"merchant":"7-Eleven","date":"2024-05-09","total":12.50,"currency":"USD"}\n\n'
+        '{"merchant":"7-Eleven","date":"2024-05-09","total":12.50,"currency":"USD","items":[{"description":"Coffee","amount":3.50},{"description":"Sandwich","amount":6.00}]}\n\n'
         'OCR text:\n$ocrText';
 
     final raw = await _chat(prompt, temp: 0.05, tokens: 512);
