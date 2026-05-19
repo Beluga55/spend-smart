@@ -374,5 +374,75 @@
   "unassignedAmount": "未分配金额",
   "totalDoesNotMatch": "总额不匹配",
   "more": "更多",
-  "pleaseSignInForGroups": "请登录以使用群组功能"
+  "pleaseSignInForGroups": "请登录以使用群组功能",
+  "deleteGroup": "删除群组",
+  "deleteGroupConfirm": "确定要删除此群组吗？所有费用和分摊记录将被移除。",
+  "groupNotFound": "未找到群组，请检查邀请码。",
+  "alreadyMember": "你已经是该群组的成员",
+  "noGroupExpensesYet": "暂无群组费用",
+  "paidBy": "付款人",
+  "markedAsSettled": "已标记为结清",
+  "joinedGroup": "已加入\"{groupName}\"！",
+  "@joinedGroup": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "markAsSettled": "标为已结清",
+  "settledUp": "已结清",
+  "owes": "欠",
+  "isOwed": "可取回",
+  "you": "你",
+  "syncComplete": "同步完成",
+  "syncFailed": "同步失败",
+  "groupExpenseSaved": "群组费用已保存",
+  "done": "完成",
+  "showInviteCode": "显示邀请码",
+  "deleteGroupExpense": "删除群组费用",
+  "deleteGroupExpenseConfirm": "删除此群组费用？分摊和项目记录也将被移除。",
+  "groupExpenseDeleted": "群组费用已删除",
+  "settlementRecorded": "已标记为结清 — 已记录到个人账目",
+  "getStarted": "开始使用",
+  "createGroupSubtitle": "创建一个新的费用群组",
+  "joinGroupSubtitle": "输入邀请码或扫描二维码",
+  "settleUp": "结清账目",
+  "confirm": "确认",
+  "leaveGroup": "离开群组",
+  "leave": "离开",
+  "leaveGroupConfirm": "确定要离开\"{groupName}\"吗？",
+  "@leaveGroupConfirm": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "settleUpConfirmPayBack": "{name} 是否已还款 {amount}？",
+  "@settleUpConfirmPayBack": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "settleUpConfirmPay": "您是否已向 {name} 付款 {amount}？",
+  "@settleUpConfirmPay": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "success": "成功！",
+  "groupReady": "群组\"{groupName}\"已创建",
+  "@groupReady": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "font": "字体",
+  "soraDefault": "Sora (默认)",
+  "fredokaCat": "Fredoka (猫主题)"
 }

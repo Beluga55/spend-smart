@@ -929,7 +929,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get balances => '余额';
 
   @override
-  String get markAsSettled => '标记为已结算';
+  String get markAsSettled => '标为已结清';
 
   @override
   String get addGroupExpense => '添加群组支出';
@@ -960,4 +960,122 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pleaseSignInForGroups => '请登录以使用群组功能';
+
+  @override
+  String get deleteGroup => '删除群组';
+
+  @override
+  String get deleteGroupConfirm => '确定要删除此群组吗？所有费用和分摊记录将被移除。';
+
+  @override
+  String get groupNotFound => '未找到群组，请检查邀请码。';
+
+  @override
+  String get alreadyMember => '你已经是该群组的成员';
+
+  @override
+  String get noGroupExpensesYet => '暂无群组费用';
+
+  @override
+  String get paidBy => '付款人';
+
+  @override
+  String get markedAsSettled => '已标记为结清';
+
+  @override
+  String joinedGroup(String groupName) {
+    return '已加入\"$groupName\"！';
+  }
+
+  @override
+  String get settledUp => '已结清';
+
+  @override
+  String get owes => '欠';
+
+  @override
+  String get isOwed => '可取回';
+
+  @override
+  String get you => '你';
+
+  @override
+  String get syncComplete => '同步完成';
+
+  @override
+  String get syncFailed => '同步失败';
+
+  @override
+  String get groupExpenseSaved => '群组费用已保存';
+
+  @override
+  String get done => '完成';
+
+  @override
+  String get showInviteCode => '显示邀请码';
+
+  @override
+  String get deleteGroupExpense => '删除群组费用';
+
+  @override
+  String get deleteGroupExpenseConfirm => '删除此群组费用？分摊和项目记录也将被移除。';
+
+  @override
+  String get groupExpenseDeleted => '群组费用已删除';
+
+  @override
+  String get settlementRecorded => '已标记为结清 — 已记录到个人账目';
+
+  @override
+  String get getStarted => '开始使用';
+
+  @override
+  String get createGroupSubtitle => '创建一个新的费用群组';
+
+  @override
+  String get joinGroupSubtitle => '输入邀请码或扫描二维码';
+
+  @override
+  String get settleUp => '结清账目';
+
+  @override
+  String get confirm => '确认';
+
+  @override
+  String get leaveGroup => '离开群组';
+
+  @override
+  String get leave => '离开';
+
+  @override
+  String leaveGroupConfirm(String groupName) {
+    return '确定要离开\"$groupName\"吗？';
+  }
+
+  @override
+  String settleUpConfirmPayBack(String name, String amount) {
+    return '$name 是否已还款 $amount？';
+  }
+
+  @override
+  String settleUpConfirmPay(String name, String amount) {
+    return '您是否已向 $name 付款 $amount？';
+  }
+
+  @override
+  String get success => '成功！';
+
+  @override
+  String groupReady(String groupName) {
+    return '群组\"$groupName\"已创建';
+  }
+
+  @override
+  String get font => '字体';
+
+  @override
+  String get soraDefault => 'Sora (默认)';
+
+  @override
+  String get fredokaCat => 'Fredoka (猫主题)';
 }

@@ -86,7 +86,6 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 16),
 
             const AIInsightsCard(),
-            const GroupsCard(),
 
             if (budgetAlerts.isNotEmpty)
               ...budgetAlerts.entries.map(

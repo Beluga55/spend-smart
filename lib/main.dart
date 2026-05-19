@@ -23,6 +23,7 @@ import 'package:mobile_expense_tracker/features/splash/splash_screen.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
+import 'package:mobile_expense_tracker/core/providers/font_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
 import 'package:mobile_expense_tracker/core/services/biometric_service.dart';
@@ -30,6 +31,7 @@ import 'package:mobile_expense_tracker/core/services/hive_init_service.dart';
 import 'package:mobile_expense_tracker/core/services/update_service.dart';
 import 'package:mobile_expense_tracker/core/services/home_widget_service.dart';
 import 'package:mobile_expense_tracker/core/services/group_sync_service.dart';
+import 'package:mobile_expense_tracker/core/services/group_realtime_service.dart';
 import 'package:mobile_expense_tracker/core/config/env.dart';
 import 'package:mobile_expense_tracker/core/providers/update_provider.dart';
 import 'package:mobile_expense_tracker/core/database/database_migration_service.dart';
@@ -54,7 +56,10 @@ void main() async {
   _safeRegisterAdapter<Budget>(2, () => BudgetAdapter());
   _safeRegisterAdapter<SavingGoal>(3, () => SavingGoalAdapter());
   _safeRegisterAdapter<RecurringExpense>(4, () => RecurringExpenseAdapter());
-  _safeRegisterAdapter<RecurringFrequency>(5, () => RecurringFrequencyAdapter());
+  _safeRegisterAdapter<RecurringFrequency>(
+    5,
+    () => RecurringFrequencyAdapter(),
+  );
   _safeRegisterAdapter<Income>(6, () => IncomeAdapter());
   _safeRegisterAdapter<Wallet>(7, () => WalletAdapter());
   _safeRegisterAdapter<WalletTransfer>(8, () => WalletTransferAdapter());
@@ -85,11 +90,7 @@ void main() async {
   // Run migrations to patch old schema before business logic touches the data.
   await runMigrations();
 
-  runApp(
-    const ProviderScope(
-      child: AppInitializer(),
-    ),
-  );
+  runApp(const ProviderScope(child: AppInitializer()));
 }
 
 void _safeRegisterAdapter<T>(int typeId, TypeAdapter<T> Function() factory) {
@@ -279,11 +280,14 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     // The user simply taps "Sign in with Google" once after updating.
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      final currentVersion =
+          '${packageInfo.version}+${packageInfo.buildNumber}';
       final settingsBox = Hive.box('settings');
       final lastVersion = settingsBox.get('lastAppVersion') as String?;
       if (lastVersion != currentVersion) {
-        debugPrint('[Auth] Version changed ($lastVersion → $currentVersion). Resetting auth state.');
+        debugPrint(
+          '[Auth] Version changed ($lastVersion → $currentVersion). Resetting auth state.',
+        );
         await SupabaseService.forceRefreshAuth();
         await settingsBox.delete('googleLinked');
         await settingsBox.delete('googleEmail');
@@ -295,8 +299,7 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
 
     // Initialize Supabase with timeout (Samsung network can be slow/aggressive)
     try {
-      await SupabaseService.initialize()
-          .timeout(const Duration(seconds: 5));
+      await SupabaseService.initialize().timeout(const Duration(seconds: 5));
     } catch (e) {
       debugPrint('Supabase initialization failed or timed out: $e');
     }
@@ -314,8 +317,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     try {
       final currentSession = SupabaseService.client.auth.currentSession;
       if (currentSession == null) {
-        await SupabaseService.signInAnonymously()
-            .timeout(const Duration(seconds: 5));
+        await SupabaseService.signInAnonymously().timeout(
+          const Duration(seconds: 5),
+        );
       }
     } catch (e) {
       debugPrint('Anonymous sign-in failed or timed out: $e');
@@ -329,11 +333,14 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       final isAnonymous = user == null || user.isAnonymous;
       if (isAnonymous) {
         final settingsBox = Hive.box('settings');
-        final hiveLinked = settingsBox.get('googleLinked', defaultValue: false) == true;
+        final hiveLinked =
+            settingsBox.get('googleLinked', defaultValue: false) == true;
         if (hiveLinked) {
           await settingsBox.delete('googleLinked');
           await settingsBox.delete('googleEmail');
-          debugPrint('[Auth] Cleared stale googleLinked flags after anonymous recovery');
+          debugPrint(
+            '[Auth] Cleared stale googleLinked flags after anonymous recovery',
+          );
         }
       }
     } catch (e) {
@@ -349,7 +356,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     // Request notification permission before scheduling
     final permissionGranted = await NotificationService.requestPermission();
     if (permissionGranted == false) {
-      debugPrint('[Notifications] Permission denied on Android 13+ — scheduled reminders will be blocked by OS');
+      debugPrint(
+        '[Notifications] Permission denied on Android 13+ — scheduled reminders will be blocked by OS',
+      );
     }
 
     // Schedule reminder if enabled
@@ -362,12 +371,19 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       );
     }
 
-    // Sync group data with Supabase
+    // Sync group data with Supabase in background (non-blocking)
+    const GroupSyncService()
+        .syncAll()
+        .timeout(const Duration(seconds: 30))
+        .catchError((e) {
+          debugPrint('Group sync background task failed: $e');
+        });
+
+    // Start Realtime WebSocket subscriptions for group data
     try {
-      const groupSync = GroupSyncService();
-      await groupSync.syncAll().timeout(const Duration(seconds: 10));
+      await GroupRealtimeService.instance.start();
     } catch (e) {
-      debugPrint('Group sync failed: $e');
+      debugPrint('Group realtime start failed: $e');
     }
   }
 
@@ -390,11 +406,14 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       if (startDay.isAfter(today)) continue;
 
       var current = recurring;
-      var nextDate =
-          current.lastCreated == null ? startDay : current.getNextDueDate();
+      var nextDate = current.lastCreated == null
+          ? startDay
+          : current.getNextDueDate();
 
       int iterations = 0;
-      while (nextDate != null && !nextDate.isAfter(today) && iterations < maxBacklogDays) {
+      while (nextDate != null &&
+          !nextDate.isAfter(today) &&
+          iterations < maxBacklogDays) {
         final expense = Expense(
           id: uuid.v4(),
           amount: current.amount,
@@ -413,7 +432,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
       }
 
       if (iterations >= maxBacklogDays) {
-        debugPrint('[Recurring] Capped backlog at $maxBacklogDays days for "${current.note}"');
+        debugPrint(
+          '[Recurring] Capped backlog at $maxBacklogDays days for "${current.note}"',
+        );
       }
     }
   }
@@ -421,7 +442,8 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
   Future<void> _processMonthlyCarryover() async {
     final settings = Hive.box('settings');
     final now = DateTime.now();
-    final currentMonthKey = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+    final currentMonthKey =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}';
 
     final lastProcessedStr = settings.get('carryoverMonth') as String?;
 
@@ -468,7 +490,11 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
     await settings.put('carryoverMonth', currentMonthKey);
   }
 
-  Future<void> _createCarryoverForMonth(int year, int month, DateTime now) async {
+  Future<void> _createCarryoverForMonth(
+    int year,
+    int month,
+    DateTime now,
+  ) async {
     final incomeBox = Hive.box<Income>('incomes');
     final expenseBox = Hive.box<Expense>('expenses');
 
@@ -528,7 +554,8 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
   Future<void> _checkForAppUpdate() async {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      final currentVersion =
+          '${packageInfo.version}+${packageInfo.buildNumber}';
       await ref.read(updateProvider.notifier).checkForUpdate(currentVersion);
       final info = ref.read(updateProvider).latestUpdate;
       if (info != null && mounted) {
@@ -623,7 +650,9 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
 
   Future<void> _installApk(String path) async {
     try {
-      const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+      const channel = MethodChannel(
+        'com.example.mobile_expense_tracker/update',
+      );
       await channel.invokeMethod('installApk', {'path': path});
     } catch (e) {
       debugPrint('Install error: $e');
@@ -632,6 +661,19 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateProvider, (previous, next) async {
+      final state = next.value;
+      if (state != null) {
+        if (state.isAuthenticated) {
+          debugPrint('[Auth] User authenticated — starting realtime');
+          await GroupRealtimeService.instance.start();
+        } else if (state.status == AuthStatus.unauthenticated) {
+          debugPrint('[Auth] User unauthenticated — stopping realtime');
+          await GroupRealtimeService.instance.stop();
+        }
+      }
+    });
+
     if (!_initialized) {
       return const MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -651,7 +693,11 @@ class _AppInitializerState extends ConsumerState<AppInitializer> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: Colors.redAccent,
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'Unable to start app',
@@ -712,12 +758,17 @@ class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeProvider);
     final themeStyle = ref.watch(themeStyleProvider);
+    final fontFamily = ref.watch(fontFamilyProvider);
     final isCat = themeStyle == ThemeStyle.catTheme;
 
     return MaterialApp(
       title: AppConstants.appName,
-      theme: isCat ? AppTheme.catLightTheme : AppTheme.lightTheme,
-      darkTheme: isCat ? AppTheme.catDarkTheme : AppTheme.darkTheme,
+      theme: isCat
+          ? AppTheme.catLightTheme(fontFamily: fontFamily)
+          : AppTheme.lightTheme(fontFamily: fontFamily),
+      darkTheme: isCat
+          ? AppTheme.catDarkTheme(fontFamily: fontFamily)
+          : AppTheme.darkTheme(fontFamily: fontFamily),
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       locale: locale,
@@ -731,8 +782,8 @@ class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
       home: _isLocked
           ? LockScreen(onUnlocked: _onUnlocked)
           : widget.showOnboarding
-              ? const OnboardingScreen()
-              : const HomeScreen(),
+          ? const OnboardingScreen()
+          : const HomeScreen(),
     );
   }
 }

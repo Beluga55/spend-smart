@@ -946,7 +946,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get balances => 'Balances';
 
   @override
-  String get markAsSettled => 'Mark as Settled';
+  String get markAsSettled => 'Mark as settled';
 
   @override
   String get addGroupExpense => 'Add Group Expense';
@@ -977,4 +977,125 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSignInForGroups => 'Please sign in to use groups';
+
+  @override
+  String get deleteGroup => 'Delete Group';
+
+  @override
+  String get deleteGroupConfirm =>
+      'Are you sure you want to delete this group? All expenses and splits will be removed.';
+
+  @override
+  String get groupNotFound => 'Group not found. Check the invite code.';
+
+  @override
+  String get alreadyMember => 'You are already a member of this group';
+
+  @override
+  String get noGroupExpensesYet => 'No group expenses yet';
+
+  @override
+  String get paidBy => 'Paid by';
+
+  @override
+  String get markedAsSettled => 'Marked as settled';
+
+  @override
+  String joinedGroup(String groupName) {
+    return 'Joined \"$groupName\"!';
+  }
+
+  @override
+  String get settledUp => 'Settled up';
+
+  @override
+  String get owes => 'Owes';
+
+  @override
+  String get isOwed => 'Gets back';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get syncComplete => 'Sync complete';
+
+  @override
+  String get syncFailed => 'Sync failed';
+
+  @override
+  String get groupExpenseSaved => 'Group expense saved';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get showInviteCode => 'Show Invite Code';
+
+  @override
+  String get deleteGroupExpense => 'Delete Group Expense';
+
+  @override
+  String get deleteGroupExpenseConfirm =>
+      'Delete this group expense? Splits and items will also be removed.';
+
+  @override
+  String get groupExpenseDeleted => 'Group expense deleted';
+
+  @override
+  String get settlementRecorded =>
+      'Marked as settled — recorded in your finances';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get createGroupSubtitle => 'Start a new expense group';
+
+  @override
+  String get joinGroupSubtitle => 'Enter invite code or scan QR';
+
+  @override
+  String get settleUp => 'Settle Up';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get leaveGroup => 'Leave Group';
+
+  @override
+  String get leave => 'Leave';
+
+  @override
+  String leaveGroupConfirm(String groupName) {
+    return 'Are you sure you want to leave \"$groupName\"?';
+  }
+
+  @override
+  String settleUpConfirmPayBack(String name, String amount) {
+    return 'Did $name pay you back $amount?';
+  }
+
+  @override
+  String settleUpConfirmPay(String name, String amount) {
+    return 'Did you pay $name $amount?';
+  }
+
+  @override
+  String get success => 'Success!';
+
+  @override
+  String groupReady(String groupName) {
+    return 'Group \"$groupName\" is ready';
+  }
+
+  @override
+  String get font => 'Font';
+
+  @override
+  String get soraDefault => 'Sora (Default)';
+
+  @override
+  String get fredokaCat => 'Fredoka (Cat)';
 }

@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
-import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
-import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
-import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
-import 'package:mobile_expense_tracker/features/settings/theme_modal.dart';
-import 'package:mobile_expense_tracker/features/settings/language_modal.dart';
 import 'package:mobile_expense_tracker/features/recurring/recurring_screen.dart';
 import 'package:mobile_expense_tracker/features/summary/summary_screen.dart';
 import 'package:mobile_expense_tracker/features/saving_goals/saving_goals_screen.dart';
 import 'package:mobile_expense_tracker/features/converter/converter_screen.dart';
-import 'package:mobile_expense_tracker/features/feedback/feedback_modal.dart';
-import 'package:mobile_expense_tracker/features/groups/groups_screen.dart';
+import 'package:mobile_expense_tracker/features/categories/categories_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class DrawerContent extends ConsumerWidget {
@@ -21,25 +14,14 @@ class DrawerContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final currency = ref.watch(currencyProvider);
-    final currentTheme = ref.watch(themeProvider);
-    final isDarkMode = currentTheme == ThemeMode.dark;
-    final themeStyle = ref.watch(themeStyleProvider);
-    final isCat = themeStyle == ThemeStyle.catTheme;
-    final themeLabel = isCat
-        ? (isDarkMode ? l10n.catDark : l10n.catLight)
-        : (isDarkMode ? l10n.dark : l10n.light);
-    final themeIcon = isCat
-        ? (isDarkMode ? Icons.nightlight_outlined : Icons.wb_sunny_outlined)
-        : (isDarkMode ? Icons.dark_mode : Icons.light_mode);
-    final currentLocale = ref.watch(localeProvider);
-    final localeName = currentLocale.languageCode == 'zh' ? l10n.chinese : l10n.english;
 
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final dividerColor = Theme.of(context).colorScheme.outline;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
 
     return Drawer(
       backgroundColor: surfaceColor,
@@ -62,80 +44,6 @@ class DrawerContent extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildDrawerItem(
               context: context,
-              icon: Icons.attach_money,
-              title: l10n.currency,
-              trailing: Text(
-                '${currency.symbol} ${currency.code}',
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => const CurrencyModal(),
-                );
-              },
-              textPrimary: textPrimary,
-              surfaceColor: surfaceColor,
-              backgroundColor: backgroundColor,
-              dividerColor: dividerColor,
-            ),
-            const SizedBox(height: 8),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.language,
-              title: l10n.language,
-              trailing: Text(
-                localeName,
-                style: TextStyle(
-                  color: textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => const LanguageModal(),
-                );
-              },
-              textPrimary: textPrimary,
-              surfaceColor: surfaceColor,
-              backgroundColor: backgroundColor,
-              dividerColor: dividerColor,
-            ),
-            const SizedBox(height: 8),
-            _buildDrawerItem(
-              context: context,
-              icon: themeIcon,
-              title: l10n.theme,
-              trailing: Text(
-                themeLabel,
-                style: TextStyle(color: textSecondary, fontSize: 14),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  useSafeArea: true,
-                  builder: (context) => const ThemeModal(),
-                );
-              },
-              textPrimary: textPrimary,
-              surfaceColor: surfaceColor,
-              backgroundColor: backgroundColor,
-              dividerColor: dividerColor,
-            ),
-            const SizedBox(height: 8),
-            _buildDrawerItem(
-              context: context,
               icon: Icons.repeat,
               title: l10n.recurringExpenses,
               trailing: const SizedBox(),
@@ -143,7 +51,9 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RecurringScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const RecurringScreen(),
+                  ),
                 );
               },
               textPrimary: textPrimary,
@@ -161,7 +71,9 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SummaryScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const SummaryScreen(),
+                  ),
                 );
               },
               textPrimary: textPrimary,
@@ -179,7 +91,9 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SavingGoalsScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const SavingGoalsScreen(),
+                  ),
                 );
               },
               textPrimary: textPrimary,
@@ -197,7 +111,9 @@ class DrawerContent extends ConsumerWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ConverterScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ConverterScreen(),
+                  ),
                 );
               },
               textPrimary: textPrimary,
@@ -208,34 +124,16 @@ class DrawerContent extends ConsumerWidget {
             const SizedBox(height: 8),
             _buildDrawerItem(
               context: context,
-              icon: Icons.group_outlined,
-              title: l10n.groups,
+              icon: Icons.category_outlined,
+              title: l10n.categories,
               trailing: const SizedBox(),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GroupsScreen()),
-                );
-              },
-              textPrimary: textPrimary,
-              surfaceColor: surfaceColor,
-              backgroundColor: backgroundColor,
-              dividerColor: dividerColor,
-            ),
-            const SizedBox(height: 8),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.feedback_outlined,
-              title: l10n.feedback,
-              trailing: const SizedBox(),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => const FeedbackModal(),
+                  MaterialPageRoute(
+                    builder: (context) => const CategoriesScreen(),
+                  ),
                 );
               },
               textPrimary: textPrimary,
@@ -253,7 +151,9 @@ class DrawerContent extends ConsumerWidget {
                 builder: (context, snapshot) {
                   final version = snapshot.data?.version ?? '';
                   final build = snapshot.data?.buildNumber ?? '';
-                  final versionStr = version.isNotEmpty ? 'v$version+$build' : '';
+                  final versionStr = version.isNotEmpty
+                      ? 'v$version+$build'
+                      : '';
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -338,4 +238,3 @@ class DrawerContent extends ConsumerWidget {
     );
   }
 }
-

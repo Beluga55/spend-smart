@@ -25,6 +25,9 @@ class Income extends HiveObject {
   @HiveField(6)
   String? walletId;
 
+  @HiveField(7)
+  String? groupExpenseId;
+
   Income({
     required this.id,
     required this.amount,
@@ -33,6 +36,7 @@ class Income extends HiveObject {
     this.note,
     required this.createdAt,
     this.walletId,
+    this.groupExpenseId,
   });
 
   Income copyWith({
@@ -43,6 +47,7 @@ class Income extends HiveObject {
     String? note,
     DateTime? createdAt,
     String? walletId,
+    String? groupExpenseId,
   }) {
     return Income(
       id: id ?? this.id,
@@ -52,6 +57,7 @@ class Income extends HiveObject {
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       walletId: walletId ?? this.walletId,
+      groupExpenseId: groupExpenseId ?? this.groupExpenseId,
     );
   }
 }

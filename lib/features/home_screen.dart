@@ -3,7 +3,7 @@ import 'package:mobile_expense_tracker/features/home/widgets/drawer_content.dart
 import 'package:mobile_expense_tracker/features/dashboard/dashboard_screen.dart';
 import 'package:mobile_expense_tracker/features/expenses/expenses_screen.dart';
 import 'package:mobile_expense_tracker/features/wallets/wallets_screen.dart';
-import 'package:mobile_expense_tracker/features/categories/categories_screen.dart';
+import 'package:mobile_expense_tracker/features/groups/groups_screen.dart';
 import 'package:mobile_expense_tracker/features/chat/chat_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardScreen(),
     ExpensesScreen(),
     WalletsScreen(),
-    CategoriesScreen(),
+    GroupsScreen(),
     ChatScreen(),
   ];
 
@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
+          type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.dashboard_outlined),
@@ -53,9 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
               label: l10n.wallets,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.category_outlined),
-              activeIcon: const Icon(Icons.category),
-              label: l10n.categories,
+              icon: const Icon(Icons.group_outlined),
+              activeIcon: const Icon(Icons.group),
+              label: l10n.groups,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.auto_awesome_outlined),
@@ -68,3 +69,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

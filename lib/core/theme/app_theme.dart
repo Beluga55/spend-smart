@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_expense_tracker/core/providers/font_provider.dart';
 
 class AppTheme {
   // ── Default palette ─────────────────────────────────────────────────────────
@@ -37,11 +38,18 @@ class AppTheme {
   static const Color catDarkDivider = Color(0xFF3B3235);
 
   // ── Text themes ─────────────────────────────────────────────────────────────
-  static TextTheme get _soraTextTheme => GoogleFonts.soraTextTheme();
-  static TextTheme get _nunitoTextTheme => GoogleFonts.fredokaTextTheme();
+  static TextTheme _getTextTheme(FontFamily fontFamily) {
+    switch (fontFamily) {
+      case FontFamily.sora:
+        return GoogleFonts.soraTextTheme();
+      case FontFamily.fredoka:
+        return GoogleFonts.fredokaTextTheme();
+    }
+  }
 
   // ── Default light ────────────────────────────────────────────────────────────
-  static ThemeData get lightTheme {
+  static ThemeData lightTheme({FontFamily fontFamily = FontFamily.sora}) {
+    final textTheme = _getTextTheme(fontFamily);
     return ThemeData(
       useMaterial3: true,
       colorScheme: const ColorScheme.light(
@@ -49,27 +57,54 @@ class AppTheme {
         onPrimary: Colors.white,
         surface: surfaceColor,
         onSurface: textPrimary,
+        surfaceContainerHighest: Color(0xFFF5F5F5),
+        surfaceContainerLow: Color(0xFFF0F0F0),
         outline: dividerColor,
+        outlineVariant: Color(0xFFE8E8E8),
         error: errorColor,
       ),
       scaffoldBackgroundColor: backgroundColor,
-      textTheme: _soraTextTheme.copyWith(
-        displayLarge: _soraTextTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
-        displayMedium: _soraTextTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
-        displaySmall: _soraTextTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
-        headlineLarge: _soraTextTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w600),
-        headlineMedium: _soraTextTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
-        headlineSmall: _soraTextTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
-        titleLarge: _soraTextTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-        titleMedium: _soraTextTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
-        titleSmall: _soraTextTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+      textTheme: textTheme.copyWith(
+        displayLarge: textTheme.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+        displayMedium: textTheme.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+        displaySmall: textTheme.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+        headlineLarge: textTheme.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        headlineMedium: textTheme.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        headlineSmall: textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        titleLarge: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+        titleMedium: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: surfaceColor,
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.sora(color: textPrimary, fontSize: 18, fontWeight: FontWeight.w600),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              )
+            : GoogleFonts.sora(
+                color: textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
@@ -85,7 +120,10 @@ class AppTheme {
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.sora(fontWeight: FontWeight.w500, fontSize: 11),
+        selectedLabelStyle: GoogleFonts.sora(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
         unselectedLabelStyle: GoogleFonts.sora(fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -100,12 +138,28 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: backgroundColor,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: dividerColor)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: dividerColor)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 2)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.sora(color: textSecondary),
-        hintStyle: GoogleFonts.sora(color: textSecondary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: dividerColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: dividerColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: textSecondary)
+            : GoogleFonts.sora(color: textSecondary),
+        hintStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: textSecondary)
+            : GoogleFonts.sora(color: textSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -113,18 +167,45 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600, fontSize: 16)
+              : GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: primaryColor, textStyle: GoogleFonts.sora(fontWeight: FontWeight.w600)),
+        style: TextButton.styleFrom(
+          foregroundColor: primaryColor,
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600)
+              : GoogleFonts.sora(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surfaceColor,
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )
+            : GoogleFonts.sora(
+                color: textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+        contentTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: textPrimary, fontSize: 14)
+            : GoogleFonts.sora(color: textPrimary, fontSize: 14),
       ),
     );
   }
 
   // ── Default dark ─────────────────────────────────────────────────────────────
-  static ThemeData get darkTheme {
+  static ThemeData darkTheme({FontFamily fontFamily = FontFamily.sora}) {
+    final textTheme = _getTextTheme(fontFamily);
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -133,30 +214,70 @@ class AppTheme {
         onPrimary: Colors.black,
         surface: darkSurfaceColor,
         onSurface: darkTextPrimary,
+        surfaceContainerHighest: Color(0xFF333333),
+        surfaceContainerLow: Color(0xFF2A2A2A),
         outline: darkDividerColor,
+        outlineVariant: Color(0xFF454545),
         error: Color(0xFFEF5350),
       ),
       scaffoldBackgroundColor: darkBackgroundColor,
-      textTheme: _soraTextTheme.copyWith(
-        displayLarge: _soraTextTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold, color: darkTextPrimary),
-        displayMedium: _soraTextTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold, color: darkTextPrimary),
-        displaySmall: _soraTextTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: darkTextPrimary),
-        headlineLarge: _soraTextTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w600, color: darkTextPrimary),
-        headlineMedium: _soraTextTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600, color: darkTextPrimary),
-        headlineSmall: _soraTextTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600, color: darkTextPrimary),
-        titleLarge: _soraTextTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: darkTextPrimary),
-        titleMedium: _soraTextTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, color: darkTextPrimary),
-        titleSmall: _soraTextTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500, color: darkTextPrimary),
-        bodyLarge: _soraTextTheme.bodyLarge?.copyWith(color: darkTextPrimary),
-        bodyMedium: _soraTextTheme.bodyMedium?.copyWith(color: darkTextPrimary),
-        bodySmall: _soraTextTheme.bodySmall?.copyWith(color: darkTextSecondary),
+      textTheme: textTheme.copyWith(
+        displayLarge: textTheme.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: darkTextPrimary,
+        ),
+        displayMedium: textTheme.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: darkTextPrimary,
+        ),
+        displaySmall: textTheme.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: darkTextPrimary,
+        ),
+        headlineLarge: textTheme.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: darkTextPrimary,
+        ),
+        headlineMedium: textTheme.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: darkTextPrimary,
+        ),
+        headlineSmall: textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: darkTextPrimary,
+        ),
+        titleLarge: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: darkTextPrimary,
+        ),
+        titleMedium: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: darkTextPrimary,
+        ),
+        titleSmall: textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: darkTextPrimary,
+        ),
+        bodyLarge: textTheme.bodyLarge?.copyWith(color: darkTextPrimary),
+        bodyMedium: textTheme.bodyMedium?.copyWith(color: darkTextPrimary),
+        bodySmall: textTheme.bodySmall?.copyWith(color: darkTextSecondary),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkSurfaceColor,
         foregroundColor: darkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.sora(color: darkTextPrimary, fontSize: 18, fontWeight: FontWeight.w600),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: darkTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              )
+            : GoogleFonts.sora(
+                color: darkTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
       ),
       cardTheme: CardThemeData(
         color: darkSurfaceColor,
@@ -172,8 +293,12 @@ class AppTheme {
         unselectedItemColor: darkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.sora(fontWeight: FontWeight.w500, fontSize: 11),
-        unselectedLabelStyle: GoogleFonts.sora(fontSize: 11),
+        selectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontWeight: FontWeight.w500, fontSize: 11)
+            : GoogleFonts.sora(fontWeight: FontWeight.w500, fontSize: 11),
+        unselectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontSize: 11)
+            : GoogleFonts.sora(fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: Colors.white,
@@ -187,12 +312,28 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: darkBackgroundColor,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: darkDividerColor)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: darkDividerColor)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white, width: 2)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.sora(color: darkTextSecondary),
-        hintStyle: GoogleFonts.sora(color: darkTextSecondary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: darkDividerColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: darkDividerColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: darkTextSecondary)
+            : GoogleFonts.sora(color: darkTextSecondary),
+        hintStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: darkTextSecondary)
+            : GoogleFonts.sora(color: darkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -200,28 +341,45 @@ class AppTheme {
           foregroundColor: Colors.black,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600, fontSize: 16)
+              : GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: Colors.white, textStyle: GoogleFonts.sora(fontWeight: FontWeight.w600)),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600)
+              : GoogleFonts.sora(fontWeight: FontWeight.w600),
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: darkSurfaceColor,
-        titleTextStyle: GoogleFonts.sora(
-          color: darkTextPrimary, fontSize: 20, fontWeight: FontWeight.bold,
-        ),
-        contentTextStyle: GoogleFonts.sora(
-          color: darkTextPrimary, fontSize: 14,
-        ),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: darkTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )
+            : GoogleFonts.sora(
+                color: darkTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+        contentTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: darkTextPrimary, fontSize: 14)
+            : GoogleFonts.sora(color: darkTextPrimary, fontSize: 14),
       ),
     );
   }
 
   // ── Cat light 🐱 ─────────────────────────────────────────────────────────────
-  static ThemeData get catLightTheme {
-    final t = _nunitoTextTheme;
+  static ThemeData catLightTheme({FontFamily fontFamily = FontFamily.fredoka}) {
+    final t = _getTextTheme(fontFamily);
     return ThemeData(
       useMaterial3: true,
       colorScheme: const ColorScheme.light(
@@ -237,21 +395,50 @@ class AppTheme {
         onTertiary: Colors.white,
         surface: catSurface,
         onSurface: catTextPrimary,
-        surfaceContainerHighest: catBackground,
+        surfaceContainerHighest: Color(0xFFFDF0E6),
+        surfaceContainerLow: catBackground,
         outline: catDivider,
+        outlineVariant: Color(0xFFF0E0D0),
         error: Color(0xFFB00020),
       ),
       scaffoldBackgroundColor: catBackground,
       textTheme: t.copyWith(
-        displayLarge: t.displayLarge?.copyWith(fontWeight: FontWeight.bold, color: catTextPrimary),
-        displayMedium: t.displayMedium?.copyWith(fontWeight: FontWeight.bold, color: catTextPrimary),
-        displaySmall: t.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: catTextPrimary),
-        headlineLarge: t.headlineLarge?.copyWith(fontWeight: FontWeight.w700, color: catTextPrimary),
-        headlineMedium: t.headlineMedium?.copyWith(fontWeight: FontWeight.w700, color: catTextPrimary),
-        headlineSmall: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700, color: catTextPrimary),
-        titleLarge: t.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: catTextPrimary),
-        titleMedium: t.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: catTextPrimary),
-        titleSmall: t.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: catTextPrimary),
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: catTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: catTextPrimary,
+        ),
         bodyLarge: t.bodyLarge?.copyWith(color: catTextPrimary),
         bodyMedium: t.bodyMedium?.copyWith(color: catTextPrimary),
         bodySmall: t.bodySmall?.copyWith(color: catTextSecondary),
@@ -261,7 +448,17 @@ class AppTheme {
         foregroundColor: catTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.fredoka(color: catTextPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: catTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              )
+            : GoogleFonts.sora(
+                color: catTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
       ),
       cardTheme: CardThemeData(
         color: catSurface,
@@ -277,8 +474,12 @@ class AppTheme {
         unselectedItemColor: catTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11),
-        unselectedLabelStyle: GoogleFonts.fredoka(fontSize: 11),
+        selectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11)
+            : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 11),
+        unselectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontSize: 11)
+            : GoogleFonts.sora(fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: catPrimary,
@@ -292,12 +493,28 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: catBackground,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catDivider)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catDivider)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catPrimary, width: 2)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.fredoka(color: catTextSecondary),
-        hintStyle: GoogleFonts.fredoka(color: catTextSecondary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catPrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catTextSecondary)
+            : GoogleFonts.sora(color: catTextSecondary),
+        hintStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catTextSecondary)
+            : GoogleFonts.sora(color: catTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -305,19 +522,28 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16)
+              : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: catPrimary, textStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700)),
+        style: TextButton.styleFrom(
+          foregroundColor: catPrimary,
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700)
+              : GoogleFonts.sora(fontWeight: FontWeight.w700),
+        ),
       ),
     );
   }
 
   // ── Cat dark 🐱 ──────────────────────────────────────────────────────────────
-  static ThemeData get catDarkTheme {
-    final t = _nunitoTextTheme;
+  static ThemeData catDarkTheme({FontFamily fontFamily = FontFamily.fredoka}) {
+    final t = _getTextTheme(fontFamily);
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -334,21 +560,50 @@ class AppTheme {
         onTertiary: catDarkBackground,
         surface: catDarkSurface,
         onSurface: catDarkTextPrimary,
-        surfaceContainerHighest: catDarkBackground,
+        surfaceContainerHighest: Color(0xFF332A2D),
+        surfaceContainerLow: catDarkBackground,
         outline: catDarkDivider,
+        outlineVariant: Color(0xFF4A3F43),
         error: Color(0xFFCF6679),
       ),
       scaffoldBackgroundColor: catDarkBackground,
       textTheme: t.copyWith(
-        displayLarge: t.displayLarge?.copyWith(fontWeight: FontWeight.bold, color: catDarkTextPrimary),
-        displayMedium: t.displayMedium?.copyWith(fontWeight: FontWeight.bold, color: catDarkTextPrimary),
-        displaySmall: t.displaySmall?.copyWith(fontWeight: FontWeight.bold, color: catDarkTextPrimary),
-        headlineLarge: t.headlineLarge?.copyWith(fontWeight: FontWeight.w700, color: catDarkTextPrimary),
-        headlineMedium: t.headlineMedium?.copyWith(fontWeight: FontWeight.w700, color: catDarkTextPrimary),
-        headlineSmall: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700, color: catDarkTextPrimary),
-        titleLarge: t.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: catDarkTextPrimary),
-        titleMedium: t.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: catDarkTextPrimary),
-        titleSmall: t.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: catDarkTextPrimary),
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catDarkTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catDarkTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: catDarkTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catDarkTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catDarkTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catDarkTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: catDarkTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: catDarkTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: catDarkTextPrimary,
+        ),
         bodyLarge: t.bodyLarge?.copyWith(color: catDarkTextPrimary),
         bodyMedium: t.bodyMedium?.copyWith(color: catDarkTextPrimary),
         bodySmall: t.bodySmall?.copyWith(color: catDarkTextSecondary),
@@ -358,7 +613,17 @@ class AppTheme {
         foregroundColor: catDarkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.fredoka(color: catDarkTextPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: catDarkTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              )
+            : GoogleFonts.sora(
+                color: catDarkTextPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
       ),
       cardTheme: CardThemeData(
         color: catDarkSurface,
@@ -374,8 +639,12 @@ class AppTheme {
         unselectedItemColor: catDarkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11),
-        unselectedLabelStyle: GoogleFonts.fredoka(fontSize: 11),
+        selectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11)
+            : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 11),
+        unselectedLabelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(fontSize: 11)
+            : GoogleFonts.sora(fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: catDarkPrimary,
@@ -389,12 +658,28 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: catDarkBackground,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catDarkDivider)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catDarkDivider)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: catDarkPrimary, width: 2)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: GoogleFonts.fredoka(color: catDarkTextSecondary),
-        hintStyle: GoogleFonts.fredoka(color: catDarkTextSecondary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catDarkDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catDarkDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: catDarkPrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catDarkTextSecondary)
+            : GoogleFonts.sora(color: catDarkTextSecondary),
+        hintStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catDarkTextSecondary)
+            : GoogleFonts.sora(color: catDarkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -402,31 +687,39 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16)
+              : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: catDarkPrimary, textStyle: GoogleFonts.fredoka(fontWeight: FontWeight.w700)),
+        style: TextButton.styleFrom(
+          foregroundColor: catDarkPrimary,
+          textStyle: fontFamily == FontFamily.fredoka
+              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700)
+              : GoogleFonts.sora(fontWeight: FontWeight.w700),
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: catDarkSurface,
-        titleTextStyle: GoogleFonts.fredoka(
-          color: catDarkTextPrimary, fontSize: 20, fontWeight: FontWeight.w700,
-        ),
-        contentTextStyle: GoogleFonts.fredoka(
-          color: catDarkTextPrimary, fontSize: 14,
-        ),
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: catDarkTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              )
+            : GoogleFonts.sora(
+                color: catDarkTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+        contentTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catDarkTextPrimary, fontSize: 14)
+            : GoogleFonts.sora(color: catDarkTextPrimary, fontSize: 14),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-

@@ -1901,7 +1901,7 @@ abstract class AppLocalizations {
   /// No description provided for @markAsSettled.
   ///
   /// In en, this message translates to:
-  /// **'Mark as Settled'**
+  /// **'Mark as settled'**
   String get markAsSettled;
 
   /// No description provided for @addGroupExpense.
@@ -1963,6 +1963,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please sign in to use groups'**
   String get pleaseSignInForGroups;
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Group'**
+  String get deleteGroup;
+
+  /// No description provided for @deleteGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this group? All expenses and splits will be removed.'**
+  String get deleteGroupConfirm;
+
+  /// No description provided for @groupNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Group not found. Check the invite code.'**
+  String get groupNotFound;
+
+  /// No description provided for @alreadyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You are already a member of this group'**
+  String get alreadyMember;
+
+  /// No description provided for @noGroupExpensesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No group expenses yet'**
+  String get noGroupExpensesYet;
+
+  /// No description provided for @paidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by'**
+  String get paidBy;
+
+  /// No description provided for @markedAsSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as settled'**
+  String get markedAsSettled;
+
+  /// No description provided for @joinedGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined \"{groupName}\"!'**
+  String joinedGroup(String groupName);
+
+  /// No description provided for @settledUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Settled up'**
+  String get settledUp;
+
+  /// No description provided for @owes.
+  ///
+  /// In en, this message translates to:
+  /// **'Owes'**
+  String get owes;
+
+  /// No description provided for @isOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Gets back'**
+  String get isOwed;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @syncComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync complete'**
+  String get syncComplete;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed'**
+  String get syncFailed;
+
+  /// No description provided for @groupExpenseSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Group expense saved'**
+  String get groupExpenseSaved;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @showInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Invite Code'**
+  String get showInviteCode;
+
+  /// No description provided for @deleteGroupExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Group Expense'**
+  String get deleteGroupExpense;
+
+  /// No description provided for @deleteGroupExpenseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this group expense? Splits and items will also be removed.'**
+  String get deleteGroupExpenseConfirm;
+
+  /// No description provided for @groupExpenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Group expense deleted'**
+  String get groupExpenseDeleted;
+
+  /// No description provided for @settlementRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as settled — recorded in your finances'**
+  String get settlementRecorded;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @createGroupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new expense group'**
+  String get createGroupSubtitle;
+
+  /// No description provided for @joinGroupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter invite code or scan QR'**
+  String get joinGroupSubtitle;
+
+  /// No description provided for @settleUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle Up'**
+  String get settleUp;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @leaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Group'**
+  String get leaveGroup;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
+
+  /// No description provided for @leaveGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave \"{groupName}\"?'**
+  String leaveGroupConfirm(String groupName);
+
+  /// No description provided for @settleUpConfirmPayBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Did {name} pay you back {amount}?'**
+  String settleUpConfirmPayBack(String name, String amount);
+
+  /// No description provided for @settleUpConfirmPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you pay {name} {amount}?'**
+  String settleUpConfirmPay(String name, String amount);
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success!'**
+  String get success;
+
+  /// No description provided for @groupReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Group \"{groupName}\" is ready'**
+  String groupReady(String groupName);
+
+  /// No description provided for @font.
+  ///
+  /// In en, this message translates to:
+  /// **'Font'**
+  String get font;
+
+  /// No description provided for @soraDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Sora (Default)'**
+  String get soraDefault;
+
+  /// No description provided for @fredokaCat.
+  ///
+  /// In en, this message translates to:
+  /// **'Fredoka (Cat)'**
+  String get fredokaCat;
 }
 
 class _AppLocalizationsDelegate

@@ -16,16 +16,20 @@ class PerItemAssignmentScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PerItemAssignmentScreen> createState() => _PerItemAssignmentScreenState();
+  ConsumerState<PerItemAssignmentScreen> createState() =>
+      _PerItemAssignmentScreenState();
 }
 
-class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScreen> {
+class _PerItemAssignmentScreenState
+    extends ConsumerState<PerItemAssignmentScreen> {
   late List<Map<String, dynamic>> _items;
 
   @override
   void initState() {
     super.initState();
-    _items = widget.items.map((item) => Map<String, dynamic>.from(item)).toList();
+    _items = widget.items
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList();
     for (final item in _items) {
       if (!item.containsKey('assignedTo')) {
         item['assignedTo'] = <String>[];
@@ -62,7 +66,9 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
 
   void _toggleAssignment(int itemIndex, String memberId) {
     setState(() {
-      final assigned = List<String>.from(_items[itemIndex]['assignedTo'] as List);
+      final assigned = List<String>.from(
+        _items[itemIndex]['assignedTo'] as List,
+      );
       if (assigned.contains(memberId)) {
         assigned.remove(memberId);
       } else {
@@ -76,18 +82,24 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final members = ref.watch(groupMembersProvider(widget.groupId));
-    final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
-    final dividerColor = Theme.of(context).colorScheme.outline;
-    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final theme = Theme.of(context);
+    final textPrimary = theme.colorScheme.onSurface;
+    final textSecondary = theme.colorScheme.onSurfaceVariant;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.perItem),
+        title: Text(
+          l10n.perItem,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, _items),
-            child: Text(l10n.save),
+            child: Text(
+              l10n.save,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -95,12 +107,11 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
         children: [
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: dividerColor),
+              color: theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -108,14 +119,23 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.unassignedAmount, style: TextStyle(color: textSecondary, fontSize: 12)),
+                    Text(
+                      l10n.unassignedAmount,
+                      style: TextStyle(
+                        color: textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       '\$${_unassignedAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: _unassignedAmount == 0 ? Colors.green : Colors.orange,
+                        color: _unassignedAmount == 0
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.error,
                       ),
                     ),
                   ],
@@ -123,14 +143,23 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
                 if (_unassignedAmount > 0)
                   ElevatedButton(
                     onPressed: _distributeRemaining,
-                    child: Text(l10n.distributeRemaining),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.distributeRemaining,
+                      style: const TextStyle(fontSize: 13),
+                    ),
                   ),
               ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: _items.length,
               itemBuilder: (context, index) {
                 final item = _items[index];
@@ -138,12 +167,17 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
                 final isAssigned = assigned.isNotEmpty;
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isAssigned ? dividerColor : Colors.orange),
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isAssigned
+                          ? theme.colorScheme.outlineVariant
+                          : theme.colorScheme.error.withAlpha(100),
+                      width: isAssigned ? 1 : 1.5,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,25 +188,63 @@ class _PerItemAssignmentScreenState extends ConsumerState<PerItemAssignmentScree
                           Expanded(
                             child: Text(
                               item['description'] as String,
-                              style: TextStyle(fontWeight: FontWeight.w600, color: textPrimary),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: textPrimary,
+                              ),
                             ),
                           ),
                           Text(
                             '\$${(item['amount'] as double).toStringAsFixed(2)}',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: textPrimary),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Assigned to:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
+                        runSpacing: 4,
                         children: members.map((member) {
                           final memberId = member.userId ?? member.id;
                           final isSelected = assigned.contains(memberId);
                           return FilterChip(
                             label: Text(member.displayName),
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimary
+                                  : textPrimary,
+                            ),
                             selected: isSelected,
-                            onSelected: (_) => _toggleAssignment(index, memberId),
+                            onSelected: (_) =>
+                                _toggleAssignment(index, memberId),
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            selectedColor: theme.colorScheme.primary,
+                            checkmarkColor: theme.colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide.none,
+                            ),
+                            elevation: 0,
+                            pressElevation: 0,
                           );
                         }).toList(),
                       ),

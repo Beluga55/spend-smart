@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/locale_provider.dart';
+import 'package:mobile_expense_tracker/core/providers/font_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/backup_provider.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
 import 'package:mobile_expense_tracker/core/services/notification_service.dart';
@@ -18,6 +19,7 @@ import 'package:mobile_expense_tracker/features/settings/currency_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/theme_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/language_modal.dart';
 import 'package:mobile_expense_tracker/features/settings/ai_settings_modal.dart';
+import 'package:mobile_expense_tracker/features/feedback/feedback_modal.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -49,18 +51,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final localeName = currentLocale.languageCode == 'zh'
         ? l10n.chinese
         : l10n.english;
+    final fontFamily = ref.watch(fontFamilyProvider);
     final autoBackup = ref.watch(autoBackupProvider);
     final authState = ref.watch(authStateProvider);
 
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final dividerColor = Theme.of(context).colorScheme.outline;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
 
     final isAnonymous = authState.maybeWhen(
       data: (state) {
         final settingsBox = Hive.box('settings');
-        final hiveLinked = settingsBox.get('googleLinked', defaultValue: false) as bool;
+        final hiveLinked =
+            settingsBox.get('googleLinked', defaultValue: false) as bool;
         // Trust Hive as source of truth - ignore Supabase session state
         return !hiveLinked;
       },
@@ -90,39 +96,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             GestureDetector(
               onLongPress: () => _resetAuthState(context, ref),
               child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.green),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          linkedEmail ?? 'Email linked',
-                          style: TextStyle(
-                            color: textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Cloud backup connected',
-                          style: TextStyle(color: textSecondary, fontSize: 12),
-                        ),
-                      ],
-                    ),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
                   ),
-                ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            linkedEmail ?? 'Email linked',
+                            style: TextStyle(
+                              color: textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Cloud backup connected',
+                            style: TextStyle(
+                              color: textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             ),
             _buildSettingsTile(
               context: context,
@@ -223,9 +234,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             dividerColor: dividerColor,
             onTap: () => _showThemeModal(context),
           ),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.text_fields,
+            title: l10n.font,
+            trailing: Text(
+              fontFamily == FontFamily.fredoka
+                  ? l10n.fredokaCat
+                  : l10n.soraDefault,
+              style: TextStyle(color: textSecondary),
+            ),
+            textPrimary: textPrimary,
+            backgroundColor: backgroundColor,
+            dividerColor: dividerColor,
+            onTap: () => _showFontModal(context),
+          ),
           Builder(
             builder: (context) {
-              final showStreak = Hive.box('settings').get('showStreakBanner', defaultValue: true) as bool;
+              final showStreak =
+                  Hive.box(
+                        'settings',
+                      ).get('showStreakBanner', defaultValue: true)
+                      as bool;
               return _buildSwitchTile(
                 icon: Icons.local_fire_department_outlined,
                 title: l10n.showStreakBanner,
@@ -246,16 +276,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Builder(
             builder: (context) {
               final settingsBox = Hive.box('settings');
-              final reminderEnabled = settingsBox.get('reminderEnabled', defaultValue: true) as bool;
-              final reminderHour = settingsBox.get('reminderHour', defaultValue: 20) as int;
-              final reminderMinute = settingsBox.get('reminderMinute', defaultValue: 0) as int;
-              final timeDisplay = TimeOfDay(hour: reminderHour, minute: reminderMinute).format(context);
+              final reminderEnabled =
+                  settingsBox.get('reminderEnabled', defaultValue: true)
+                      as bool;
+              final reminderHour =
+                  settingsBox.get('reminderHour', defaultValue: 20) as int;
+              final reminderMinute =
+                  settingsBox.get('reminderMinute', defaultValue: 0) as int;
+              final timeDisplay = TimeOfDay(
+                hour: reminderHour,
+                minute: reminderMinute,
+              ).format(context);
               return Column(
                 children: [
                   _buildSwitchTile(
-                    icon: reminderEnabled ? Icons.notifications_active : Icons.notifications_off_outlined,
+                    icon: reminderEnabled
+                        ? Icons.notifications_active
+                        : Icons.notifications_off_outlined,
                     title: l10n.dailyReminder,
-                    subtitle: reminderEnabled ? l10n.reminderEveryDayAt(timeDisplay) : l10n.reminderDisabled,
+                    subtitle: reminderEnabled
+                        ? l10n.reminderEveryDayAt(timeDisplay)
+                        : l10n.reminderDisabled,
                     value: reminderEnabled,
                     textPrimary: textPrimary,
                     backgroundColor: backgroundColor,
@@ -276,17 +317,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       context: context,
                       icon: Icons.access_time,
                       title: l10n.reminderTime,
-                      trailing: Text(timeDisplay, style: TextStyle(color: textSecondary)),
+                      trailing: Text(
+                        timeDisplay,
+                        style: TextStyle(color: textSecondary),
+                      ),
                       textPrimary: textPrimary,
                       backgroundColor: backgroundColor,
                       dividerColor: dividerColor,
                       onTap: () async {
                         final picked = await showTimePicker(
                           context: context,
-                          initialTime: TimeOfDay(hour: reminderHour, minute: reminderMinute),
+                          initialTime: TimeOfDay(
+                            hour: reminderHour,
+                            minute: reminderMinute,
+                          ),
                         );
                         if (picked != null) {
-                          await NotificationService.scheduleDailyReminder(picked);
+                          await NotificationService.scheduleDailyReminder(
+                            picked,
+                          );
                           setState(() {});
                         }
                       },
@@ -303,15 +352,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               return _buildSwitchTile(
                 icon: biometricEnabled ? Icons.lock : Icons.lock_open,
                 title: l10n.appLock,
-                subtitle: biometricEnabled ? l10n.appLockSubtitle : l10n.reminderDisabled,
+                subtitle: biometricEnabled
+                    ? l10n.appLockSubtitle
+                    : l10n.reminderDisabled,
                 value: biometricEnabled,
                 textPrimary: textPrimary,
                 backgroundColor: backgroundColor,
                 dividerColor: dividerColor,
                 onChanged: (val) async {
                   if (val) {
-                    final supported = await BiometricService.isDeviceSupported();
-                    final canCheck = await BiometricService.canCheckBiometrics();
+                    final supported =
+                        await BiometricService.isDeviceSupported();
+                    final canCheck =
+                        await BiometricService.canCheckBiometrics();
                     if (!supported || !canCheck) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -360,8 +413,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onTap: () => _showAISettingsModal(context),
           ),
           const SizedBox(height: 16),
+          _buildSectionHeader(l10n.feedback, textSecondary),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.feedback_outlined,
+            title: l10n.sendFeedback,
+            subtitle: 'Help us improve the app',
+            textPrimary: textPrimary,
+            backgroundColor: backgroundColor,
+            dividerColor: dividerColor,
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const FeedbackModal(),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
           _buildSectionHeader('About', textSecondary),
-          _buildUpdateTile(context, textPrimary, backgroundColor, dividerColor, textSecondary),
+          _buildUpdateTile(
+            context,
+            textPrimary,
+            backgroundColor,
+            dividerColor,
+            textSecondary,
+          ),
           const SizedBox(height: 32),
         ],
       ),
@@ -565,7 +643,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
 
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -788,6 +868,74 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  void _showFontModal(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => Consumer(
+        builder: (ctx, ref, _) {
+          final fontFamily = ref.watch(fontFamilyProvider);
+          final mq = MediaQuery.of(ctx);
+          return Container(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: 24 + mq.viewInsets.bottom + mq.padding.bottom,
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(ctx).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.font,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(ctx).colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  title: Text(l10n.soraDefault),
+                  trailing: fontFamily == FontFamily.sora
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    ref
+                        .read(fontFamilyProvider.notifier)
+                        .setFont(FontFamily.sora);
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  title: Text(l10n.fredokaCat),
+                  trailing: fontFamily == FontFamily.fredoka
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    ref
+                        .read(fontFamilyProvider.notifier)
+                        .setFont(FontFamily.fredoka);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void _signInWithGoogle(
     BuildContext context,
     WidgetRef ref,
@@ -849,16 +997,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await SupabaseService.unlinkGoogle();
         ref.invalidate(authStateProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
         }
       } catch (e) {
         // Even if Supabase fails, the Hive flags are already cleared
         // so the UI will show the correct unlinked state
         ref.invalidate(authStateProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.unlinkSuccess)));
         }
       }
     }
@@ -870,15 +1020,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Reset Account State'),
         content: const Text(
-            'This will clear your login session and restart the app. '
-            'Your expenses and data will NOT be deleted.'),
+          'This will clear your login session and restart the app. '
+          'Your expenses and data will NOT be deleted.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Reset & Restart')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Reset & Restart'),
+          ),
         ],
       ),
     );
@@ -891,14 +1044,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       } catch (_) {}
       ref.invalidate(authStateProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Account state reset')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Account state reset')));
       }
     }
   }
 
-  Widget _buildUpdateTile(BuildContext context, Color textPrimary,
-      Color backgroundColor, Color dividerColor, Color textSecondary) {
+  Widget _buildUpdateTile(
+    BuildContext context,
+    Color textPrimary,
+    Color backgroundColor,
+    Color dividerColor,
+    Color textSecondary,
+  ) {
     final updateState = ref.watch(updateProvider);
     final l10n = AppLocalizations.of(context)!;
 
@@ -917,17 +1076,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       case UpdateStatus.available:
         final version = updateState.latestUpdate?.version ?? '';
         statusText = l10n.newVersionAvailable(version);
-        trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
+        trailing = Text(
+          l10n.installUpdate,
+          style: TextStyle(color: textSecondary),
+        );
         break;
       case UpdateStatus.downloading:
         final progress = updateState.progress;
         statusText = l10n.downloadingUpdate;
-        trailing = Text('${(progress * 100).toStringAsFixed(0)}%',
-            style: TextStyle(color: textSecondary));
+        trailing = Text(
+          '${(progress * 100).toStringAsFixed(0)}%',
+          style: TextStyle(color: textSecondary),
+        );
         break;
       case UpdateStatus.ready:
         statusText = 'Ready to install';
-        trailing = Text(l10n.installUpdate, style: TextStyle(color: textSecondary));
+        trailing = Text(
+          l10n.installUpdate,
+          style: TextStyle(color: textSecondary),
+        );
         break;
       case UpdateStatus.upToDate:
         statusText = l10n.upToDate;
@@ -970,9 +1137,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _showUpdateDownloadDialog(context);
     } else if (state.status == UpdateStatus.ready) {
       _installApk(state.apkPath!);
-    } else if (state.status != UpdateStatus.checking && state.status != UpdateStatus.downloading) {
+    } else if (state.status != UpdateStatus.checking &&
+        state.status != UpdateStatus.downloading) {
       final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      final currentVersion =
+          '${packageInfo.version}+${packageInfo.buildNumber}';
       await notifier.checkForUpdate(currentVersion);
 
       final newState = ref.read(updateProvider);
@@ -1066,7 +1235,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _installApk(String path) async {
     try {
-      const channel = MethodChannel('com.example.mobile_expense_tracker/update');
+      const channel = MethodChannel(
+        'com.example.mobile_expense_tracker/update',
+      );
       await channel.invokeMethod('installApk', {'path': path});
     } catch (e) {
       if (mounted) {
@@ -1077,7 +1248,3 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 }
-
-
-
-

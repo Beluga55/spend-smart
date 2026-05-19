@@ -374,5 +374,75 @@
   "unassignedAmount": "Unassigned amount",
   "totalDoesNotMatch": "Total does not match",
   "more": "more",
-  "pleaseSignInForGroups": "Please sign in to use groups"
+  "pleaseSignInForGroups": "Please sign in to use groups",
+  "deleteGroup": "Delete Group",
+  "deleteGroupConfirm": "Are you sure you want to delete this group? All expenses and splits will be removed.",
+  "groupNotFound": "Group not found. Check the invite code.",
+  "alreadyMember": "You are already a member of this group",
+  "noGroupExpensesYet": "No group expenses yet",
+  "paidBy": "Paid by",
+  "markedAsSettled": "Marked as settled",
+  "joinedGroup": "Joined \"{groupName}\"!",
+  "@joinedGroup": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "markAsSettled": "Mark as settled",
+  "settledUp": "Settled up",
+  "owes": "Owes",
+  "isOwed": "Gets back",
+  "you": "You",
+  "syncComplete": "Sync complete",
+  "syncFailed": "Sync failed",
+  "groupExpenseSaved": "Group expense saved",
+  "done": "Done",
+  "showInviteCode": "Show Invite Code",
+  "deleteGroupExpense": "Delete Group Expense",
+  "deleteGroupExpenseConfirm": "Delete this group expense? Splits and items will also be removed.",
+  "groupExpenseDeleted": "Group expense deleted",
+  "settlementRecorded": "Marked as settled — recorded in your finances",
+  "getStarted": "Get Started",
+  "createGroupSubtitle": "Start a new expense group",
+  "joinGroupSubtitle": "Enter invite code or scan QR",
+  "settleUp": "Settle Up",
+  "confirm": "Confirm",
+  "leaveGroup": "Leave Group",
+  "leave": "Leave",
+  "leaveGroupConfirm": "Are you sure you want to leave \"{groupName}\"?",
+  "@leaveGroupConfirm": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "settleUpConfirmPayBack": "Did {name} pay you back {amount}?",
+  "@settleUpConfirmPayBack": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "settleUpConfirmPay": "Did you pay {name} {amount}?",
+  "@settleUpConfirmPay": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "success": "Success!",
+  "groupReady": "Group \"{groupName}\" is ready",
+  "@groupReady": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "font": "Font",
+  "soraDefault": "Sora (Default)",
+  "fredokaCat": "Fredoka (Cat)"
 }

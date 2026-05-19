@@ -13,8 +13,7 @@ class GroupPickerSheet extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final groups = ref.watch(groupsProvider);
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
-    final dividerColor = Theme.of(context).colorScheme.outline;
+    final textSecondary = Theme.of(context).colorScheme.onSurfaceVariant;
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
@@ -37,7 +36,7 @@ class GroupPickerSheet extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: dividerColor,
+                color: Theme.of(context).colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -60,42 +59,56 @@ class GroupPickerSheet extends ConsumerWidget {
               ),
             )
           else
-            ...groups.map((group) => InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    onGroupSelected(group.id);
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: dividerColor),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                          child: Icon(Icons.group, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            group.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: textPrimary,
-                            ),
-                          ),
-                        ),
-                        Icon(Icons.chevron_right, color: textPrimary.withAlpha(128)),
-                      ],
+            ...groups.map(
+              (group) => InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  onGroupSelected(group.id);
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
                     ),
                   ),
-                )),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.group,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          group.name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: textPrimary.withAlpha(128),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           const SizedBox(height: 16),
         ],
       ),
