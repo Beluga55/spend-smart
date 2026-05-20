@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "zh",
   "appTitle": "支出追踪",
   "dashboard": "仪表盘",
@@ -84,6 +84,8 @@
   "dark": "深色",
   "catLight": "猫咪浅色 🐱",
   "catDark": "猫咪深色 🐱",
+  "limeLight": "翠绿浅色 💚",
+  "limeDark": "翠绿深色 💚",
   "about": "关于",
   "developedBy": "开发者：Justin",
   "approachingMonthlyLimit": "接近月度上限",
@@ -444,5 +446,6 @@
   },
   "font": "字体",
   "soraDefault": "Sora (默认)",
-  "fredokaCat": "Fredoka (猫主题)"
+  "fredokaCat": "Fredoka (猫主题)",
+  "comfortaa": "Comfortaa (青柠)"
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-enum ThemeStyle { defaultTheme, catTheme }
+enum ThemeStyle { defaultTheme, catTheme, limeTheme }
 
 class ThemeState {
   final ThemeMode mode;
@@ -10,8 +10,9 @@ class ThemeState {
   const ThemeState(this.mode, this.style);
 }
 
-final themeStateProvider =
-    StateNotifierProvider<ThemeNotifier, ThemeState>((ref) {
+final themeStateProvider = StateNotifierProvider<ThemeNotifier, ThemeState>((
+  ref,
+) {
   return ThemeNotifier(Hive.box('settings'));
 });
 
@@ -29,21 +30,31 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
   final Box _box;
 
   ThemeNotifier(this._box)
-      : super(const ThemeState(ThemeMode.light, ThemeStyle.defaultTheme)) {
+    : super(const ThemeState(ThemeMode.light, ThemeStyle.defaultTheme)) {
     _load();
   }
 
   void _load() {
     final isDark = _box.get('isDarkMode', defaultValue: false) as bool;
     final styleStr = _box.get('themeStyle', defaultValue: 'default') as String;
-    final style =
-        styleStr == 'cat' ? ThemeStyle.catTheme : ThemeStyle.defaultTheme;
+    final style = styleStr == 'cat'
+        ? ThemeStyle.catTheme
+        : styleStr == 'lime'
+        ? ThemeStyle.limeTheme
+        : ThemeStyle.defaultTheme;
     state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);
   }
 
   Future<void> setTheme(ThemeStyle style, bool isDark) async {
     await _box.put('isDarkMode', isDark);
-    await _box.put('themeStyle', style == ThemeStyle.catTheme ? 'cat' : 'default');
+    await _box.put(
+      'themeStyle',
+      style == ThemeStyle.catTheme
+          ? 'cat'
+          : style == ThemeStyle.limeTheme
+          ? 'lime'
+          : 'default',
+    );
     state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);
   }
 

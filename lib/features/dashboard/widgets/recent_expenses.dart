@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
@@ -34,6 +35,7 @@ class RecentTransactionsList extends ConsumerWidget {
     ]..sort((a, b) => b.date.compareTo(a.date));
 
     final display = items.take(5).toList();
+    final semantic = Theme.of(context).extension<SemanticColors>();
 
     if (display.isEmpty) {
       return Container(
@@ -44,7 +46,10 @@ class RecentTransactionsList extends ConsumerWidget {
           border: Border.all(color: dividerColor),
         ),
         child: Center(
-          child: Text(l10n.noExpensesYet, style: TextStyle(color: textSecondary)),
+          child: Text(
+            l10n.noExpensesYet,
+            style: TextStyle(color: textSecondary),
+          ),
         ),
       );
     }
@@ -68,40 +73,51 @@ class RecentTransactionsList extends ConsumerWidget {
           if (item.isIncome) {
             final income = item.income!;
             final incomeCategories = ref.watch(incomeCategoriesProvider);
-            final cat = getIncomeCategoryForSource(income.source, incomeCategories);
+            final cat = getIncomeCategoryForSource(
+              income.source,
+              incomeCategories,
+            );
             return Dismissible(
               key: Key(income.id),
               direction: DismissDirection.endToStart,
               confirmDismiss: (direction) async {
                 return await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(
-                      l10n.deleteIncome,
-                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-                    ),
-                    content: Text(
-                      l10n.areYouSureDeleteIncome,
-                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(l10n.cancel),
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(
+                          l10n.deleteIncome,
+                          style: TextStyle(
+                            color: Theme.of(ctx).colorScheme.onSurface,
+                          ),
+                        ),
+                        content: Text(
+                          l10n.areYouSureDeleteIncome,
+                          style: TextStyle(
+                            color: Theme.of(ctx).colorScheme.onSurface,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(l10n.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(l10n.delete),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: Text(l10n.delete),
-                      ),
-                    ],
-                  ),
-                ) ?? false;
+                    ) ??
+                    false;
               },
               background: Container(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.only(right: 20),
                 color: Theme.of(context).colorScheme.error,
-                child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+                child: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).colorScheme.onError,
+                ),
               ),
               onDismissed: (_) {
                 final deleted = income;
@@ -121,7 +137,10 @@ class RecentTransactionsList extends ConsumerWidget {
                 );
               },
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 leading: Container(
                   width: 44,
                   height: 44,
@@ -129,11 +148,18 @@ class RecentTransactionsList extends ConsumerWidget {
                     color: Color(cat.color).withAlpha(25),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(IconConstants.getIcon(cat.iconName), color: Color(cat.color), size: 22),
+                  child: Icon(
+                    IconConstants.getIcon(cat.iconName),
+                    color: Color(cat.color),
+                    size: 22,
+                  ),
                 ),
                 title: Text(
                   income.note?.isNotEmpty == true ? income.note! : cat.name,
-                  style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: textPrimary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -143,7 +169,11 @@ class RecentTransactionsList extends ConsumerWidget {
                 ),
                 trailing: Text(
                   '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF4CAF50), fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: semantic?.income ?? const Color(0xFF4CAF50),
+                    fontSize: 16,
+                  ),
                 ),
               ),
             );
@@ -151,43 +181,58 @@ class RecentTransactionsList extends ConsumerWidget {
             final expense = item.expense!;
             Category category = categories.cast<Category>().firstWhere(
               (c) => c.id == expense.categoryId,
-              orElse: () => Category(id: '', name: '', iconName: 'more_horiz', color: 0xFFB8B8B8),
+              orElse: () => Category(
+                id: '',
+                name: '',
+                iconName: 'more_horiz',
+                color: 0xFFB8B8B8,
+              ),
             );
-            final displayName = category.name.isEmpty ? l10n.unknown : category.name;
+            final displayName = category.name.isEmpty
+                ? l10n.unknown
+                : category.name;
 
             return Dismissible(
               key: Key(expense.id),
               direction: DismissDirection.endToStart,
               confirmDismiss: (direction) async {
                 return await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(
-                      l10n.deleteExpense,
-                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-                    ),
-                    content: Text(
-                      l10n.areYouSureDeleteExpense,
-                      style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(l10n.cancel),
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(
+                          l10n.deleteExpense,
+                          style: TextStyle(
+                            color: Theme.of(ctx).colorScheme.onSurface,
+                          ),
+                        ),
+                        content: Text(
+                          l10n.areYouSureDeleteExpense,
+                          style: TextStyle(
+                            color: Theme.of(ctx).colorScheme.onSurface,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(l10n.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(l10n.delete),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: Text(l10n.delete),
-                      ),
-                    ],
-                  ),
-                ) ?? false;
+                    ) ??
+                    false;
               },
               background: Container(
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.only(right: 20),
                 color: Theme.of(context).colorScheme.error,
-                child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+                child: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).colorScheme.onError,
+                ),
               ),
               onDismissed: (_) {
                 final deleted = expense;
@@ -207,7 +252,10 @@ class RecentTransactionsList extends ConsumerWidget {
                 );
               },
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 leading: Container(
                   width: 44,
                   height: 44,
@@ -215,11 +263,20 @@ class RecentTransactionsList extends ConsumerWidget {
                     color: Color(category.color).withAlpha(25),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(IconConstants.getIcon(category.iconName), color: Color(category.color), size: 22),
+                  child: Icon(
+                    IconConstants.getIcon(category.iconName),
+                    color: Color(category.color),
+                    size: 22,
+                  ),
                 ),
                 title: Text(
-                  expense.note?.isNotEmpty == true ? expense.note! : displayName,
-                  style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
+                  expense.note?.isNotEmpty == true
+                      ? expense.note!
+                      : displayName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: textPrimary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -229,7 +286,11 @@ class RecentTransactionsList extends ConsumerWidget {
                 ),
                 trailing: Text(
                   '-${currency.symbol}${expense.amount.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFFF5252), fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFFF5252),
+                    fontSize: 16,
+                  ),
                 ),
               ),
             );

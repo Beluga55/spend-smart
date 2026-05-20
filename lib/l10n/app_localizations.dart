@@ -518,6 +518,18 @@ abstract class AppLocalizations {
   /// **'Cat Dark 🐱'**
   String get catDark;
 
+  /// No description provided for @limeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Light 💚'**
+  String get limeLight;
+
+  /// No description provided for @limeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Dark 💚'**
+  String get limeDark;
+
   /// No description provided for @about.
   ///
   /// In en, this message translates to:
@@ -2179,6 +2191,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fredoka (Cat)'**
   String get fredokaCat;
+
+  /// No description provided for @comfortaa.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortaa (Lime)'**
+  String get comfortaa;
 }
 
 class _AppLocalizationsDelegate

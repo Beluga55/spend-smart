@@ -223,6 +223,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get catDark => '猫咪深色 🐱';
 
   @override
+  String get limeLight => '翠绿浅色 💚';
+
+  @override
+  String get limeDark => '翠绿深色 💚';
+
+  @override
   String get about => '关于';
 
   @override
@@ -1078,4 +1084,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fredokaCat => 'Fredoka (猫主题)';
+
+  @override
+  String get comfortaa => 'Comfortaa (青柠)';
 }

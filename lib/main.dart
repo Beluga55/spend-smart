@@ -759,16 +759,28 @@ class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
     final themeMode = ref.watch(themeProvider);
     final themeStyle = ref.watch(themeStyleProvider);
     final fontFamily = ref.watch(fontFamilyProvider);
-    final isCat = themeStyle == ThemeStyle.catTheme;
+
+    ThemeData lightTheme;
+    ThemeData darkTheme;
+    switch (themeStyle) {
+      case ThemeStyle.catTheme:
+        lightTheme = AppTheme.catLightTheme(fontFamily: fontFamily);
+        darkTheme = AppTheme.catDarkTheme(fontFamily: fontFamily);
+        break;
+      case ThemeStyle.limeTheme:
+        lightTheme = AppTheme.limeLightTheme(fontFamily: fontFamily);
+        darkTheme = AppTheme.limeDarkTheme(fontFamily: fontFamily);
+        break;
+      case ThemeStyle.defaultTheme:
+        lightTheme = AppTheme.lightTheme(fontFamily: fontFamily);
+        darkTheme = AppTheme.darkTheme(fontFamily: fontFamily);
+        break;
+    }
 
     return MaterialApp(
       title: AppConstants.appName,
-      theme: isCat
-          ? AppTheme.catLightTheme(fontFamily: fontFamily)
-          : AppTheme.lightTheme(fontFamily: fontFamily),
-      darkTheme: isCat
-          ? AppTheme.catDarkTheme(fontFamily: fontFamily)
-          : AppTheme.darkTheme(fontFamily: fontFamily),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       locale: locale,

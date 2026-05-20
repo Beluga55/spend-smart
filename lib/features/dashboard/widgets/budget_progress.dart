@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
@@ -34,11 +35,13 @@ class BudgetProgressCard extends ConsumerWidget {
     final dividerColor = cs.outline;
     final textPrimary = cs.onSurface;
     final textSecondary = cs.onSurface.withAlpha(153);
-    final isCat = ref.watch(themeStyleProvider) == ThemeStyle.catTheme;
-    final successColor = (isCat && !isDark)
-        ? const Color(0xFFF4978E)  // soft pink for cat light
-        : (isDark ? const Color(0xFF81C784) : const Color(0xFF4CAF50));
-    final warningColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFF57C00);
+    final semantic = Theme.of(context).extension<SemanticColors>();
+    final successColor =
+        semantic?.success ??
+        (isDark ? const Color(0xFF81C784) : const Color(0xFF4CAF50));
+    final warningColor =
+        semantic?.warning ??
+        (isDark ? const Color(0xFFFFB74D) : const Color(0xFFF57C00));
 
     final criticalColor = isDark ? Colors.white : Colors.red;
 
@@ -101,8 +104,8 @@ class BudgetProgressCard extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   isCritical
-                    ? l10n.overBudget
-                    : remaining >= 0
+                      ? l10n.overBudget
+                      : remaining >= 0
                       ? '${currency.symbol}${remaining.toStringAsFixed(2)} ${l10n.remaining}'
                       : '${currency.symbol}${(-remaining).toStringAsFixed(2)} ${l10n.overBudget}',
                   style: TextStyle(
@@ -113,7 +116,10 @@ class BudgetProgressCard extends ConsumerWidget {
                 if (isWarning && !isCritical) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: textSecondary.withAlpha(25),
                       borderRadius: BorderRadius.circular(4),
@@ -129,9 +135,22 @@ class BudgetProgressCard extends ConsumerWidget {
                   ),
                 ],
                 const SizedBox(height: 12),
-                _buildDailyAllowance(currency, dailyAllowance, textPrimary, textSecondary, isCritical, criticalColor),
+                _buildDailyAllowance(
+                  currency,
+                  dailyAllowance,
+                  textPrimary,
+                  textSecondary,
+                  isCritical,
+                  criticalColor,
+                ),
                 const SizedBox(height: 8),
-                _buildProjectedSpending(currency, projected, budgetAmount, textPrimary, textSecondary),
+                _buildProjectedSpending(
+                  currency,
+                  projected,
+                  budgetAmount,
+                  textPrimary,
+                  textSecondary,
+                ),
               ],
             ),
           ),
@@ -140,7 +159,14 @@ class BudgetProgressCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildDailyAllowance(dynamic currency, double dailyAllowanceValue, Color textPrimary, Color textSecondary, bool isCritical, Color criticalColor) {
+  Widget _buildDailyAllowance(
+    dynamic currency,
+    double dailyAllowanceValue,
+    Color textPrimary,
+    Color textSecondary,
+    bool isCritical,
+    Color criticalColor,
+  ) {
     if (dailyAllowanceValue <= 0) return const SizedBox.shrink();
 
     return Row(
@@ -161,7 +187,13 @@ class BudgetProgressCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildProjectedSpending(dynamic currency, double projected, double budgetAmount, Color textPrimary, Color textSecondary) {
+  Widget _buildProjectedSpending(
+    dynamic currency,
+    double projected,
+    double budgetAmount,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     if (budgetAmount <= 0) return const SizedBox.shrink();
 
     // Cap projection at 10x budget to avoid absurd numbers from front-loaded spending
@@ -176,8 +208,8 @@ class BudgetProgressCard extends ConsumerWidget {
         Expanded(
           child: Text(
             isOverProjected
-              ? 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (+${currency.symbol}${diff.toStringAsFixed(0)})'
-              : 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (-${currency.symbol}${(-diff).toStringAsFixed(0)})',
+                ? 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (+${currency.symbol}${diff.toStringAsFixed(0)})'
+                : 'Projected: ${currency.symbol}${capped.toStringAsFixed(0)} (-${currency.symbol}${(-diff).toStringAsFixed(0)})',
             style: TextStyle(fontSize: 12, color: textSecondary),
             overflow: TextOverflow.ellipsis,
           ),
@@ -186,4 +218,3 @@ class BudgetProgressCard extends ConsumerWidget {
     );
   }
 }
-

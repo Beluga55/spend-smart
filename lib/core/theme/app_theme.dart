@@ -2,6 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_expense_tracker/core/providers/font_provider.dart';
 
+@immutable
+class SemanticColors extends ThemeExtension<SemanticColors> {
+  final Color success;
+  final Color income;
+  final Color expense;
+  final Color warning;
+
+  const SemanticColors({
+    required this.success,
+    required this.income,
+    required this.expense,
+    required this.warning,
+  });
+
+  @override
+  SemanticColors copyWith({
+    Color? success,
+    Color? income,
+    Color? expense,
+    Color? warning,
+  }) {
+    return SemanticColors(
+      success: success ?? this.success,
+      income: income ?? this.income,
+      expense: expense ?? this.expense,
+      warning: warning ?? this.warning,
+    );
+  }
+
+  @override
+  SemanticColors lerp(SemanticColors? other, double t) {
+    if (other is! SemanticColors) return this;
+    return SemanticColors(
+      success: Color.lerp(success, other.success, t)!,
+      income: Color.lerp(income, other.income, t)!,
+      expense: Color.lerp(expense, other.expense, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+    );
+  }
+}
+
 class AppTheme {
   // ── Default palette ─────────────────────────────────────────────────────────
   static const Color primaryColor = Color(0xFF000000);
@@ -37,6 +78,21 @@ class AppTheme {
   static const Color catDarkTextSecondary = Color(0xFFA09498);
   static const Color catDarkDivider = Color(0xFF3B3235);
 
+  // ── Lime palette ─────────────────────────────────────────────────────────────
+  static const Color limePrimary = Color(0xFF4CAF50);
+  static const Color limeBackground = Color(0xFFF1F8E9);
+  static const Color limeSurface = Color(0xFFFFFFFF);
+  static const Color limeTextPrimary = Color(0xFF1B5E20);
+  static const Color limeTextSecondary = Color(0xFF455A64);
+  static const Color limeDivider = Color(0xFFC8E6C9);
+
+  static const Color limeDarkPrimary = Color(0xFF8EF13E);
+  static const Color limeDarkBackground = Color(0xFF1A1A1A);
+  static const Color limeDarkSurface = Color(0xFF2D2D2D);
+  static const Color limeDarkTextPrimary = Color(0xFFFFFFFF);
+  static const Color limeDarkTextSecondary = Color(0xFFA0A0A0);
+  static const Color limeDarkDivider = Color(0xFF404040);
+
   // ── Text themes ─────────────────────────────────────────────────────────────
   static TextTheme _getTextTheme(FontFamily fontFamily) {
     switch (fontFamily) {
@@ -44,6 +100,8 @@ class AppTheme {
         return GoogleFonts.soraTextTheme();
       case FontFamily.fredoka:
         return GoogleFonts.fredokaTextTheme();
+      case FontFamily.comfortaa:
+        return GoogleFonts.comfortaaTextTheme();
     }
   }
 
@@ -200,6 +258,14 @@ class AppTheme {
             ? GoogleFonts.fredoka(color: textPrimary, fontSize: 14)
             : GoogleFonts.sora(color: textPrimary, fontSize: 14),
       ),
+      extensions: const [
+        SemanticColors(
+          success: successColor,
+          income: successColor,
+          expense: errorColor,
+          warning: warningColor,
+        ),
+      ],
     );
   }
 
@@ -374,6 +440,14 @@ class AppTheme {
             ? GoogleFonts.fredoka(color: darkTextPrimary, fontSize: 14)
             : GoogleFonts.sora(color: darkTextPrimary, fontSize: 14),
       ),
+      extensions: const [
+        SemanticColors(
+          success: darkSuccessColor,
+          income: darkSuccessColor,
+          expense: Color(0xFFEF5350),
+          warning: darkWarningColor,
+        ),
+      ],
     );
   }
 
@@ -538,6 +612,31 @@ class AppTheme {
               : GoogleFonts.sora(fontWeight: FontWeight.w700),
         ),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: catSurface,
+        titleTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(
+                color: catTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              )
+            : GoogleFonts.sora(
+                color: catTextPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+        contentTextStyle: fontFamily == FontFamily.fredoka
+            ? GoogleFonts.fredoka(color: catTextPrimary, fontSize: 14)
+            : GoogleFonts.sora(color: catTextPrimary, fontSize: 14),
+      ),
+      extensions: const [
+        SemanticColors(
+          success: successColor,
+          income: successColor,
+          expense: errorColor,
+          warning: warningColor,
+        ),
+      ],
     );
   }
 
@@ -720,6 +819,323 @@ class AppTheme {
             ? GoogleFonts.fredoka(color: catDarkTextPrimary, fontSize: 14)
             : GoogleFonts.sora(color: catDarkTextPrimary, fontSize: 14),
       ),
+      extensions: const [
+        SemanticColors(
+          success: darkSuccessColor,
+          income: darkSuccessColor,
+          expense: Color(0xFFCF6679),
+          warning: darkWarningColor,
+        ),
+      ],
+    );
+  }
+
+  // ── Lime light 💚 ─────────────────────────────────────────────────────────────
+  static ThemeData limeLightTheme({FontFamily fontFamily = FontFamily.comfortaa}) {
+    final t = _getTextTheme(fontFamily);
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: const ColorScheme.light(
+        primary: limePrimary,
+        onPrimary: Colors.white,
+        surface: limeSurface,
+        onSurface: limeTextPrimary,
+        surfaceContainerHighest: Color(0xFFE8F5E9),
+        surfaceContainerLow: limeBackground,
+        outline: limeDivider,
+        outlineVariant: Color(0xFFE0E0E0),
+        error: Color(0xFFD32F2F),
+      ),
+      scaffoldBackgroundColor: limeBackground,
+      textTheme: t.copyWith(
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: limeTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: limeTextPrimary,
+        ),
+        bodyLarge: t.bodyLarge?.copyWith(color: limeTextPrimary),
+        bodyMedium: t.bodyMedium?.copyWith(color: limeTextPrimary),
+        bodySmall: t.bodySmall?.copyWith(color: limeTextSecondary),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: limeSurface,
+        foregroundColor: limeTextPrimary,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: limeTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: limeSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: limeDivider),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: limeSurface,
+        selectedItemColor: limePrimary,
+        unselectedItemColor: limeTextSecondary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: GoogleFonts.comfortaa(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: limePrimary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: limeBackground,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limeDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limeDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limePrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: GoogleFonts.comfortaa(color: limeTextSecondary),
+        hintStyle: GoogleFonts.comfortaa(color: limeTextSecondary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: limePrimary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: limePrimary,
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: limeSurface,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: limeTextPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.comfortaa(color: limeTextPrimary, fontSize: 14),
+      ),
+      extensions: const [
+        SemanticColors(
+          success: limePrimary,
+          income: limePrimary,
+          expense: Color(0xFFD32F2F),
+          warning: Color(0xFFF57C00),
+        ),
+      ],
+    );
+  }
+
+  // ── Lime dark 💚 ──────────────────────────────────────────────────────────────
+  static ThemeData limeDarkTheme({FontFamily fontFamily = FontFamily.comfortaa}) {
+    final t = _getTextTheme(fontFamily);
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: limeDarkPrimary,
+        onPrimary: Colors.black,
+        surface: limeDarkSurface,
+        onSurface: limeDarkTextPrimary,
+        surfaceContainerHighest: Color(0xFF333333),
+        surfaceContainerLow: Color(0xFF2A2A2A),
+        outline: limeDarkDivider,
+        outlineVariant: Color(0xFF454545),
+        error: Color(0xFFEF5350),
+      ),
+      scaffoldBackgroundColor: limeDarkBackground,
+      textTheme: t.copyWith(
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeDarkTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeDarkTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: limeDarkTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeDarkTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeDarkTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeDarkTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: limeDarkTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: limeDarkTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: limeDarkTextPrimary,
+        ),
+        bodyLarge: t.bodyLarge?.copyWith(color: limeDarkTextPrimary),
+        bodyMedium: t.bodyMedium?.copyWith(color: limeDarkTextPrimary),
+        bodySmall: t.bodySmall?.copyWith(color: limeDarkTextSecondary),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: limeDarkSurface,
+        foregroundColor: limeDarkTextPrimary,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: limeDarkTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: limeDarkSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: limeDarkDivider),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: limeDarkSurface,
+        selectedItemColor: limeDarkPrimary,
+        unselectedItemColor: limeDarkTextSecondary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: GoogleFonts.comfortaa(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: limeDarkPrimary,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: limeDarkBackground,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limeDarkDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limeDarkDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: limeDarkPrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: GoogleFonts.comfortaa(color: limeDarkTextSecondary),
+        hintStyle: GoogleFonts.comfortaa(color: limeDarkTextSecondary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: limeDarkPrimary,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: limeDarkPrimary,
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: limeDarkSurface,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: limeDarkTextPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.comfortaa(color: limeDarkTextPrimary, fontSize: 14),
+      ),
+      extensions: const [
+        SemanticColors(
+          success: limeDarkPrimary,
+          income: limeDarkPrimary,
+          expense: Color(0xFFEF5350),
+          warning: Color(0xFFFFB74D),
+        ),
+      ],
     );
   }
 }

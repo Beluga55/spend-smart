@@ -42,21 +42,32 @@ class ThemeModal extends ConsumerWidget {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: dividerColor, borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             // Cat ears when cat theme is active
             if (currentStyle == ThemeStyle.catTheme)
-              Center(
-                child: Text('🐱', style: TextStyle(fontSize: 36)),
-              ),
+              Center(child: Text('🐱', style: TextStyle(fontSize: 36))),
             if (currentStyle == ThemeStyle.catTheme) const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.theme, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary)),
-                IconButton(icon: Icon(Icons.close, color: textPrimary), onPressed: () => Navigator.pop(context)),
+                Text(
+                  l10n.theme,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: textPrimary),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -65,12 +76,16 @@ class ThemeModal extends ConsumerWidget {
               icon: Icons.light_mode_outlined,
               swatch: AppTheme.backgroundColor,
               swatchBorder: AppTheme.dividerColor,
-              isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.light,
+              isSelected:
+                  currentStyle == ThemeStyle.defaultTheme &&
+                  currentMode == ThemeMode.light,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
               dividerColor: dividerColor,
               onTap: () {
-                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, false);
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.defaultTheme, false);
                 Navigator.pop(context);
               },
             ),
@@ -80,12 +95,16 @@ class ThemeModal extends ConsumerWidget {
               icon: Icons.dark_mode_outlined,
               swatch: AppTheme.darkBackgroundColor,
               swatchBorder: AppTheme.darkDividerColor,
-              isSelected: currentStyle == ThemeStyle.defaultTheme && currentMode == ThemeMode.dark,
+              isSelected:
+                  currentStyle == ThemeStyle.defaultTheme &&
+                  currentMode == ThemeMode.dark,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
               dividerColor: dividerColor,
               onTap: () {
-                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.defaultTheme, true);
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.defaultTheme, true);
                 Navigator.pop(context);
               },
             ),
@@ -95,12 +114,16 @@ class ThemeModal extends ConsumerWidget {
               icon: Icons.wb_sunny_outlined,
               swatch: AppTheme.catBackground,
               swatchBorder: AppTheme.catPrimary,
-              isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.light,
+              isSelected:
+                  currentStyle == ThemeStyle.catTheme &&
+                  currentMode == ThemeMode.light,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
               dividerColor: dividerColor,
               onTap: () {
-                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, false);
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.catTheme, false);
                 Navigator.pop(context);
               },
             ),
@@ -110,12 +133,54 @@ class ThemeModal extends ConsumerWidget {
               icon: Icons.nightlight_outlined,
               swatch: AppTheme.catDarkBackground,
               swatchBorder: AppTheme.catDarkPrimary,
-              isSelected: currentStyle == ThemeStyle.catTheme && currentMode == ThemeMode.dark,
+              isSelected:
+                  currentStyle == ThemeStyle.catTheme &&
+                  currentMode == ThemeMode.dark,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
               dividerColor: dividerColor,
               onTap: () {
-                ref.read(themeStateProvider.notifier).setTheme(ThemeStyle.catTheme, true);
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.catTheme, true);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _ThemeOption(
+              label: l10n.limeLight,
+              icon: Icons.eco_outlined,
+              swatch: AppTheme.limeBackground,
+              swatchBorder: AppTheme.limePrimary,
+              isSelected:
+                  currentStyle == ThemeStyle.limeTheme &&
+                  currentMode == ThemeMode.light,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.limeTheme, false);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _ThemeOption(
+              label: l10n.limeDark,
+              icon: Icons.nights_stay_outlined,
+              swatch: AppTheme.limeDarkBackground,
+              swatchBorder: AppTheme.limeDarkPrimary,
+              isSelected:
+                  currentStyle == ThemeStyle.limeTheme &&
+                  currentMode == ThemeMode.dark,
+              textPrimary: textPrimary,
+              backgroundColor: backgroundColor,
+              dividerColor: dividerColor,
+              onTap: () {
+                ref
+                    .read(themeStateProvider.notifier)
+                    .setTheme(ThemeStyle.limeTheme, true);
                 Navigator.pop(context);
               },
             ),
@@ -160,7 +225,10 @@ class _ThemeOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? textPrimary.withAlpha(13) : backgroundColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? textPrimary : dividerColor, width: isSelected ? 2 : 1),
+          border: Border.all(
+            color: isSelected ? textPrimary : dividerColor,
+            width: isSelected ? 2 : 1,
+          ),
         ),
         child: Row(
           children: [
@@ -169,7 +237,11 @@ class _ThemeOption extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: textPrimary, fontSize: 16),
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: textPrimary,
+                  fontSize: 16,
+                ),
               ),
             ),
             // Color swatch preview

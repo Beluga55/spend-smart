@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -341,6 +342,7 @@ class _ParsedCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textPrimary = scheme.onSurface;
     final textSecondary = scheme.onSurface.withAlpha(153);
+    final semantic = Theme.of(context).extension<SemanticColors>();
     final success = const Color(0xFF4CAF50);
 
     final merchant = data['merchant']?.toString();

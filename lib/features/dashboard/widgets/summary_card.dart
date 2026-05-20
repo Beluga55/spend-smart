@@ -1,9 +1,9 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class SummaryCard extends ConsumerWidget {
@@ -25,18 +25,19 @@ class SummaryCard extends ConsumerWidget {
     final bgColor = (isCat && !isDark)
         ? Colors.white
         : (isCat && isDark)
-            ? const Color(0xFF2B2426)  // soft pink-tinted dark
-            : (isDark ? const Color(0xFF2D2D2D) : Colors.black);
+        ? const Color(0xFF2B2426) // soft pink-tinted dark
+        : (isDark ? const Color(0xFF2D2D2D) : Colors.black);
 
     // On white cat-light card, flip text colors to dark
     final catLight = isCat && !isDark;
     final subtitleColor = catLight ? Colors.black54 : Colors.white70;
     final valueTextColor = catLight ? Colors.black87 : Colors.white;
     final dividerLineColor = catLight ? Colors.black12 : Colors.white24;
-    final surplusColor = const Color(0xFF81C784);
-    final deficitColor = const Color(0xFFEF9A9A);
-    final incomeArrowColor = const Color(0xFF81C784);
-    final expenseArrowColor = const Color(0xFFEF9A9A);
+    final semantic = Theme.of(context).extension<SemanticColors>();
+    final surplusColor = semantic?.success ?? const Color(0xFF81C784);
+    final deficitColor = semantic?.expense ?? const Color(0xFFEF9A9A);
+    final incomeArrowColor = semantic?.income ?? const Color(0xFF81C784);
+    final expenseArrowColor = semantic?.expense ?? const Color(0xFFEF9A9A);
 
     return Container(
       width: double.infinity,
@@ -52,7 +53,11 @@ class SummaryCard extends ConsumerWidget {
             Positioned(
               right: -4,
               bottom: -4,
-              child: Icon(Icons.pets, size: 72, color: AppTheme.catPrimary.withAlpha(45)),
+              child: Icon(
+                Icons.pets,
+                size: 72,
+                color: AppTheme.catPrimary.withAlpha(45),
+              ),
             ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +67,11 @@ class SummaryCard extends ConsumerWidget {
                   if (isCat) const Text('🐱 ', style: TextStyle(fontSize: 14)),
                   Text(
                     title,
-                    style: TextStyle(color: subtitleColor, fontSize: 13, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: subtitleColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -100,7 +109,8 @@ class SummaryCard extends ConsumerWidget {
                       icon: Icons.arrow_downward_rounded,
                       iconColor: incomeArrowColor,
                       label: l10n.income,
-                      value: '${currency.symbol}${monthlyIncome.toStringAsFixed(2)}',
+                      value:
+                          '${currency.symbol}${monthlyIncome.toStringAsFixed(2)}',
                       labelColor: subtitleColor,
                       valueColor: valueTextColor,
                     ),
@@ -111,7 +121,8 @@ class SummaryCard extends ConsumerWidget {
                       icon: Icons.arrow_upward_rounded,
                       iconColor: expenseArrowColor,
                       label: l10n.expenses,
-                      value: '${currency.symbol}${monthlyExpense.toStringAsFixed(2)}',
+                      value:
+                          '${currency.symbol}${monthlyExpense.toStringAsFixed(2)}',
                       labelColor: subtitleColor,
                       valueColor: valueTextColor,
                     ),
@@ -121,13 +132,20 @@ class SummaryCard extends ConsumerWidget {
               if (budget != null) ...[
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: (catLight ? Colors.black : Colors.white).withAlpha(15),
+                    color: (catLight ? Colors.black : Colors.white).withAlpha(
+                      15,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    l10n.ofBudget('${currency.symbol}${budget!.toStringAsFixed(2)}'),
+                    l10n.ofBudget(
+                      '${currency.symbol}${budget!.toStringAsFixed(2)}',
+                    ),
                     style: TextStyle(color: subtitleColor, fontSize: 12),
                   ),
                 ),
@@ -170,7 +188,14 @@ class _StatColumn extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Text(value, style: TextStyle(color: valueColor, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          value,
+          style: TextStyle(
+            color: valueColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }

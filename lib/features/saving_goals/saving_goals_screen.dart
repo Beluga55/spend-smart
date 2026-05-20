@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
@@ -19,13 +20,13 @@ class SavingGoalsScreen extends ConsumerWidget {
     final currency = ref.watch(currencyProvider);
 
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
     final surfaceColor = Theme.of(context).colorScheme.surface;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.savingGoals),
-      ),
+      appBar: AppBar(title: Text(l10n.savingGoals)),
       body: goals.isEmpty
           ? Center(
               child: Column(
@@ -39,18 +40,12 @@ class SavingGoalsScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     l10n.noSavingGoalsYet,
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: textSecondary, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.tapToAddFirstGoal,
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: textSecondary, fontSize: 14),
                   ),
                 ],
               ),
@@ -92,7 +87,7 @@ class SavingGoalsScreen extends ConsumerWidget {
     Color textSecondary,
     Color surfaceColor,
   ) {
-    final progressColor = _getProgressColor(goal.progress, isDark);
+    final progressColor = _getProgressColor(goal.progress, isDark, context);
 
     return GestureDetector(
       onTap: () => _showGoalDetailModal(context, ref, goal, l10n),
@@ -103,9 +98,7 @@ class SavingGoalsScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: textSecondary.withAlpha(26),
-          ),
+          border: Border.all(color: textSecondary.withAlpha(26)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +146,9 @@ class SavingGoalsScreen extends ConsumerWidget {
                               ? l10n.daysRemaining(goal.daysRemaining!)
                               : l10n.deadlinePassed,
                           style: TextStyle(
-                            color: goal.daysRemaining! <= 7 ? Colors.orange : textSecondary,
+                            color: goal.daysRemaining! <= 7
+                                ? Colors.orange
+                                : textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -173,10 +168,7 @@ class SavingGoalsScreen extends ConsumerWidget {
                     ),
                     Text(
                       '$currencySymbol${goal.targetAmount.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        color: textSecondary,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: textSecondary, fontSize: 12),
                     ),
                   ],
                 ),
@@ -207,10 +199,7 @@ class SavingGoalsScreen extends ConsumerWidget {
                 if (goal.deadline != null && !goal.isCompleted)
                   Text(
                     '${l10n.deadline}: ${_formatDate(goal.deadline!)}',
-                    style: TextStyle(
-                      color: textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: textSecondary, fontSize: 12),
                   ),
               ],
             ),
@@ -220,11 +209,15 @@ class SavingGoalsScreen extends ConsumerWidget {
     );
   }
 
-  Color _getProgressColor(double progress, bool isDark) {
-    if (progress >= 100) return Colors.green;
-    if (progress >= 75) return isDark ? Colors.lightGreen : Colors.green.shade400;
+  Color _getProgressColor(double progress, bool isDark, BuildContext context) {
+    final semantic = Theme.of(context).extension<SemanticColors>();
+    if (progress >= 100) return semantic?.success ?? Colors.green;
+    if (progress >= 75)
+      return semantic?.success ??
+          (isDark ? Colors.lightGreen : Colors.green.shade400);
     if (progress >= 50) return Colors.orange;
-    if (progress >= 25) return isDark ? Colors.orange.shade300 : Colors.orange.shade400;
+    if (progress >= 25)
+      return isDark ? Colors.orange.shade300 : Colors.orange.shade400;
     return isDark ? Colors.orange.shade200 : Colors.orange.shade300;
   }
 
@@ -232,26 +225,37 @@ class SavingGoalsScreen extends ConsumerWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _showAddGoalModal(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  void _showAddGoalModal(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => SavingGoalModal(
         onSave: (name, targetAmount, deadline, iconName, color) {
-          ref.read(savingGoalsProvider.notifier).addGoal(
-            name: name,
-            targetAmount: targetAmount,
-            deadline: deadline,
-            iconName: iconName,
-            color: color,
-          );
+          ref
+              .read(savingGoalsProvider.notifier)
+              .addGoal(
+                name: name,
+                targetAmount: targetAmount,
+                deadline: deadline,
+                iconName: iconName,
+                color: color,
+              );
         },
       ),
     );
   }
 
-  void _showEditGoalModal(BuildContext context, WidgetRef ref, SavingGoal goal, AppLocalizations l10n) {
+  void _showEditGoalModal(
+    BuildContext context,
+    WidgetRef ref,
+    SavingGoal goal,
+    AppLocalizations l10n,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -259,16 +263,18 @@ class SavingGoalsScreen extends ConsumerWidget {
       builder: (context) => SavingGoalModal(
         goal: goal,
         onSave: (name, targetAmount, deadline, iconName, color) {
-          ref.read(savingGoalsProvider.notifier).updateGoal(
-            goal.copyWith(
-              name: name,
-              targetAmount: targetAmount,
-              deadline: deadline,
-              iconName: iconName,
-              color: color,
-              clearDeadline: deadline == null && goal.deadline != null,
-            ),
-          );
+          ref
+              .read(savingGoalsProvider.notifier)
+              .updateGoal(
+                goal.copyWith(
+                  name: name,
+                  targetAmount: targetAmount,
+                  deadline: deadline,
+                  iconName: iconName,
+                  color: color,
+                  clearDeadline: deadline == null && goal.deadline != null,
+                ),
+              );
         },
         onDelete: () {
           ref.read(savingGoalsProvider.notifier).deleteGoal(goal.id);
@@ -277,7 +283,12 @@ class SavingGoalsScreen extends ConsumerWidget {
     );
   }
 
-  void _showGoalDetailModal(BuildContext context, WidgetRef ref, SavingGoal goal, AppLocalizations l10n) {
+  void _showGoalDetailModal(
+    BuildContext context,
+    WidgetRef ref,
+    SavingGoal goal,
+    AppLocalizations l10n,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -288,11 +299,11 @@ class SavingGoalsScreen extends ConsumerWidget {
           ref.read(savingGoalsProvider.notifier).addToGoal(goal.id, amount);
         },
         onWithdraw: (amount) {
-          ref.read(savingGoalsProvider.notifier).withdrawFromGoal(goal.id, amount);
+          ref
+              .read(savingGoalsProvider.notifier)
+              .withdrawFromGoal(goal.id, amount);
         },
       ),
     );
   }
 }
-
-

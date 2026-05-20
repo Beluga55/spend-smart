@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -15,6 +16,7 @@ class QuickAddSheet extends StatelessWidget {
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final dividerColor = Theme.of(context).colorScheme.outline;
+    final semantic = Theme.of(context).extension<SemanticColors>();
 
     return Container(
       decoration: BoxDecoration(

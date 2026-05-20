@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,8 +46,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currency = ref.watch(currencyProvider);
-    final currentTheme = ref.watch(themeProvider);
-    final isDarkMode = currentTheme == ThemeMode.dark;
+    final themeState = ref.watch(themeStateProvider);
+    final currentStyle = themeState.style;
+    final currentMode = themeState.mode;
+    final isDarkMode = currentMode == ThemeMode.dark;
+
+    String themeName = '';
+    if (currentStyle == ThemeStyle.defaultTheme) {
+      themeName = isDarkMode ? l10n.dark : l10n.light;
+    } else if (currentStyle == ThemeStyle.catTheme) {
+      themeName = isDarkMode ? l10n.catDark : l10n.catLight;
+    } else if (currentStyle == ThemeStyle.limeTheme) {
+      themeName = isDarkMode ? l10n.limeDark : l10n.limeLight;
+    }
     final currentLocale = ref.watch(localeProvider);
     final localeName = currentLocale.languageCode == 'zh'
         ? l10n.chinese
@@ -61,6 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final textSecondary = Theme.of(
       context,
     ).colorScheme.onSurface.withAlpha(153);
+    final semantic = Theme.of(context).extension<SemanticColors>();
 
     final isAnonymous = authState.maybeWhen(
       data: (state) {
@@ -226,7 +239,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
             title: l10n.theme,
             trailing: Text(
-              isDarkMode ? l10n.dark : l10n.light,
+              themeName,
               style: TextStyle(color: textSecondary),
             ),
             textPrimary: textPrimary,
@@ -241,7 +254,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: Text(
               fontFamily == FontFamily.fredoka
                   ? l10n.fredokaCat
-                  : l10n.soraDefault,
+                  : fontFamily == FontFamily.comfortaa
+                      ? l10n.comfortaa
+                      : l10n.soraDefault,
               style: TextStyle(color: textSecondary),
             ),
             textPrimary: textPrimary,
@@ -925,6 +940,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ref
                         .read(fontFamilyProvider.notifier)
                         .setFont(FontFamily.fredoka);
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  title: Text(l10n.comfortaa),
+                  trailing: fontFamily == FontFamily.comfortaa
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    ref
+                        .read(fontFamilyProvider.notifier)
+                        .setFont(FontFamily.comfortaa);
                     Navigator.pop(ctx);
                   },
                 ),

@@ -225,6 +225,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catDark => 'Cat Dark 🐱';
 
   @override
+  String get limeLight => 'Emerald Light 💚';
+
+  @override
+  String get limeDark => 'Emerald Dark 💚';
+
+  @override
   String get about => 'About';
 
   @override
@@ -1098,4 +1104,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fredokaCat => 'Fredoka (Cat)';
+
+  @override
+  String get comfortaa => 'Comfortaa (Lime)';
 }

@@ -1,8 +1,8 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/providers/ai_provider.dart';
@@ -23,7 +23,8 @@ class ExpenseModal extends ConsumerStatefulWidget {
     String? note,
     String? walletId,
     String? receiptImagePath,
-  ) onSave;
+  )
+  onSave;
   final VoidCallback? onDelete;
 
   const ExpenseModal({
@@ -60,7 +61,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     _selectedReceiptPath = widget.expense?.receiptImagePath;
 
     final categories = ref.read(expenseCategoriesProvider);
-    _selectedCategoryId = widget.expense?.categoryId ?? (categories.isNotEmpty ? categories.first.id : '');
+    _selectedCategoryId =
+        widget.expense?.categoryId ??
+        (categories.isNotEmpty ? categories.first.id : '');
   }
 
   @override
@@ -77,7 +80,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Add your Gemini or NVIDIA API key in Settings → AI Assistant to use this feature.'),
+            content: Text(
+              'Add your Gemini or NVIDIA API key in Settings → AI Assistant to use this feature.',
+            ),
             duration: Duration(seconds: 3),
           ),
         );
@@ -90,7 +95,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Add a description in the Note field so AI knows what this expense is.'),
+            content: Text(
+              'Add a description in the Note field so AI knows what this expense is.',
+            ),
             duration: Duration(seconds: 2),
           ),
         );
@@ -109,7 +116,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       final suggested = await service.suggestCategory(label, categoryNames);
 
       // Debug: log raw response so we can see what the AI returns
-      debugPrint('[AI Category] Provider: ${service.lastUsedProvider}, Raw response: "$suggested"');
+      debugPrint(
+        '[AI Category] Provider: ${service.lastUsedProvider}, Raw response: "$suggested"',
+      );
 
       var cleaned = suggested.trim();
       cleaned = cleaned.replaceAll("'", '');
@@ -119,7 +128,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('AI returned empty. Try again or check your API key.'),
+              content: Text(
+                'AI returned empty. Try again or check your API key.',
+              ),
               duration: Duration(seconds: 3),
             ),
           );
@@ -148,7 +159,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('AI said "$cleaned" but no category matches. Pick manually.'),
+              content: Text(
+                'AI said "$cleaned" but no category matches. Pick manually.',
+              ),
               duration: const Duration(seconds: 3),
             ),
           );
@@ -194,9 +207,12 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
 
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final dividerColor = Theme.of(context).colorScheme.outline;
+    final semantic = Theme.of(context).extension<SemanticColors>();
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     return Container(
@@ -483,14 +499,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 value: _selectedWalletId,
-                decoration: InputDecoration(
-                  hintText: l10n.selectWallet,
-                ),
+                decoration: InputDecoration(hintText: l10n.selectWallet),
                 items: [
-                  DropdownMenuItem(
-                    value: null,
-                    child: Text(l10n.noWallet),
-                  ),
+                  DropdownMenuItem(value: null, child: Text(l10n.noWallet)),
                   ...wallets.map((wallet) {
                     return DropdownMenuItem(
                       value: wallet.id,
@@ -510,7 +521,10 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(wallet.name, style: TextStyle(color: textPrimary)),
+                          Text(
+                            wallet.name,
+                            style: TextStyle(color: textPrimary),
+                          ),
                         ],
                       ),
                     );
@@ -619,9 +633,13 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
                       groupId: groupId,
                       initialDescription: merchant,
                       initialAmount: total is num ? total.toDouble() : null,
-                      initialDate: date is String ? DateTime.tryParse(date) : null,
+                      initialDate: date is String
+                          ? DateTime.tryParse(date)
+                          : null,
                       receiptItems: items is List
-                          ? items.map((e) => Map<String, dynamic>.from(e as Map)).toList()
+                          ? items
+                                .map((e) => Map<String, dynamic>.from(e as Map))
+                                .toList()
                           : null,
                     ),
                   ),
@@ -634,4 +652,3 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     );
   }
 }
-

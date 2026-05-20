@@ -1,6 +1,6 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/constants/icon_constants.dart';
 import 'package:mobile_expense_tracker/core/models/saving_goal.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
@@ -40,7 +40,10 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
 
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
+    final semantic = Theme.of(context).extension<SemanticColors>();
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
@@ -49,7 +52,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).padding.bottom,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -87,10 +92,7 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
             Center(
               child: Text(
                 '${currency.symbol}${widget.goal.currentAmount.toStringAsFixed(2)} / ${currency.symbol}${widget.goal.targetAmount.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: textSecondary),
               ),
             ),
             const SizedBox(height: 8),
@@ -100,7 +102,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: widget.goal.isCompleted ? Colors.green : textSecondary,
+                  color: widget.goal.isCompleted
+                      ? semantic?.success ?? Colors.green
+                      : textSecondary,
                 ),
               ),
             ),
@@ -122,7 +126,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: _isAdding
-                                  ? (isDark ? Colors.white : AppTheme.primaryColor)
+                                  ? (isDark
+                                        ? Colors.white
+                                        : AppTheme.primaryColor)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -147,7 +153,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: !_isAdding
-                                  ? (isDark ? Colors.white : AppTheme.primaryColor)
+                                  ? (isDark
+                                        ? Colors.white
+                                        : AppTheme.primaryColor)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -169,7 +177,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _amountController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     style: TextStyle(color: textPrimary, fontSize: 18),
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
@@ -187,30 +197,50 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
             Row(
               children: [
                 Expanded(
-                  child: _buildQuickAmountButton(currency.symbol, 10, textPrimary, backgroundColor),
+                  child: _buildQuickAmountButton(
+                    currency.symbol,
+                    10,
+                    textPrimary,
+                    backgroundColor,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildQuickAmountButton(currency.symbol, 50, textPrimary, backgroundColor),
+                  child: _buildQuickAmountButton(
+                    currency.symbol,
+                    50,
+                    textPrimary,
+                    backgroundColor,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildQuickAmountButton(currency.symbol, 100, textPrimary, backgroundColor),
+                  child: _buildQuickAmountButton(
+                    currency.symbol,
+                    100,
+                    textPrimary,
+                    backgroundColor,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildQuickAmountButton(currency.symbol, 500, textPrimary, backgroundColor),
+                  child: _buildQuickAmountButton(
+                    currency.symbol,
+                    500,
+                    textPrimary,
+                    backgroundColor,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-                child: ElevatedButton(
+              child: ElevatedButton(
                 onPressed: _handleSubmit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isAdding
-                      ? Colors.green
+                      ? semantic?.success ?? Colors.green
                       : (isDark ? Colors.white : AppTheme.primaryColor),
                   foregroundColor: _isAdding
                       ? Colors.white
@@ -236,7 +266,12 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
     );
   }
 
-  Widget _buildQuickAmountButton(String symbol, double amount, Color textPrimary, Color backgroundColor) {
+  Widget _buildQuickAmountButton(
+    String symbol,
+    double amount,
+    Color textPrimary,
+    Color backgroundColor,
+  ) {
     return GestureDetector(
       onTap: () {
         _amountController.text = amount.toStringAsFixed(0);
@@ -250,10 +285,7 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
         child: Text(
           '$symbol${amount.toStringAsFixed(0)}',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: textPrimary,
-            fontWeight: FontWeight.w500,
-          ),
+          style: TextStyle(color: textPrimary, fontWeight: FontWeight.w500),
         ),
       ),
     );
@@ -269,7 +301,9 @@ class _GoalDetailModalState extends ConsumerState<GoalDetailModal> {
       if (amount > widget.goal.currentAmount) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.cannotWithdrawMoreThanCurrent),
+            content: Text(
+              AppLocalizations.of(context)!.cannotWithdrawMoreThanCurrent,
+            ),
             backgroundColor: Colors.red,
           ),
         );

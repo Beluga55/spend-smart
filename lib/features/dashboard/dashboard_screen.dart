@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -243,6 +244,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildSyncStatus(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncNotifierProvider);
     final l10n = Localizations.of<AppLocalizations>(context, AppLocalizations);
+    final semantic = Theme.of(context).extension<SemanticColors>();
 
     IconData icon;
     Color color;

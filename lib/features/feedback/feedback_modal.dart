@@ -1,3 +1,4 @@
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/services/supabase_service.dart';
@@ -31,6 +32,7 @@ class _FeedbackModalState extends ConsumerState<FeedbackModal> {
     final dividerColor = Theme.of(context).colorScheme.outline;
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final semantic = Theme.of(context).extension<SemanticColors>();
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Container(
