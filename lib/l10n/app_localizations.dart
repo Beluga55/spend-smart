@@ -2174,6 +2174,12 @@ abstract class AppLocalizations {
   /// **'Group \"{groupName}\" is ready'**
   String groupReady(String groupName);
 
+  /// No description provided for @groupSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Settings'**
+  String get groupSettings;
+
   /// No description provided for @font.
   ///
   /// In en, this message translates to:

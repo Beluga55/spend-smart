@@ -13,7 +13,9 @@ final groupMemberBoxProvider = Provider<Box<GroupMember>>((ref) {
   return Hive.box<GroupMember>('group_members');
 });
 
-final groupsProvider = StateNotifierProvider<GroupsNotifier, List<Group>>((ref) {
+final groupsProvider = StateNotifierProvider<GroupsNotifier, List<Group>>((
+  ref,
+) {
   final box = ref.watch(groupBoxProvider);
   final syncService = ref.watch(groupSyncServiceProvider);
   return GroupsNotifier(box, syncService);
@@ -51,11 +53,16 @@ class GroupsNotifier extends StateNotifier<List<Group>> {
   Group? getGroup(String id) => _box.get(id);
 }
 
-final groupMembersProvider = StateNotifierProvider.family<GroupMembersNotifier, List<GroupMember>, String>((ref, groupId) {
-  final box = ref.watch(groupMemberBoxProvider);
-  final syncService = ref.watch(groupSyncServiceProvider);
-  return GroupMembersNotifier(box, groupId, syncService);
-});
+final groupMembersProvider =
+    StateNotifierProvider.family<
+      GroupMembersNotifier,
+      List<GroupMember>,
+      String
+    >((ref, groupId) {
+      final box = ref.watch(groupMemberBoxProvider);
+      final syncService = ref.watch(groupSyncServiceProvider);
+      return GroupMembersNotifier(box, groupId, syncService);
+    });
 
 class GroupMembersNotifier extends StateNotifier<List<GroupMember>> {
   final Box<GroupMember> _box;
@@ -63,24 +70,36 @@ class GroupMembersNotifier extends StateNotifier<List<GroupMember>> {
   final GroupSyncService _syncService;
 
   GroupMembersNotifier(this._box, this._groupId, this._syncService)
-      : super(_box.values.where((m) => m.groupId == _groupId && m.isActive).toList()) {
+    : super(
+        _box.values.where((m) => m.groupId == _groupId && m.isActive).toList(),
+      ) {
     _box.listenable().addListener(_refresh);
   }
 
   void _refresh() {
-    state = _box.values.where((m) => m.groupId == _groupId && m.isActive).toList();
+    state = _box.values
+        .where((m) => m.groupId == _groupId && m.isActive)
+        .toList();
   }
 
   Future<void> addMember(GroupMember member) async {
-    debugPrint('[GroupMembersNotifier] Adding member: ${member.displayName} to group: ${member.groupId}');
+    debugPrint(
+      '[GroupMembersNotifier] Adding member: ${member.displayName} to group: ${member.groupId}',
+    );
     await _box.put(member.id, member);
     _refresh();
-    debugPrint('[GroupMembersNotifier] Local state updated, count: ${state.length}');
+    debugPrint(
+      '[GroupMembersNotifier] Local state updated, count: ${state.length}',
+    );
     try {
       await _syncService.pushMember(member);
-      debugPrint('[GroupMembersNotifier] Sync succeeded for member: ${member.id}');
+      debugPrint(
+        '[GroupMembersNotifier] Sync succeeded for member: ${member.id}',
+      );
     } catch (e) {
-      debugPrint('[GroupMembersNotifier] Sync failed for member: ${member.id}: $e');
+      debugPrint(
+        '[GroupMembersNotifier] Sync failed for member: ${member.id}: $e',
+      );
       rethrow;
     }
   }
@@ -88,11 +107,19 @@ class GroupMembersNotifier extends StateNotifier<List<GroupMember>> {
   Future<void> removeMember(String memberId) async {
     final member = _box.get(memberId);
     if (member != null) {
-      final updated = member.copyWith(isActive: false, updatedAt: DateTime.now());
+      final updated = member.copyWith(
+        isActive: false,
+        updatedAt: DateTime.now(),
+      );
       await _box.put(memberId, updated);
       _refresh();
       return _syncService.pushMember(updated);
     }
   }
-}
 
+  Future<void> updateMember(GroupMember member) async {
+    await _box.put(member.id, member);
+    _refresh();
+    return _syncService.pushMember(member);
+  }
+}

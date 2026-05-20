@@ -1097,6 +1097,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get groupSettings => 'Group Settings';
+
+  @override
   String get font => 'Font';
 
   @override

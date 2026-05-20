@@ -1077,6 +1077,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get groupSettings => '群组设置';
+
+  @override
   String get font => '字体';
 
   @override

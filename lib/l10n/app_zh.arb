@@ -444,7 +444,8 @@
       }
     }
   },
-  "font": "字体",
+  "groupSettings": "群组设置",
+"font": "字体",
   "soraDefault": "Sora (默认)",
   "fredokaCat": "Fredoka (猫主题)",
   "comfortaa": "Comfortaa (青柠)"

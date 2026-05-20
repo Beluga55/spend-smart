@@ -444,7 +444,8 @@
       }
     }
   },
-  "font": "Font",
+  "groupSettings": "Group Settings",
+"font": "Font",
   "soraDefault": "Sora (Default)",
   "fredokaCat": "Fredoka (Cat)",
   "comfortaa": "Comfortaa (Lime)"

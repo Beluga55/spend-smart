@@ -21,6 +21,7 @@ import 'package:mobile_expense_tracker/core/services/group_sync_service.dart';
 import 'package:mobile_expense_tracker/core/utils/design_utils.dart';
 import 'package:mobile_expense_tracker/features/groups/widgets/group_expense_modal.dart';
 import 'package:mobile_expense_tracker/features/groups/widgets/group_balances_screen.dart';
+import 'package:mobile_expense_tracker/features/groups/group_settings_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class GroupDetailScreen extends ConsumerStatefulWidget {
@@ -71,8 +72,15 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.groupSettings,
             onPressed: () {
-              // Group settings
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      GroupSettingsScreen(group: widget.group),
+                ),
+              );
             },
           ),
         ],
@@ -87,15 +95,13 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
           ],
         ),
       ),
-      body: SafeArea(
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _ExpensesTab(group: widget.group),
-            _BalancesTab(group: widget.group),
-            _MembersTab(group: widget.group),
-          ],
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _ExpensesTab(group: widget.group),
+          _BalancesTab(group: widget.group),
+          _MembersTab(group: widget.group),
+        ],
       ),
       floatingActionButton: _tabController.index == 0
           ? FloatingActionButton.extended(
@@ -369,7 +375,9 @@ class _BalancesTab extends ConsumerWidget {
                   ),
                   child: Center(
                     child: Text(
-                      member.displayName[0].toUpperCase(),
+                      member.displayName.isNotEmpty
+                          ? member.displayName[0].toUpperCase()
+                          : '?',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -627,7 +635,9 @@ class _MembersTab extends ConsumerWidget {
                   ),
                   child: Center(
                     child: Text(
-                      member.displayName[0].toUpperCase(),
+                      member.displayName.isNotEmpty
+                          ? member.displayName[0].toUpperCase()
+                          : '?',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
