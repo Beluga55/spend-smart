@@ -409,14 +409,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _buildSectionHeader('AI Assistant', textSecondary),
+          _buildSectionHeader(l10n.aiChat, textSecondary),
           _buildSettingsTile(
             context: context,
             icon: Icons.auto_awesome,
-            title: 'AI Settings',
+            title: l10n.aiSettings,
             subtitle: ref.watch(aiSettingsProvider).hasAnyKey
-                ? 'Tap to manage features'
-                : 'Get AI-powered receipt scanning & insights',
+                ? l10n.aiSettingsTapToManage
+                : l10n.aiSettingsGetStarted,
             textPrimary: textPrimary,
             backgroundColor: backgroundColor,
             dividerColor: dividerColor,

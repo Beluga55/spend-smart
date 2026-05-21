@@ -448,5 +448,15 @@
 "font": "字体",
   "soraDefault": "Sora (默认)",
   "fredokaCat": "Fredoka (猫主题)",
-  "comfortaa": "Comfortaa (青柠)"
+  "comfortaa": "Comfortaa (青柠)",
+  "aiSettings": "AI 设置",
+  "aiSettingsDescription": "AI 可帮助您扫描收据、自动分类支出以及获取消费洞察。",
+  "aiReceiptScanning": "收据扫描",
+  "aiAutoCategorize": "自动分类",
+  "aiMonthlyInsights": "月度洞察",
+  "aiSpendingChat": "消费对话",
+  "aiRegenerateInsights": "重新生成洞察",
+  "aiNotConfigured": "未配置",
+  "aiSettingsTapToManage": "点击管理功能",
+  "aiSettingsGetStarted": "获取 AI 驱动的收据扫描与消费洞察"
 }

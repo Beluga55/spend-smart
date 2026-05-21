@@ -25,11 +25,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      Future.delayed(const Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 50), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 150),
             curve: Curves.easeOut,
           );
         }
@@ -43,7 +43,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messages = ref.watch(chatProvider);
     final isLoading = ref.watch(chatLoadingProvider);
     final hasMessages = messages.isNotEmpty;
-
     ref.listen(chatProvider, (previous, next) => _scrollToBottom());
 
     return Scaffold(
@@ -86,14 +85,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: hasMessages
                 ? ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final msg = messages[index];
                       final isLast = index == messages.length - 1;
+                      // Show loading on the last assistant message when it's empty (processing)
+                      final isProcessing =
+                          isLast &&
+                          msg.role == ChatRole.assistant &&
+                          msg.content.isEmpty &&
+                          isLoading;
                       return ChatMessageBubble(
                         message: msg,
-                        showLoading: isLast && msg.role == ChatRole.user && isLoading,
+                        showLoading: isProcessing,
                       );
                     },
                   )
@@ -111,7 +119,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context)!;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -136,11 +146,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: Text(
               l10n.chatWelcomeSubtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: textSecondary,
-                height: 1.4,
-              ),
+              style: TextStyle(fontSize: 14, color: textSecondary, height: 1.4),
             ),
           ),
         ],

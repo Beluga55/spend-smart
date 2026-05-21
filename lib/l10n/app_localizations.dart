@@ -2203,6 +2203,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comfortaa (Lime)'**
   String get comfortaa;
+
+  /// No description provided for @aiSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Settings'**
+  String get aiSettings;
+
+  /// No description provided for @aiSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'AI helps you scan receipts, auto-categorize expenses, and get spending insights.'**
+  String get aiSettingsDescription;
+
+  /// No description provided for @aiReceiptScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt Scanning'**
+  String get aiReceiptScanning;
+
+  /// No description provided for @aiAutoCategorize.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Categorize'**
+  String get aiAutoCategorize;
+
+  /// No description provided for @aiMonthlyInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Insights'**
+  String get aiMonthlyInsights;
+
+  /// No description provided for @aiSpendingChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending Chat'**
+  String get aiSpendingChat;
+
+  /// No description provided for @aiRegenerateInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate Insights'**
+  String get aiRegenerateInsights;
+
+  /// No description provided for @aiNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get aiNotConfigured;
+
+  /// No description provided for @aiSettingsTapToManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to manage features'**
+  String get aiSettingsTapToManage;
+
+  /// No description provided for @aiSettingsGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get AI-powered receipt scanning & insights'**
+  String get aiSettingsGetStarted;
 }
 
 class _AppLocalizationsDelegate

@@ -49,6 +49,32 @@ cp .env.example .env
 
 CI requires secrets: `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS`, `KEYSTORE_BASE64`, `DISCORD_WEBHOOK_URL`.
 
+## EvoMap Evolution System
+
+The project uses **EvoMap GEP (Gene Expression Programming)** to store memory across sessions. This is critical — agents must use it.
+
+### Available Genes (Evolution Strategies)
+
+| Gene | Category | When to Use |
+|---|---|---|
+| `gene_flutter_spendsmart` | optimize | General Flutter/Dart work — Hive, Supabase, Riverpod, theme, AI/OCR, groups, biometric auth |
+| `gene_ai_wallet_actions` | innovate | AI wallet-aware actions — natural language transfers, multi-wallet expense/income creation, AI service provider work |
+
+### MCP Tools Overview
+
+- **`evomap_gep_recall`** — Query past experience before starting any task
+- **`evomap_gep_evolve`** — Trigger evolution when stuck or starting a new feature category; context should describe the task and relevant files
+- **`evomap_gep_record_outcome`** — **Mandatory** after ANY code change (use `geneId: "ad_hoc"` if no gene matches)
+- **`evomap_gep_install_gene`** — Install new genes when existing ones don't match your signals
+- **`evomap_gep_status`** — Check gene/capsule/memory counts
+
+### Workflow
+
+1. Start task → `evomap_gep_recall` to check past solutions
+2. If stuck or starting something new → `evomap_gep_evolve` with context of what you're doing
+3. Implement changes
+4. **Always** → `evomap_gep_record_outcome` to store learnings
+
 ## Architecture Notes
 
 - **Hive typed boxes** are opened eagerly in `main()`. Heavy boxes (`expenses`, `incomes`, `wallet_transfers`) have corruption recovery via `openBoxSafe()`.
@@ -71,6 +97,7 @@ CI requires secrets: `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS`, `KEYSTORE
 
 - **Receipt Scanning** — Camera/gallery → Google ML Kit OCR → NVIDIA AI parsing.  Tap "Scan Receipt" in the expense modal.
 - **AI Auto-Categorization** — Tap the refresh icon next to the category dropdown to get an AI-suggested category.
+- **AI Wallet-Aware Actions** — AI can create expenses/incomes in specific wallets and transfer between wallets via natural language. Multiple AI providers supported (Gemini, NVIDIA, OpenRouter) with fallback chain.
 - **AI Monthly Insights** — Appears on the dashboard when the NVIDIA API key is configured and the feature is enabled.
 - **Home Screen Widget** — Android widget showing total balance and today's income/expense.  Long-press home screen to add.
 

@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:mobile_expense_tracker/core/models/chat_message.dart';
 import 'package:mobile_expense_tracker/core/models/expense.dart';
@@ -12,15 +13,53 @@ import 'package:mobile_expense_tracker/core/providers/wallet_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatNotifier extends StateNotifier<List<ChatMessage>> {
-  ChatNotifier(this._ref) : super([]);
+  ChatNotifier(this._ref) : super([]) {
+    final loaded = _loadMessages();
+    if (loaded.isNotEmpty) {
+      state = loaded;
+    }
+  }
 
   final Ref _ref;
 
   static const int _maxHistoryLength = 10;
+  static const int _maxPersistedMessages = 100;
+  static const String _boxName = 'chat_messages';
+  static const String _boxKey = 'messages';
 
   void clearChat() {
     state = [];
     _ref.read(chatLoadingProvider.notifier).state = false;
+    _saveMessages();
+  }
+
+  void cancelResponse() {
+    // No-op for non-streaming chat - response can't be cancelled once sent
+  }
+
+  List<ChatMessage> _loadMessages() {
+    try {
+      final box = Hive.box(_boxName);
+      final raw = box.get(_boxKey) as List<dynamic>?;
+      if (raw == null) return [];
+      return raw
+          .cast<Map<String, dynamic>>()
+          .map((m) => ChatMessage.fromJson(m))
+          .toList()
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> _saveMessages() async {
+    try {
+      final box = Hive.box(_boxName);
+      final toSave = state.length > _maxPersistedMessages
+          ? state.sublist(state.length - _maxPersistedMessages)
+          : state;
+      await box.put(_boxKey, toSave.map((m) => m.toJson()).toList());
+    } catch (_) {}
   }
 
   Future<void> sendMessage(String text) async {
@@ -34,15 +73,37 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
     );
 
     state = [...state, userMsg];
+    _saveMessages();
     _ref.read(chatLoadingProvider.notifier).state = true;
+
+    // Add placeholder assistant message showing processing state
+    final assistantId = const Uuid().v4();
+    final placeholder = ChatMessage(
+      id: assistantId,
+      role: ChatRole.assistant,
+      content: '',
+      timestamp: DateTime.now(),
+    );
+    state = [...state, placeholder];
+    _saveMessages();
 
     try {
       final aiSettings = _ref.read(aiSettingsProvider);
       if (!aiSettings.enabledFeatures.contains(AIFeature.chatQuery) ||
           !aiSettings.hasAnyKey) {
-        _addAssistantMessage(
-          'AI Chat is not enabled. Please configure an API key and enable the feature in Settings > AI Assistant.',
-        );
+        // Replace placeholder with error message
+        state = [
+          for (final m in state)
+            if (m.id == assistantId)
+              m.copyWith(
+                content:
+                    'AI Chat is not enabled. Please configure an API key and enable the feature in Settings > AI Assistant.',
+              )
+            else
+              m,
+        ];
+        _ref.read(chatLoadingProvider.notifier).state = false;
+        _saveMessages();
         return;
       }
 
@@ -50,23 +111,20 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
       final context = _buildContext();
       final history = _buildHistory();
 
-      final response = await service.chat(
+      // Get non-streaming response
+      final parsed = await service.chat(
         query: text.trim(),
         context: context,
         history: history,
       );
 
-      final type = response['type'] as String? ?? 'answer';
-      final message =
-          response['message'] as String? ?? 'Sorry, I did not understand that.';
-      final actionData = response['action'] as Map<String, dynamic>?;
-      debugPrint(
-        '[Chat] AI response: type=$type, hasAction=${actionData != null}',
-      );
+      final message = parsed['message'] as String? ?? '';
+      final actionData = parsed['action'] as Map<String, dynamic>?;
 
       ChatAction? action;
-      if (actionData != null && type != 'answer') {
-        action = ChatAction(type: type, data: actionData);
+      final parsedType = parsed['type'] as String?;
+      if (actionData != null && parsedType != null && parsedType != 'answer') {
+        action = ChatAction(type: parsedType, data: actionData);
       }
 
       // Execute the action if present
@@ -75,14 +133,33 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         executionNote = await _executeAction(action);
       }
 
-      _addAssistantMessage(
-        executionNote.isNotEmpty ? '$message\n\n$executionNote' : message,
-        action: action,
-      );
+      final finalContent = executionNote.isNotEmpty
+          ? '$message\n\n$executionNote'
+          : message;
+
+      // Replace placeholder with final response
+      state = [
+        for (final m in state)
+          if (m.id == assistantId)
+            m.copyWith(content: finalContent, action: action)
+          else
+            m,
+      ];
+      _ref.read(chatLoadingProvider.notifier).state = false;
+      _saveMessages();
     } catch (e, stack) {
       developer.log('[Chat] Error: $e\n$stack');
-      _addAssistantMessage('Something went wrong. Please try again. Error: $e');
-    } finally {
+      // Replace placeholder with error message
+      state = [
+        for (final m in state)
+          if (m.id == assistantId)
+            m.copyWith(
+              content: 'Something went wrong. Please try again. Error: $e',
+            )
+          else
+            m,
+      ];
+      _saveMessages();
       _ref.read(chatLoadingProvider.notifier).state = false;
     }
   }
@@ -185,17 +262,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         .toList();
   }
 
-  void _addAssistantMessage(String content, {ChatAction? action}) {
-    final msg = ChatMessage(
-      id: const Uuid().v4(),
-      role: ChatRole.assistant,
-      content: content,
-      timestamp: DateTime.now(),
-      action: action,
-    );
-    state = [...state, msg];
-  }
-
   Future<String> _executeAction(ChatAction action) async {
     developer.log(
       '[Chat] _executeAction: type=${action.type}, data=${action.data}',
@@ -257,7 +323,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         date = DateTime.now();
       }
 
-      // Find wallet by name if specified, otherwise use default
       String? walletId;
       String walletInfo = '';
       if (walletName != null && walletName.isNotEmpty) {
@@ -319,7 +384,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         date = DateTime.now();
       }
 
-      // Find wallet by name if specified, otherwise use default
       String? walletId;
       String walletInfo = '';
       if (walletName != null && walletName.isNotEmpty) {
@@ -404,7 +468,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
           date = DateTime.now();
         }
 
-        // Find wallet by name if specified, otherwise use default
         String? walletId;
         String walletInfo = '';
         if (walletName != null && walletName.isNotEmpty) {
@@ -491,7 +554,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
           date = DateTime.now();
         }
 
-        // Find wallet by name if specified, otherwise use default
         String? walletId;
         String walletInfo = '';
         if (walletName != null && walletName.isNotEmpty) {
@@ -566,7 +628,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         return '⚠️ Wallet "$toWalletName" not found. Available wallets: ${wallets.map((w) => w.name).join(', ')}';
       }
 
-      // Check if source wallet has sufficient balance
       final fromBalance = _ref.read(walletBalanceProvider(fromWallet.id));
       if (amount > fromBalance) {
         return '⚠️ Insufficient balance in ${fromWallet.name} (available: \$${fromBalance.toStringAsFixed(2)}). Cannot transfer \$${amount.toStringAsFixed(2)}.';
@@ -644,7 +705,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
       final expenses = _ref.read(expensesProvider);
       final categories = _ref.read(categoriesProvider);
 
-      // Build candidate list and score them
       final candidates = expenses.where((e) {
         if (amount != null && e.amount != amount) return false;
         if (dateStr != null && dateStr.isNotEmpty) {
@@ -667,7 +727,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         return '⚠️ No matching expense found to delete.';
       }
 
-      // Prefer the one whose note matches best
       Expense target;
       if (note != null && note.isNotEmpty) {
         final noteMatches = candidates
@@ -758,7 +817,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
         return '⚠️ Cannot delete default category "${match.name}".';
       }
 
-      // Check if any transactions use this category
       final expenses = _ref.read(expensesProvider);
       final incomes = _ref.read(incomesProvider);
       final hasExpenses = expenses.any((e) => e.categoryId == match.id);
@@ -775,7 +833,6 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
     }
   }
 
-  /// Find a category by name (case-insensitive exact match, then contains).
   static Category? _findCategoryByName(
     List<Category> categories,
     String name,
@@ -783,21 +840,18 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
   ) {
     final lower = name.toLowerCase().trim();
 
-    // Exact match
     for (final cat in categories) {
       if (cat.name.toLowerCase() == lower && cat.effectiveType == type) {
         return cat;
       }
     }
 
-    // Contains match
     for (final cat in categories) {
       if (cat.name.toLowerCase().contains(lower) && cat.effectiveType == type) {
         return cat;
       }
     }
 
-    // Reverse contains
     for (final cat in categories) {
       if (lower.contains(cat.name.toLowerCase()) && cat.effectiveType == type) {
         return cat;
@@ -807,18 +861,15 @@ class ChatNotifier extends StateNotifier<List<ChatMessage>> {
     return null;
   }
 
-  /// Find a wallet by name (case-insensitive exact match, then contains).
   static Wallet? _findWalletByName(List<Wallet> wallets, String name) {
     final lower = name.toLowerCase().trim();
 
-    // Exact match
     for (final wallet in wallets) {
       if (wallet.name.toLowerCase() == lower) {
         return wallet;
       }
     }
 
-    // Contains match
     for (final wallet in wallets) {
       if (wallet.name.toLowerCase().contains(lower)) {
         return wallet;

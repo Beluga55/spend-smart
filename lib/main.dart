@@ -86,6 +86,7 @@ void main() async {
   await openBoxSafe<GroupExpenseSplit>('group_expense_splits');
   await openBoxSafe<GroupExpenseItem>('group_expense_items');
   await openBoxSafeUntyped('settings');
+  await openBoxSafeUntyped('chat_messages');
 
   // Run migrations to patch old schema before business logic touches the data.
   await runMigrations();

@@ -1110,4 +1110,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comfortaa => 'Comfortaa (Lime)';
+
+  @override
+  String get aiSettings => 'AI Settings';
+
+  @override
+  String get aiSettingsDescription =>
+      'AI helps you scan receipts, auto-categorize expenses, and get spending insights.';
+
+  @override
+  String get aiReceiptScanning => 'Receipt Scanning';
+
+  @override
+  String get aiAutoCategorize => 'Auto-Categorize';
+
+  @override
+  String get aiMonthlyInsights => 'Monthly Insights';
+
+  @override
+  String get aiSpendingChat => 'Spending Chat';
+
+  @override
+  String get aiRegenerateInsights => 'Regenerate Insights';
+
+  @override
+  String get aiNotConfigured => 'Not configured';
+
+  @override
+  String get aiSettingsTapToManage => 'Tap to manage features';
+
+  @override
+  String get aiSettingsGetStarted =>
+      'Get AI-powered receipt scanning & insights';
 }

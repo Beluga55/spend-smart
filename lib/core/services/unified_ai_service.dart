@@ -1,17 +1,8 @@
+import 'dart:async';
 import 'package:mobile_expense_tracker/core/services/gemini_ai_service.dart';
 import 'package:mobile_expense_tracker/core/services/nvidia_ai_service.dart';
 import 'package:mobile_expense_tracker/core/services/openrouter_ai_service.dart';
 
-/// Unified AI service that tries OpenRouter first, then Gemini, then falls back to NVIDIA.
-///
-/// OpenRouter is the primary for testing speed and reliability with the openrouter/free model.
-/// Gemini (Google AI Studio) is the secondary with a generous free tier (60 RPM, 1,000 RPD).
-/// NVIDIA/minimax is the tertiary fallback when both are unavailable or misconfigured.
-///
-/// Get keys at:
-/// - OpenRouter: https://openrouter.ai/keys
-/// - Gemini: https://aistudio.google.com/app/apikey
-/// - NVIDIA: https://build.nvidia.com/
 class UnifiedAIService {
   final String? _openrouterKey;
   final String? _geminiKey;
@@ -67,6 +58,86 @@ class UnifiedAIService {
           );
         }
       }
+    }
+  }
+
+  /// Try streaming providers in order. Returns the first stream that connects
+  /// successfully. If a provider fails before yielding any data, falls through.
+  Stream<String> _tryPrimaryThenFallbackStream(
+    Stream<String> Function() primary,
+    Stream<String> Function() secondary,
+    Stream<String> Function() fallback,
+  ) async* {
+    final controller = StreamController<String>();
+    StreamSubscription<String>? sub;
+
+    void tryFallbackProvider() {
+      if (controller.isClosed) return;
+      sub?.cancel();
+      _lastUsedProvider = 'NVIDIA';
+      try {
+        sub = fallback().listen(
+          (chunk) => controller.add(chunk),
+          onError: (e) {
+            if (!controller.isClosed) {
+              controller.addError(e);
+              controller.close();
+            }
+          },
+          onDone: () {
+            if (!controller.isClosed) controller.close();
+          },
+          cancelOnError: false,
+        );
+      } catch (e) {
+        if (!controller.isClosed) {
+          controller.addError(e);
+          controller.close();
+        }
+      }
+    }
+
+    void tryNextProvider() {
+      if (controller.isClosed) return;
+      sub?.cancel();
+      if (_lastUsedProvider == 'OpenRouter') {
+        _lastUsedProvider = 'Gemini';
+        try {
+          sub = secondary().listen(
+            (chunk) => controller.add(chunk),
+            onError: (_) => tryFallbackProvider(),
+            onDone: () {
+              if (!controller.isClosed) controller.close();
+            },
+            cancelOnError: false,
+          );
+        } catch (_) {
+          tryFallbackProvider();
+        }
+      } else {
+        if (!controller.isClosed) {
+          controller.addError(Exception('All AI providers failed'));
+          controller.close();
+        }
+      }
+    }
+
+    try {
+      _lastUsedProvider = 'OpenRouter';
+      sub = primary().listen(
+        (chunk) => controller.add(chunk),
+        onError: (_) => tryNextProvider(),
+        onDone: () {
+          if (!controller.isClosed) controller.close();
+        },
+        cancelOnError: false,
+      );
+      await for (final chunk in controller.stream) {
+        yield chunk;
+      }
+    } finally {
+      await sub?.cancel();
+      if (!controller.isClosed) controller.close();
     }
   }
 
@@ -158,6 +229,23 @@ class UnifiedAIService {
       () => gemini.chat(query: query, context: context, history: history),
       () => nvidia.chat(query: query, context: context, history: history),
       'chat',
+    );
+  }
+
+  /// Stream the chat response, trying providers in order with fallback.
+  Stream<String> chatStream({
+    required String query,
+    required Map<String, dynamic> context,
+    required List<Map<String, dynamic>> history,
+  }) {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
+    final gemini = GeminiAIService(_geminiKey ?? '');
+    final nvidia = NvidiaAIService(_nvidiaKey ?? '');
+
+    return _tryPrimaryThenFallbackStream(
+      () => openrouter.chatStream(query: query, context: context, history: history),
+      () => gemini.chatStream(query: query, context: context, history: history),
+      () => nvidia.chatStream(query: query, context: context, history: history),
     );
   }
 }

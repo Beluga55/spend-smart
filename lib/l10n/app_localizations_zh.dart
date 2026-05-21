@@ -1090,4 +1090,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get comfortaa => 'Comfortaa (青柠)';
+
+  @override
+  String get aiSettings => 'AI 设置';
+
+  @override
+  String get aiSettingsDescription => 'AI 可帮助您扫描收据、自动分类支出以及获取消费洞察。';
+
+  @override
+  String get aiReceiptScanning => '收据扫描';
+
+  @override
+  String get aiAutoCategorize => '自动分类';
+
+  @override
+  String get aiMonthlyInsights => '月度洞察';
+
+  @override
+  String get aiSpendingChat => '消费对话';
+
+  @override
+  String get aiRegenerateInsights => '重新生成洞察';
+
+  @override
+  String get aiNotConfigured => '未配置';
+
+  @override
+  String get aiSettingsTapToManage => '点击管理功能';
+
+  @override
+  String get aiSettingsGetStarted => '获取 AI 驱动的收据扫描与消费洞察';
 }

@@ -448,5 +448,15 @@
 "font": "Font",
   "soraDefault": "Sora (Default)",
   "fredokaCat": "Fredoka (Cat)",
-  "comfortaa": "Comfortaa (Lime)"
+  "comfortaa": "Comfortaa (Lime)",
+  "aiSettings": "AI Settings",
+  "aiSettingsDescription": "AI helps you scan receipts, auto-categorize expenses, and get spending insights.",
+  "aiReceiptScanning": "Receipt Scanning",
+  "aiAutoCategorize": "Auto-Categorize",
+  "aiMonthlyInsights": "Monthly Insights",
+  "aiSpendingChat": "Spending Chat",
+  "aiRegenerateInsights": "Regenerate Insights",
+  "aiNotConfigured": "Not configured",
+  "aiSettingsTapToManage": "Tap to manage features",
+  "aiSettingsGetStarted": "Get AI-powered receipt scanning & insights"
 }

@@ -15,17 +15,19 @@ class ChatMessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = message.role == ChatRole.user;
     final colorScheme = Theme.of(context).colorScheme;
+    final isProcessing = showLoading && message.content.isEmpty;
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
+          maxWidth: MediaQuery.of(context).size.width * 0.85,
         ),
         child: Column(
-          crossAxisAlignment:
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -40,41 +42,53 @@ class ChatMessageBubble extends StatelessWidget {
                   bottomRight: Radius.circular(isUser ? 4 : 18),
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.content,
-                    style: TextStyle(
-                      color: isUser
-                          ? colorScheme.onPrimary
-                          : colorScheme.onSurfaceVariant,
-                      fontSize: 15,
-                      height: 1.4,
-                    ),
-                  ),
-                  if (showLoading)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: isUser
-                              ? colorScheme.onPrimary.withAlpha(180)
-                              : colorScheme.primary,
-                        ),
+              child: isProcessing
+                  ? _buildProcessingIndicator(colorScheme, isUser)
+                  : Text(
+                      message.content,
+                      style: TextStyle(
+                        color: isUser
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                        fontSize: 15,
+                        height: 1.4,
                       ),
                     ),
-                ],
-              ),
             ),
             if (message.action != null)
               _buildActionCard(context, message.action!),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildProcessingIndicator(ColorScheme colorScheme, bool isUser) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: isUser
+                ? colorScheme.onPrimary.withAlpha(180)
+                : colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'Thinking...',
+          style: TextStyle(
+            color: isUser
+                ? colorScheme.onPrimary.withAlpha(180)
+                : colorScheme.onSurfaceVariant.withAlpha(180),
+            fontSize: 14,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
     );
   }
 
