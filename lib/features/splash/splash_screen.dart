@@ -8,7 +8,9 @@ class SplashScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAFAFA),
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F0F)
+          : const Color(0xFFFAFAFA),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -19,16 +21,16 @@ class SplashScreen extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.06)
-                    : Colors.black.withOpacity(0.04),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Icon(
                 Icons.account_balance_wallet_outlined,
                 size: 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.9)
-                    : Colors.black.withOpacity(0.85),
+                    ? Colors.white.withValues(alpha: 0.9)
+                    : Colors.black.withValues(alpha: 0.85),
               ),
             ),
             const SizedBox(height: 28),
@@ -38,8 +40,8 @@ class SplashScreen extends StatelessWidget {
                 fontSize: 28,
                 fontWeight: FontWeight.w600,
                 color: isDark
-                    ? Colors.white.withOpacity(0.95)
-                    : Colors.black.withOpacity(0.9),
+                    ? Colors.white.withValues(alpha: 0.95)
+                    : Colors.black.withValues(alpha: 0.9),
                 letterSpacing: 0.5,
               ),
             ),
@@ -50,8 +52,8 @@ class SplashScreen extends StatelessWidget {
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 color: isDark
-                    ? Colors.white.withOpacity(0.4)
-                    : Colors.black.withOpacity(0.3),
+                    ? Colors.white.withValues(alpha: 0.4)
+                    : Colors.black.withValues(alpha: 0.3),
               ),
             ),
           ],

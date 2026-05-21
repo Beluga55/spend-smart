@@ -10,17 +10,14 @@ import 'package:mobile_expense_tracker/core/models/group.dart';
 import 'package:mobile_expense_tracker/core/models/group_member.dart';
 import 'package:mobile_expense_tracker/core/models/group_expense.dart';
 import 'package:mobile_expense_tracker/core/models/group_expense_split.dart';
-import 'package:mobile_expense_tracker/core/models/group_expense_item.dart';
 import 'package:mobile_expense_tracker/core/models/expense.dart';
 import 'package:mobile_expense_tracker/core/models/income.dart';
 import 'package:mobile_expense_tracker/core/models/category.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mobile_expense_tracker/core/providers/group_expense_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/group_provider.dart';
-import 'package:mobile_expense_tracker/core/services/group_sync_service.dart';
 import 'package:mobile_expense_tracker/core/utils/design_utils.dart';
 import 'package:mobile_expense_tracker/features/groups/widgets/group_expense_modal.dart';
-import 'package:mobile_expense_tracker/features/groups/widgets/group_balances_screen.dart';
 import 'package:mobile_expense_tracker/features/groups/group_settings_screen.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
@@ -528,8 +525,9 @@ class _BalancesTab extends ConsumerWidget {
       final personalExpenseBox = Hive.box<Expense>('expenses');
 
       // Check if already recorded
-      if (personalExpenseBox.values.any((e) => e.note == settlementNote))
+      if (personalExpenseBox.values.any((e) => e.note == settlementNote)) {
         return;
+      }
 
       final categoryBox = Hive.box<Category>('categories');
       final expCat = categoryBox.values.firstWhere(

@@ -63,7 +63,7 @@ class GroupRealtimeService {
     debugPrint('[GroupRealtime] Refreshed — ${_myGroupIds.length} groups');
 
     await stop();
-    _started = true; 
+    _started = true;
     await _subscribe();
   }
 
@@ -179,7 +179,7 @@ class GroupRealtimeService {
   Future<void> _refreshGroupIds() async {
     final userId = _userId ?? SupabaseService.currentUser?.id;
     if (userId == null) return;
-    
+
     try {
       final ids = await _getMyGroupIds(userId);
       _myGroupIds = ids.toSet();
@@ -226,23 +226,40 @@ class GroupRealtimeService {
 
     // 1. Delete group record
     await groupBox.delete(groupId);
-    
+
     // 2. Delete members
-    final memberIds = memberBox.values.where((m) => m.groupId == groupId).map((m) => m.id).toList();
-    for (final id in memberIds) await memberBox.delete(id);
+    final memberIds = memberBox.values
+        .where((m) => m.groupId == groupId)
+        .map((m) => m.id)
+        .toList();
+    for (final id in memberIds) {
+      await memberBox.delete(id);
+    }
 
     // 3. Delete expenses, splits, and items
-    final groupExpenses = expenseBox.values.where((e) => e.groupId == groupId).toList();
+    final groupExpenses = expenseBox.values
+        .where((e) => e.groupId == groupId)
+        .toList();
     for (final expense in groupExpenses) {
-      final sIds = splitBox.values.where((s) => s.groupExpenseId == expense.id).map((s) => s.id).toList();
-      for (final id in sIds) await splitBox.delete(id);
-      
-      final iIds = itemBox.values.where((i) => i.groupExpenseId == expense.id).map((i) => i.id).toList();
-      for (final id in iIds) await itemBox.delete(id);
-      
+      final sIds = splitBox.values
+          .where((s) => s.groupExpenseId == expense.id)
+          .map((s) => s.id)
+          .toList();
+      for (final id in sIds) {
+        await splitBox.delete(id);
+      }
+
+      final iIds = itemBox.values
+          .where((i) => i.groupExpenseId == expense.id)
+          .map((i) => i.id)
+          .toList();
+      for (final id in iIds) {
+        await itemBox.delete(id);
+      }
+
       await expenseBox.delete(expense.id);
     }
-    
+
     _myGroupIds.remove(groupId);
   }
 
@@ -312,7 +329,9 @@ class GroupRealtimeService {
   }
 
   void _handleExpenseChange(PostgresChangePayload payload) {
-    debugPrint('[GroupRealtime] Expense change event: ${payload.eventType.name}, table: ${payload.table}');
+    debugPrint(
+      '[GroupRealtime] Expense change event: ${payload.eventType.name}, table: ${payload.table}',
+    );
     final row = payload.newRecord;
     final id = row['id'] as String?;
     if (id == null) return;
@@ -345,16 +364,20 @@ class GroupRealtimeService {
       debugPrint('[GroupRealtime] Delete event has no old ID');
       return;
     }
-    
+
     // Check if this expense belongs to one of our groups
     final expenseBox = Hive.box<GroupExpense>('group_expenses');
     final existingExpense = expenseBox.get(oldId);
-    
+
     if (existingExpense != null && _isMyGroup(existingExpense.groupId)) {
-      debugPrint('[GroupRealtime] Deleting expense $oldId from group ${existingExpense.groupId}');
+      debugPrint(
+        '[GroupRealtime] Deleting expense $oldId from group ${existingExpense.groupId}',
+      );
       _deleteExpenseLocally(oldId);
     } else {
-      debugPrint('[GroupRealtime] Expense $oldId not found or not in my groups, ignoring');
+      debugPrint(
+        '[GroupRealtime] Expense $oldId not found or not in my groups, ignoring',
+      );
     }
   }
 
@@ -396,8 +419,12 @@ class GroupRealtimeService {
 
   void _maybeRecordSettlementExpense(GroupExpenseSplit split) {
     final currentUserId = SupabaseService.currentUser?.id;
-    debugPrint('[GroupRealtime] _maybeRecordSettlementExpense called for split ${split.id}');
-    debugPrint('[GroupRealtime] currentUserId: $currentUserId, split.userId: ${split.userId}, split.groupExpenseId: ${split.groupExpenseId}');
+    debugPrint(
+      '[GroupRealtime] _maybeRecordSettlementExpense called for split ${split.id}',
+    );
+    debugPrint(
+      '[GroupRealtime] currentUserId: $currentUserId, split.userId: ${split.userId}, split.groupExpenseId: ${split.groupExpenseId}',
+    );
     if (currentUserId == null) {
       debugPrint('[GroupRealtime] No current user, skipping');
       return;
@@ -405,9 +432,13 @@ class GroupRealtimeService {
 
     final expenseBox = Hive.box<GroupExpense>('group_expenses');
     final groupExpense = expenseBox.get(split.groupExpenseId);
-    debugPrint('[GroupRealtime] groupExpense found: ${groupExpense != null}, paidByUserId: ${groupExpense?.paidByUserId}');
+    debugPrint(
+      '[GroupRealtime] groupExpense found: ${groupExpense != null}, paidByUserId: ${groupExpense?.paidByUserId}',
+    );
     if (groupExpense == null) {
-      debugPrint('[GroupRealtime] Group expense not found, skipping settlement recording');
+      debugPrint(
+        '[GroupRealtime] Group expense not found, skipping settlement recording',
+      );
       return;
     }
 
@@ -415,11 +446,16 @@ class GroupRealtimeService {
     final now = DateTime.now();
 
     // Case 1: Current user is the debtor (they owed money and paid it back)
-    debugPrint('[GroupRealtime] Checking Case 1: split.userId(${split.userId}) == currentUserId($currentUserId) && paidByUserId(${groupExpense.paidByUserId}) != currentUserId($currentUserId)');
-    if (split.userId == currentUserId && groupExpense.paidByUserId != currentUserId) {
+    debugPrint(
+      '[GroupRealtime] Checking Case 1: split.userId(${split.userId}) == currentUserId($currentUserId) && paidByUserId(${groupExpense.paidByUserId}) != currentUserId($currentUserId)',
+    );
+    if (split.userId == currentUserId &&
+        groupExpense.paidByUserId != currentUserId) {
       debugPrint('[GroupRealtime] Case 1 matched - debtor settlement');
       final settlementNote = '[Settlement] ${split.id}';
-      final alreadyRecorded = personalExpenseBox.values.any((e) => e.note == settlementNote);
+      final alreadyRecorded = personalExpenseBox.values.any(
+        (e) => e.note == settlementNote,
+      );
       if (alreadyRecorded) return;
 
       final categoryBox = Hive.box<Category>('categories');
@@ -446,12 +482,17 @@ class GroupRealtimeService {
         groupExpenseId: split.groupExpenseId,
       );
       personalExpenseBox.put(settleExpense.id, settleExpense);
-      debugPrint('[GroupRealtime] Recorded debtor settlement expense: ${split.amount}');
+      debugPrint(
+        '[GroupRealtime] Recorded debtor settlement expense: ${split.amount}',
+      );
     }
 
     // Case 2: Current user is the creditor (they were owed money and got paid back)
-    debugPrint('[GroupRealtime] Checking Case 2: paidByUserId(${groupExpense.paidByUserId}) == currentUserId($currentUserId) && split.userId(${split.userId}) != currentUserId($currentUserId)');
-    if (groupExpense.paidByUserId == currentUserId && split.userId != currentUserId) {
+    debugPrint(
+      '[GroupRealtime] Checking Case 2: paidByUserId(${groupExpense.paidByUserId}) == currentUserId($currentUserId) && split.userId(${split.userId}) != currentUserId($currentUserId)',
+    );
+    if (groupExpense.paidByUserId == currentUserId &&
+        split.userId != currentUserId) {
       debugPrint('[GroupRealtime] Case 2 matched - creditor settlement');
       final incomeNote = '[Settlement Received] ${split.id}';
       final incomeBox = Hive.box<Income>('incomes');
@@ -471,12 +512,17 @@ class GroupRealtimeService {
         date: split.settledAt ?? now,
         note: incomeNote,
         createdAt: now,
-        groupExpenseId: split.groupExpenseId, // Key: link to expense for deletion
+        groupExpenseId:
+            split.groupExpenseId, // Key: link to expense for deletion
       );
       incomeBox.put(income.id, income);
-      debugPrint('[GroupRealtime] Recorded creditor settlement income: ${income.id} with note: $incomeNote, groupExpenseId: ${split.groupExpenseId}');
+      debugPrint(
+        '[GroupRealtime] Recorded creditor settlement income: ${income.id} with note: $incomeNote, groupExpenseId: ${split.groupExpenseId}',
+      );
     } else {
-      debugPrint('[GroupRealtime] Neither Case 1 nor Case 2 matched - user is not part of this settlement');
+      debugPrint(
+        '[GroupRealtime] Neither Case 1 nor Case 2 matched - user is not part of this settlement',
+      );
     }
   }
 
@@ -513,27 +559,45 @@ class GroupRealtimeService {
     final incomeBox = Hive.box<Income>('incomes');
 
     // Get splits before deleting to find related transactions
-    final splits = splitBox.values.where((s) => s.groupExpenseId == expenseId).toList();
+    final splits = splitBox.values
+        .where((s) => s.groupExpenseId == expenseId)
+        .toList();
 
     // Delete payer's personal expense (already uses groupExpenseId)
-    final payerExpenses = personalExpenseBox.values.where((e) => e.groupExpenseId == expenseId).toList();
-    debugPrint('[GroupRealtime] Found ${payerExpenses.length} payer expenses to delete');
+    final payerExpenses = personalExpenseBox.values
+        .where((e) => e.groupExpenseId == expenseId)
+        .toList();
+    debugPrint(
+      '[GroupRealtime] Found ${payerExpenses.length} payer expenses to delete',
+    );
     for (final exp in payerExpenses) {
       personalExpenseBox.delete(exp.id);
       debugPrint('[GroupRealtime] Deleted payer expense ${exp.id}');
     }
 
     // Delete ALL settlement expenses for this expense (by groupExpenseId)
-    final settlementExpensesByGroup = personalExpenseBox.values.where((e) => e.groupExpenseId == expenseId && (e.note?.startsWith('[Settlement]') ?? false)).toList();
-    debugPrint('[GroupRealtime] Found ${settlementExpensesByGroup.length} settlement expenses by groupExpenseId');
+    final settlementExpensesByGroup = personalExpenseBox.values
+        .where(
+          (e) =>
+              e.groupExpenseId == expenseId &&
+              (e.note?.startsWith('[Settlement]') ?? false),
+        )
+        .toList();
+    debugPrint(
+      '[GroupRealtime] Found ${settlementExpensesByGroup.length} settlement expenses by groupExpenseId',
+    );
     for (final exp in settlementExpensesByGroup) {
       personalExpenseBox.delete(exp.id);
       debugPrint('[GroupRealtime] Deleted settlement expense ${exp.id}');
     }
 
     // Delete ALL settlement income for this expense (by groupExpenseId)
-    final settlementIncomesByGroup = incomeBox.values.where((i) => i.groupExpenseId == expenseId).toList();
-    debugPrint('[GroupRealtime] Found ${settlementIncomesByGroup.length} settlement incomes by groupExpenseId');
+    final settlementIncomesByGroup = incomeBox.values
+        .where((i) => i.groupExpenseId == expenseId)
+        .toList();
+    debugPrint(
+      '[GroupRealtime] Found ${settlementIncomesByGroup.length} settlement incomes by groupExpenseId',
+    );
     for (final income in settlementIncomesByGroup) {
       incomeBox.delete(income.id);
       debugPrint('[GroupRealtime] Deleted settlement income ${income.id}');
@@ -543,7 +607,9 @@ class GroupRealtimeService {
     for (final split in splits) {
       // Delete debtor's settlement expense by note (backup method)
       final settlementNote = '[Settlement] ${split.id}';
-      final settlementExpenses = personalExpenseBox.values.where((e) => e.note == settlementNote).toList();
+      final settlementExpenses = personalExpenseBox.values
+          .where((e) => e.note == settlementNote)
+          .toList();
       for (final exp in settlementExpenses) {
         personalExpenseBox.delete(exp.id);
       }
@@ -555,7 +621,9 @@ class GroupRealtimeService {
         debugPrint('[GroupRealtime] Checking income note: ${i.note}');
         return i.note == incomeNote;
       }).toList();
-      debugPrint('[GroupRealtime] Found ${settlementIncomes.length} settlement incomes to delete');
+      debugPrint(
+        '[GroupRealtime] Found ${settlementIncomes.length} settlement incomes to delete',
+      );
       for (final income in settlementIncomes) {
         incomeBox.delete(income.id);
         debugPrint('[GroupRealtime] Deleted settlement income ${income.id}');
@@ -566,13 +634,17 @@ class GroupRealtimeService {
     }
 
     // Delete items
-    final items = itemBox.values.where((i) => i.groupExpenseId == expenseId).toList();
+    final items = itemBox.values
+        .where((i) => i.groupExpenseId == expenseId)
+        .toList();
     for (final item in items) {
       itemBox.delete(item.id);
     }
 
     // Delete the expense
     expenseBox.delete(expenseId);
-    debugPrint('[GroupRealtime] Deleted expense $expenseId and related data locally');
+    debugPrint(
+      '[GroupRealtime] Deleted expense $expenseId and related data locally',
+    );
   }
 }

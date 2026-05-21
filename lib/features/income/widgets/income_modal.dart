@@ -35,7 +35,13 @@ Category getIncomeCategoryForSource(
 
 class IncomeModal extends ConsumerStatefulWidget {
   final Income? income;
-  final Function(double amount, String source, DateTime date, String? note, String? walletId)
+  final Function(
+    double amount,
+    String source,
+    DateTime date,
+    String? note,
+    String? walletId,
+  )
   onSave;
   final VoidCallback? onDelete;
 
@@ -93,7 +99,9 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final dividerColor = Theme.of(context).colorScheme.outline;
-    final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
+    final textSecondary = Theme.of(
+      context,
+    ).colorScheme.onSurface.withAlpha(153);
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     return Container(
@@ -178,7 +186,8 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: incomeCategories.any((c) => c.id == _selectedSource)
+                initialValue:
+                    incomeCategories.any((c) => c.id == _selectedSource)
                     ? _selectedSource
                     : null,
                 decoration: const InputDecoration(),
@@ -279,15 +288,10 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedWalletId,
-                decoration: InputDecoration(
-                  hintText: l10n.selectWallet,
-                ),
+                initialValue: _selectedWalletId,
+                decoration: InputDecoration(hintText: l10n.selectWallet),
                 items: [
-                  DropdownMenuItem(
-                    value: null,
-                    child: Text(l10n.noWallet),
-                  ),
+                  DropdownMenuItem(value: null, child: Text(l10n.noWallet)),
                   ...wallets.map((wallet) {
                     return DropdownMenuItem(
                       value: wallet.id,
@@ -307,7 +311,10 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(wallet.name, style: TextStyle(color: textPrimary)),
+                          Text(
+                            wallet.name,
+                            style: TextStyle(color: textPrimary),
+                          ),
                         ],
                       ),
                     );
@@ -340,7 +347,11 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day),
+      lastDate: DateTime(
+        DateTime.now().year,
+        DateTime.now().month + 1,
+        DateTime.now().day,
+      ),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -354,9 +365,14 @@ class _IncomeModalState extends ConsumerState<IncomeModal> {
           ? null
           : _noteController.text.trim();
 
-      widget.onSave(amount, _selectedSource, _selectedDate, note, _selectedWalletId);
+      widget.onSave(
+        amount,
+        _selectedSource,
+        _selectedDate,
+        note,
+        _selectedWalletId,
+      );
       Navigator.pop(context);
     }
   }
 }
-

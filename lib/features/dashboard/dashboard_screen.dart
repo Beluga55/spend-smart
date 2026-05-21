@@ -1,4 +1,3 @@
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +11,6 @@ import 'package:mobile_expense_tracker/features/dashboard/widgets/spending_trend
 import 'package:mobile_expense_tracker/features/dashboard/widgets/top_categories.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/streak_banner.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/ai_insights_card.dart';
-import 'package:mobile_expense_tracker/features/dashboard/widgets/groups_card.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/month_selector.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/quick_add_sheet.dart';
 import 'package:mobile_expense_tracker/features/budget/budget_modal.dart';
@@ -93,7 +91,10 @@ class DashboardScreen extends ConsumerWidget {
                 (alert) => Container(
                   width: double.infinity,
                   margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: backgroundColor,
                     borderRadius: BorderRadius.circular(10),
@@ -139,9 +140,15 @@ class DashboardScreen extends ConsumerWidget {
             ],
 
             const SizedBox(height: 24),
-            _SectionHeader(title: l10n.spendingByCategory, textPrimary: textPrimary),
+            _SectionHeader(
+              title: l10n.spendingByCategory,
+              textPrimary: textPrimary,
+            ),
             const SizedBox(height: 12),
-            CategoryChart(categoryTotals: categoryTotals, categories: categories),
+            CategoryChart(
+              categoryTotals: categoryTotals,
+              categories: categories,
+            ),
 
             const SizedBox(height: 24),
             const TopCategoriesList(),
@@ -150,7 +157,10 @@ class DashboardScreen extends ConsumerWidget {
             const SpendingTrendsChart(),
 
             const SizedBox(height: 24),
-            _SectionHeader(title: l10n.recentTransactions, textPrimary: textPrimary),
+            _SectionHeader(
+              title: l10n.recentTransactions,
+              textPrimary: textPrimary,
+            ),
             const SizedBox(height: 12),
             const RecentTransactionsList(),
 
@@ -201,17 +211,22 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => ExpenseModal(
         onSave: (amount, categoryId, date, note, walletId, receiptImagePath) {
-          ref.read(expensesProvider.notifier).addExpense(
-            amount: amount,
-            categoryId: categoryId,
-            date: date,
-            note: note,
-            walletId: walletId,
-            receiptImagePath: receiptImagePath,
-          );
+          ref
+              .read(expensesProvider.notifier)
+              .addExpense(
+                amount: amount,
+                categoryId: categoryId,
+                date: date,
+                note: note,
+                walletId: walletId,
+                receiptImagePath: receiptImagePath,
+              );
           final selected = ref.read(selectedMonthProvider);
           if (date.year != selected.year || date.month != selected.month) {
-            ref.read(selectedMonthProvider.notifier).state = DateTime(date.year, date.month);
+            ref.read(selectedMonthProvider.notifier).state = DateTime(
+              date.year,
+              date.month,
+            );
           }
         },
       ),
@@ -225,16 +240,21 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => IncomeModal(
         onSave: (amount, source, date, note, walletId) {
-          ref.read(incomesProvider.notifier).addIncome(
-            amount: amount,
-            source: source,
-            date: date,
-            note: note,
-            walletId: walletId,
-          );
+          ref
+              .read(incomesProvider.notifier)
+              .addIncome(
+                amount: amount,
+                source: source,
+                date: date,
+                note: note,
+                walletId: walletId,
+              );
           final selected = ref.read(selectedMonthProvider);
           if (date.year != selected.year || date.month != selected.month) {
-            ref.read(selectedMonthProvider.notifier).state = DateTime(date.year, date.month);
+            ref.read(selectedMonthProvider.notifier).state = DateTime(
+              date.year,
+              date.month,
+            );
           }
         },
       ),
@@ -244,7 +264,6 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildSyncStatus(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncNotifierProvider);
     final l10n = Localizations.of<AppLocalizations>(context, AppLocalizations);
-    final semantic = Theme.of(context).extension<SemanticColors>();
 
     IconData icon;
     Color color;
@@ -256,7 +275,9 @@ class DashboardScreen extends ConsumerWidget {
         break;
       case SyncStatus.pending:
         icon = Icons.cloud_upload_outlined;
-        color = Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.grey;
+        color = Theme.of(context).brightness == Brightness.dark
+            ? Colors.white70
+            : Colors.grey;
         break;
       case SyncStatus.syncing:
         icon = Icons.cloud_sync_outlined;
@@ -275,10 +296,13 @@ class DashboardScreen extends ConsumerWidget {
     return IconButton(
       icon: Icon(icon, color: color),
       onPressed: () {
-        if (syncState.status == SyncStatus.error && syncState.errorMessage != null) {
+        if (syncState.status == SyncStatus.error &&
+            syncState.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n?.syncError ?? 'Sync Error'}: ${syncState.errorMessage}'),
+              content: Text(
+                '${l10n?.syncError ?? 'Sync Error'}: ${syncState.errorMessage}',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -305,7 +329,11 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textPrimary),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: textPrimary,
+      ),
     );
   }
 }

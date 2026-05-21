@@ -88,14 +88,22 @@ class _TransferModalState extends ConsumerState<TransferModal> {
             ),
             const SizedBox(height: 24),
             DropdownButtonFormField<String>(
-              value: _fromWalletId,
-              decoration: _buildInputDecoration(l10n.fromWallet, backgroundColor, dividerColor, textSecondary),
+              initialValue: _fromWalletId,
+              decoration: _buildInputDecoration(
+                l10n.fromWallet,
+                backgroundColor,
+                dividerColor,
+                textSecondary,
+              ),
               style: TextStyle(color: textPrimary),
               dropdownColor: surfaceColor,
               items: wallets.map((wallet) {
                 return DropdownMenuItem(
                   value: wallet.id,
-                  child: Text(wallet.name, style: TextStyle(color: textPrimary)),
+                  child: Text(
+                    wallet.name,
+                    style: TextStyle(color: textPrimary),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
@@ -122,16 +130,22 @@ class _TransferModalState extends ConsumerState<TransferModal> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _toWalletId,
-              decoration: _buildInputDecoration(l10n.toWallet, backgroundColor, dividerColor, textSecondary),
+              initialValue: _toWalletId,
+              decoration: _buildInputDecoration(
+                l10n.toWallet,
+                backgroundColor,
+                dividerColor,
+                textSecondary,
+              ),
               style: TextStyle(color: textPrimary),
               dropdownColor: surfaceColor,
-              items: wallets
-                  .where((w) => w.id != _fromWalletId)
-                  .map((wallet) {
+              items: wallets.where((w) => w.id != _fromWalletId).map((wallet) {
                 return DropdownMenuItem(
                   value: wallet.id,
-                  child: Text(wallet.name, style: TextStyle(color: textPrimary)),
+                  child: Text(
+                    wallet.name,
+                    style: TextStyle(color: textPrimary),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
@@ -141,7 +155,9 @@ class _TransferModalState extends ConsumerState<TransferModal> {
             const SizedBox(height: 16),
             TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: TextStyle(color: textPrimary),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
@@ -151,7 +167,11 @@ class _TransferModalState extends ConsumerState<TransferModal> {
                   setState(() => _amountError = null);
                 }
               },
-              decoration: _buildInputDecoration(l10n.amount, backgroundColor, dividerColor, textSecondary,
+              decoration: _buildInputDecoration(
+                l10n.amount,
+                backgroundColor,
+                dividerColor,
+                textSecondary,
                 hintText: l10n.enterAmount,
                 prefixText: '\$ ',
                 errorText: _amountError,
@@ -161,7 +181,11 @@ class _TransferModalState extends ConsumerState<TransferModal> {
             TextField(
               controller: _noteController,
               style: TextStyle(color: textPrimary),
-              decoration: _buildInputDecoration(l10n.noteOptional, backgroundColor, dividerColor, textSecondary,
+              decoration: _buildInputDecoration(
+                l10n.noteOptional,
+                backgroundColor,
+                dividerColor,
+                textSecondary,
                 hintText: l10n.addANote,
               ),
             ),
@@ -179,7 +203,12 @@ class _TransferModalState extends ConsumerState<TransferModal> {
                 }
               },
               child: InputDecorator(
-                decoration: _buildInputDecoration(l10n.date, backgroundColor, dividerColor, textSecondary),
+                decoration: _buildInputDecoration(
+                  l10n.date,
+                  backgroundColor,
+                  dividerColor,
+                  textSecondary,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -232,11 +261,16 @@ class _TransferModalState extends ConsumerState<TransferModal> {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: errorText != null ? errorColor : borderColor),
+        borderSide: BorderSide(
+          color: errorText != null ? errorColor : borderColor,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.onSurface,
+          width: 2,
+        ),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
@@ -250,7 +284,8 @@ class _TransferModalState extends ConsumerState<TransferModal> {
 
     final balance = ref.read(walletBalanceProvider(_fromWalletId!));
     double available = balance;
-    if (widget.transfer != null && widget.transfer!.fromWalletId == _fromWalletId) {
+    if (widget.transfer != null &&
+        widget.transfer!.fromWalletId == _fromWalletId) {
       available += widget.transfer!.amount;
     }
 

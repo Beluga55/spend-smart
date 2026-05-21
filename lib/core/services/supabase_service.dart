@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
@@ -109,10 +110,10 @@ class SupabaseService {
       if (response.user != null) {
         final email = response.user!.email;
         final isAnon = response.user!.isAnonymous;
-        print('Session refreshed - email: $email, isAnonymous: $isAnon');
+        debugPrint('Session refreshed - email: $email, isAnonymous: $isAnon');
       }
     } catch (e) {
-      print('Session refresh failed, signing in anonymously: $e');
+      debugPrint('Session refresh failed, signing in anonymously: $e');
       try {
         await client.auth.signInAnonymously();
       } catch (_) {}

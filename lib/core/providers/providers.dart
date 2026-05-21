@@ -365,7 +365,8 @@ final monthlyHistoryProvider = Provider<Map<String, double>>((ref) {
     monthlyTotals[key] = (monthlyTotals[key] ?? 0) + expense.amount;
   }
 
-  final sortedKeys = monthlyTotals.keys.toList()..sort((a, b) => b.compareTo(a));
+  final sortedKeys = monthlyTotals.keys.toList()
+    ..sort((a, b) => b.compareTo(a));
   final result = <String, double>{};
   for (final key in sortedKeys.take(6)) {
     result[key] = monthlyTotals[key]!;

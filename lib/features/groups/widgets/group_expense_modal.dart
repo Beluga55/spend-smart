@@ -268,7 +268,7 @@ class _GroupExpenseModalState extends ConsumerState<GroupExpenseModal> {
                   );
                   final currentUser = SupabaseService.client.auth.currentUser;
                   return DropdownButtonFormField<String>(
-                    value: _paidByUserId,
+                    initialValue: _paidByUserId,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
                       labelText: l10n.paidBy,

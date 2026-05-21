@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
-import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
 
 class BudgetProgressCard extends ConsumerWidget {

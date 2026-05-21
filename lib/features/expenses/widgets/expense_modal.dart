@@ -125,7 +125,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       cleaned = cleaned.replaceAll('"', '');
 
       if (cleaned.isEmpty) {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -156,7 +156,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       }
 
       if (match == null) {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -173,7 +173,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
         _aiSuggestedCategoryId = match!.id;
         _selectedCategoryId = match.id;
       });
-      if (context.mounted) {
+      if (mounted) {
         final provider = service.lastUsedProvider ?? 'AI';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -184,7 +184,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
       }
     } catch (e) {
       debugPrint('[AI Category] Error: $e');
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Could not get suggestion: $e'),
@@ -212,7 +212,6 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
     ).colorScheme.onSurface.withAlpha(153);
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final dividerColor = Theme.of(context).colorScheme.outline;
-    final semantic = Theme.of(context).extension<SemanticColors>();
     final errorColor = isDark ? Colors.white : AppTheme.errorColor;
 
     return Container(
@@ -279,10 +278,13 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
                   fillColor: backgroundColor,
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return l10n.enterAmount;
+                  if (value == null || value.isEmpty) {
+                    return l10n.enterAmount;
+                  }
                   final amount = double.tryParse(value);
-                  if (amount == null || amount <= 0)
+                  if (amount == null || amount <= 0) {
                     return l10n.enterValidAmount;
+                  }
                   return null;
                 },
               ),
@@ -296,7 +298,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedCategoryId,
+                initialValue: _selectedCategoryId,
                 decoration: const InputDecoration(),
                 menuMaxHeight: 300,
                 items: categories.map((cat) {
@@ -326,8 +328,9 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
                 style: TextStyle(color: textPrimary),
                 dropdownColor: surfaceColor,
                 onChanged: (value) {
-                  if (value != null)
+                  if (value != null) {
                     setState(() => _selectedCategoryId = value);
+                  }
                 },
               ),
               const SizedBox(height: 12),
@@ -498,7 +501,7 @@ class _ExpenseModalState extends ConsumerState<ExpenseModal> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedWalletId,
+                initialValue: _selectedWalletId,
                 decoration: InputDecoration(hintText: l10n.selectWallet),
                 items: [
                   DropdownMenuItem(value: null, child: Text(l10n.noWallet)),

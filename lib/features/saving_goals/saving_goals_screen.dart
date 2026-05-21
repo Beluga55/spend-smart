@@ -212,12 +212,14 @@ class SavingGoalsScreen extends ConsumerWidget {
   Color _getProgressColor(double progress, bool isDark, BuildContext context) {
     final semantic = Theme.of(context).extension<SemanticColors>();
     if (progress >= 100) return semantic?.success ?? Colors.green;
-    if (progress >= 75)
+    if (progress >= 75) {
       return semantic?.success ??
           (isDark ? Colors.lightGreen : Colors.green.shade400);
+    }
     if (progress >= 50) return Colors.orange;
-    if (progress >= 25)
+    if (progress >= 25) {
       return isDark ? Colors.orange.shade300 : Colors.orange.shade400;
+    }
     return isDark ? Colors.orange.shade200 : Colors.orange.shade300;
   }
 

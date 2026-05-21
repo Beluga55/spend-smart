@@ -1,4 +1,3 @@
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,7 +72,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final textSecondary = Theme.of(
       context,
     ).colorScheme.onSurface.withAlpha(153);
-    final semantic = Theme.of(context).extension<SemanticColors>();
 
     final isAnonymous = authState.maybeWhen(
       data: (state) {
@@ -238,10 +236,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             context: context,
             icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
             title: l10n.theme,
-            trailing: Text(
-              themeName,
-              style: TextStyle(color: textSecondary),
-            ),
+            trailing: Text(themeName, style: TextStyle(color: textSecondary)),
             textPrimary: textPrimary,
             backgroundColor: backgroundColor,
             dividerColor: dividerColor,
@@ -255,8 +250,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               fontFamily == FontFamily.fredoka
                   ? l10n.fredokaCat
                   : fontFamily == FontFamily.comfortaa
-                      ? l10n.comfortaa
-                      : l10n.soraDefault,
+                  ? l10n.comfortaa
+                  : l10n.soraDefault,
               style: TextStyle(color: textSecondary),
             ),
             textPrimary: textPrimary,
@@ -1167,14 +1162,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } else if (state.status != UpdateStatus.checking &&
         state.status != UpdateStatus.downloading) {
       final packageInfo = await PackageInfo.fromPlatform();
+      if (!mounted) return;
       final currentVersion =
           '${packageInfo.version}+${packageInfo.buildNumber}';
       await notifier.checkForUpdate(currentVersion);
+      if (!mounted) return;
 
       final newState = ref.read(updateProvider);
       if (newState.status == UpdateStatus.available) {
         _showUpdateDownloadDialog(context);
-      } else if (newState.status == UpdateStatus.upToDate && mounted) {
+      } else if (newState.status == UpdateStatus.upToDate) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.upToDate)),
         );

@@ -1,4 +1,3 @@
-import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +9,11 @@ class ReceiptScannerSheet extends ConsumerStatefulWidget {
   final Function(Map<String, dynamic> parsedData) onParsed;
   final Function(Map<String, dynamic> parsedData)? onAddToGroup;
 
-  const ReceiptScannerSheet({super.key, required this.onParsed, this.onAddToGroup});
+  const ReceiptScannerSheet({
+    super.key,
+    required this.onParsed,
+    this.onAddToGroup,
+  });
 
   @override
   ConsumerState<ReceiptScannerSheet> createState() =>
@@ -99,9 +102,11 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
-      setState(() => _error = msg.contains('401')
-          ? 'Invalid API key (401). Check your keys in Settings → AI Assistant.'
-          : 'AI failed: $msg');
+      setState(
+        () => _error = msg.contains('401')
+            ? 'Invalid API key (401). Check your keys in Settings → AI Assistant.'
+            : 'AI failed: $msg',
+      );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -123,7 +128,8 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom +
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
             MediaQuery.of(context).padding.bottom,
       ),
       child: SingleChildScrollView(
@@ -138,10 +144,7 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
               _imagePreview(),
               const SizedBox(height: 20),
             ],
-            if (_isBusy) ...[
-              _loading(),
-              const SizedBox(height: 20),
-            ],
+            if (_isBusy) ...[_loading(), const SizedBox(height: 20)],
             if (_error != null) ...[
               _errorBox(_error!),
               const SizedBox(height: 20),
@@ -180,29 +183,49 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
         children: [
           Icon(Icons.document_scanner_outlined, color: textPrimary),
           const SizedBox(width: 10),
-          Text('Scan Receipt',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary)),
+          Text(
+            'Scan Receipt',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textPrimary,
+            ),
+          ),
         ],
       ),
-      IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+      IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () => Navigator.pop(context),
+      ),
     ],
   );
 
   Widget _imagePreview() => ClipRRect(
     borderRadius: BorderRadius.circular(12),
-    child: Image.file(File(_imagePath!), height: 160, width: double.infinity, fit: BoxFit.cover,
-      errorBuilder: (_, err, stk) => Container(height: 160, color: Colors.grey[200],
-        child: const Center(child: Icon(Icons.broken_image))),
+    child: Image.file(
+      File(_imagePath!),
+      height: 160,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (_, err, stk) => Container(
+        height: 160,
+        color: Colors.grey[200],
+        child: const Center(child: Icon(Icons.broken_image)),
+      ),
     ),
   );
 
   Widget _loading() => const Padding(
     padding: EdgeInsets.symmetric(vertical: 24),
-    child: Center(child: Column(children: [
-      CircularProgressIndicator(),
-      SizedBox(height: 12),
-      Text('Processing…'),
-    ])),
+    child: Center(
+      child: Column(
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 12),
+          Text('Processing…'),
+        ],
+      ),
+    ),
   );
 
   Widget _errorBox(String msg) => Container(
@@ -218,32 +241,42 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
       children: [
         const Icon(Icons.error_outline, color: Colors.red, size: 18),
         const SizedBox(width: 8),
-        Expanded(child: Text(msg, style: const TextStyle(color: Colors.red, fontSize: 13))),
+        Expanded(
+          child: Text(
+            msg,
+            style: const TextStyle(color: Colors.red, fontSize: 13),
+          ),
+        ),
       ],
     ),
   );
 
-  Widget _actionButtons() => Column(children: [
-    SizedBox(width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () => _scan(ImageSource.camera),
-        icon: const Icon(Icons.camera_alt),
-        label: const Text('Take Photo'),
+  Widget _actionButtons() => Column(
+    children: [
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () => _scan(ImageSource.camera),
+          icon: const Icon(Icons.camera_alt),
+          label: const Text('Take Photo'),
+        ),
       ),
-    ),
-    const SizedBox(height: 10),
-    SizedBox(width: double.infinity,
-      child: OutlinedButton.icon(
-        onPressed: () => _scan(ImageSource.gallery),
-        icon: const Icon(Icons.photo_library),
-        label: const Text('Choose from Gallery'),
+      const SizedBox(height: 10),
+      SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () => _scan(ImageSource.gallery),
+          icon: const Icon(Icons.photo_library),
+          label: const Text('Choose from Gallery'),
+        ),
       ),
-    ),
-  ]);
+    ],
+  );
 
   Widget _ocrSection(String text, Color textSecondary, bool hasRealKey) {
     const maxLinesCollapsed = 4;
-    final isLong = text.split('\n').length > maxLinesCollapsed || text.length > 200;
+    final isLong =
+        text.split('\n').length > maxLinesCollapsed || text.length > 200;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +285,14 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
           children: [
             Icon(Icons.text_snippet_outlined, size: 16, color: textSecondary),
             const SizedBox(width: 6),
-            Text('Extracted Text', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: textSecondary)),
+            Text(
+              'Extracted Text',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: textSecondary,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -268,15 +308,26 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
             children: [
               Text(
                 text,
-                style: TextStyle(color: textSecondary, fontSize: 12, height: 1.4),
+                style: TextStyle(
+                  color: textSecondary,
+                  fontSize: 12,
+                  height: 1.4,
+                ),
                 maxLines: _showFullOcr ? null : maxLinesCollapsed,
                 overflow: _showFullOcr ? null : TextOverflow.ellipsis,
               ),
               if (isLong)
                 TextButton(
                   onPressed: () => setState(() => _showFullOcr = !_showFullOcr),
-                  style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  child: Text(_showFullOcr ? 'Show less' : 'Show more', style: TextStyle(fontSize: 12)),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    _showFullOcr ? 'Show less' : 'Show more',
+                    style: TextStyle(fontSize: 12),
+                  ),
                 ),
             ],
           ),
@@ -292,11 +343,15 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.key_off_outlined, size: 16, color: Colors.amber),
+                  const Icon(
+                    Icons.key_off_outlined,
+                    size: 16,
+                    color: Colors.amber,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
-            child: const Text(
-              'Add your Gemini or NVIDIA API key in Settings → AI Assistant to auto-parse receipts.',
+                    child: const Text(
+                      'Add your Gemini or NVIDIA API key in Settings → AI Assistant to auto-parse receipts.',
                       style: TextStyle(fontSize: 12, color: Colors.amber),
                     ),
                   ),
@@ -312,7 +367,12 @@ class _ReceiptScannerSheetState extends ConsumerState<ReceiptScannerSheet> {
     width: double.infinity,
     child: TextButton(
       onPressed: () => setState(() {
-        _imagePath = null; _ocrText = ''; _parsedData = null; _provider = null; _error = null; _showFullOcr = false;
+        _imagePath = null;
+        _ocrText = '';
+        _parsedData = null;
+        _provider = null;
+        _error = null;
+        _showFullOcr = false;
       }),
       child: const Text('Scan Another'),
     ),
@@ -335,14 +395,18 @@ class _ParsedCard extends StatelessWidget {
   final VoidCallback onUse;
   final VoidCallback? onAddToGroup;
 
-  const _ParsedCard({required this.data, this.provider, required this.onUse, this.onAddToGroup});
+  const _ParsedCard({
+    required this.data,
+    this.provider,
+    required this.onUse,
+    this.onAddToGroup,
+  });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textPrimary = scheme.onSurface;
     final textSecondary = scheme.onSurface.withAlpha(153);
-    final semantic = Theme.of(context).extension<SemanticColors>();
     final success = const Color(0xFF4CAF50);
 
     final merchant = data['merchant']?.toString();
@@ -351,91 +415,162 @@ class _ParsedCard extends StatelessWidget {
     final currency = data['currency']?.toString();
     final items = data['items'] as List<dynamic>?;
 
-    final hasAnyValue = merchant != null || date != null || total != null || currency != null;
+    final hasAnyValue =
+        merchant != null || date != null || total != null || currency != null;
 
-    return Column(children: [
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: success.withAlpha(12),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: success.withAlpha(40)),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: success.withAlpha(12),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: success.withAlpha(40)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.check_circle, size: 18, color: success),
-              const SizedBox(width: 8),
-              Text('Parsed Receipt', style: TextStyle(fontWeight: FontWeight.w700, color: textPrimary, fontSize: 15)),
-              const Spacer(),
-              if (provider != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: success.withAlpha(20),
-                    borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Icon(Icons.check_circle, size: 18, color: success),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Parsed Receipt',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: textPrimary,
+                      fontSize: 15,
+                    ),
                   ),
-                  child: Text(
-                    provider!,
-                    style: TextStyle(fontSize: 11, color: success, fontWeight: FontWeight.w600),
+                  const Spacer(),
+                  if (provider != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: success.withAlpha(20),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        provider!,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: success,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (hasAnyValue) ...[
+                _row(
+                  Icons.storefront_outlined,
+                  'Merchant',
+                  merchant,
+                  textPrimary,
+                  textSecondary,
+                ),
+                _row(
+                  Icons.calendar_today_outlined,
+                  'Date',
+                  date,
+                  textPrimary,
+                  textSecondary,
+                ),
+                _row(
+                  Icons.attach_money_outlined,
+                  'Total',
+                  total != null ? '$total ${currency ?? ''}'.trim() : null,
+                  textPrimary,
+                  textSecondary,
+                ),
+                if (currency != null && total == null)
+                  _row(
+                    Icons.money_outlined,
+                    'Currency',
+                    currency,
+                    textPrimary,
+                    textSecondary,
                   ),
+                if (items != null && items.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Items (${items.length})',
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  ...items
+                      .take(3)
+                      .map(
+                        (item) => Text(
+                          '- ${item['description']}: \$${item['amount']}',
+                          style: TextStyle(color: textSecondary, fontSize: 12),
+                        ),
+                      ),
+                  if (items.length > 3)
+                    Text(
+                      '+ ${items.length - 3} more',
+                      style: TextStyle(color: textSecondary, fontSize: 11),
+                    ),
+                ],
+              ] else
+                Text(
+                  'Could not extract details. You can still save the image with the expense.',
+                  style: TextStyle(color: textSecondary, fontSize: 13),
                 ),
             ],
           ),
-          const SizedBox(height: 14),
-          if (hasAnyValue) ...[
-            _row(Icons.storefront_outlined, 'Merchant', merchant, textPrimary, textSecondary),
-            _row(Icons.calendar_today_outlined, 'Date', date, textPrimary, textSecondary),
-            _row(Icons.attach_money_outlined, 'Total', total != null ? '$total ${currency ?? ''}'.trim() : null, textPrimary, textSecondary),
-            if (currency != null && total == null)
-              _row(Icons.money_outlined, 'Currency', currency, textPrimary, textSecondary),
-            if (items != null && items.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text('Items (${items.length})', style: TextStyle(color: textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 4),
-              ...items.take(3).map((item) => Text(
-                '- ${item['description']}: \$${item['amount']}',
-                style: TextStyle(color: textSecondary, fontSize: 12),
-              )),
-              if (items.length > 3)
-                Text('+ ${items.length - 3} more', style: TextStyle(color: textSecondary, fontSize: 11)),
-            ],
-          ] else
-            Text('Could not extract details. You can still save the image with the expense.', style: TextStyle(color: textSecondary, fontSize: 13)),
-        ]),
-      ),
-      const SizedBox(height: 12),
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: onUse,
-          icon: const Icon(Icons.check),
-          label: const Text('Use This Data'),
         ),
-      ),
-      if (onAddToGroup != null) ...[
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         SizedBox(
           width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: onAddToGroup,
-            icon: const Icon(Icons.group_add),
-            label: const Text('Add to Group'),
+          child: ElevatedButton.icon(
+            onPressed: onUse,
+            icon: const Icon(Icons.check),
+            label: const Text('Use This Data'),
           ),
         ),
+        if (onAddToGroup != null) ...[
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: onAddToGroup,
+              icon: const Icon(Icons.group_add),
+              label: const Text('Add to Group'),
+            ),
+          ),
+        ],
       ],
-    ]);
+    );
   }
 
-  Widget _row(IconData icon, String label, String? value, Color primary, Color secondary) {
+  Widget _row(
+    IconData icon,
+    String label,
+    String? value,
+    Color primary,
+    Color secondary,
+  ) {
     final valid = value != null && value.isNotEmpty && value != 'null';
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: valid ? const Color(0xFF4CAF50) : secondary),
+          Icon(
+            icon,
+            size: 16,
+            color: valid ? const Color(0xFF4CAF50) : secondary,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

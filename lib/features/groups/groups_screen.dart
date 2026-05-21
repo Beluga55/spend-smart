@@ -6,7 +6,6 @@ import 'package:mobile_expense_tracker/core/providers/group_expense_provider.dar
 import 'package:mobile_expense_tracker/core/providers/group_provider.dart';
 import 'package:mobile_expense_tracker/core/services/group_sync_service.dart';
 import 'package:mobile_expense_tracker/core/utils/design_utils.dart';
-import 'package:mobile_expense_tracker/core/providers/theme_provider.dart';
 import 'package:mobile_expense_tracker/features/groups/widgets/create_group_modal.dart';
 import 'package:mobile_expense_tracker/features/groups/widgets/join_group_modal.dart';
 import 'package:mobile_expense_tracker/features/groups/group_detail_screen.dart';
