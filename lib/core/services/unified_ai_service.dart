@@ -1,59 +1,81 @@
 import 'package:mobile_expense_tracker/core/services/gemini_ai_service.dart';
 import 'package:mobile_expense_tracker/core/services/nvidia_ai_service.dart';
+import 'package:mobile_expense_tracker/core/services/openrouter_ai_service.dart';
 
-/// Unified AI service that tries Gemini first, then falls back to NVIDIA/minimax.
+/// Unified AI service that tries OpenRouter first, then Gemini, then falls back to NVIDIA.
 ///
-/// Gemini (Google AI Studio) is the primary because it has a generous free tier
-/// (60 RPM, 1,000 RPD) and stronger instruction-following for structured output.
-/// NVIDIA/minimax is the fallback when Gemini is unavailable or misconfigured.
+/// OpenRouter is the primary for testing speed and reliability with the openrouter/free model.
+/// Gemini (Google AI Studio) is the secondary with a generous free tier (60 RPM, 1,000 RPD).
+/// NVIDIA/minimax is the tertiary fallback when both are unavailable or misconfigured.
 ///
-/// Get a free Gemini key at: https://aistudio.google.com/app/apikey
+/// Get keys at:
+/// - OpenRouter: https://openrouter.ai/keys
+/// - Gemini: https://aistudio.google.com/app/apikey
+/// - NVIDIA: https://build.nvidia.com/
 class UnifiedAIService {
+  final String? _openrouterKey;
   final String? _geminiKey;
   final String? _nvidiaKey;
 
-  UnifiedAIService({String? geminiKey, String? nvidiaKey})
-      : _geminiKey = geminiKey,
-        _nvidiaKey = nvidiaKey;
+  UnifiedAIService({
+    String? openrouterKey,
+    String? geminiKey,
+    String? nvidiaKey,
+  }) : _openrouterKey = openrouterKey,
+       _geminiKey = geminiKey,
+       _nvidiaKey = nvidiaKey;
 
   String? _lastUsedProvider;
   String? get lastUsedProvider => _lastUsedProvider;
 
   bool get isConfigured {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
-    return gemini.isConfigured || nvidia.isConfigured;
+    return openrouter.isConfigured ||
+        gemini.isConfigured ||
+        nvidia.isConfigured;
   }
 
   Future<T> _tryPrimaryThenFallback<T>(
     Future<T> Function() primary,
+    Future<T> Function() secondary,
     Future<T> Function() fallback,
     String operation,
   ) async {
     try {
       final result = await primary();
-      _lastUsedProvider = 'Gemini';
+      _lastUsedProvider = 'OpenRouter';
       return result;
     } catch (e) {
       try {
-        final result = await fallback();
-        _lastUsedProvider = 'NVIDIA';
+        final result = await secondary();
+        _lastUsedProvider = 'Gemini';
         return result;
-      } catch (fallbackErr) {
-        _lastUsedProvider = null;
-        throw Exception(
-          'AI failed on both providers.\n'
-          'Gemini: $e\n'
-          'NVIDIA: $fallbackErr',
-        );
+      } catch (secondaryErr) {
+        try {
+          final result = await fallback();
+          _lastUsedProvider = 'NVIDIA';
+          return result;
+        } catch (fallbackErr) {
+          _lastUsedProvider = null;
+          throw Exception(
+            'AI failed on all three providers.\n'
+            'OpenRouter: $e\n'
+            'Gemini: $secondaryErr\n'
+            'NVIDIA: $fallbackErr',
+          );
+        }
       }
     }
   }
 
   Future<Map<String, dynamic>> parseReceipt(String ocrText) async {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
     return _tryPrimaryThenFallback(
+      () => openrouter.parseReceipt(ocrText),
       () => gemini.parseReceipt(ocrText),
       () => nvidia.parseReceipt(ocrText),
       'parseReceipt',
@@ -61,9 +83,11 @@ class UnifiedAIService {
   }
 
   Future<String> suggestCategory(String label, List<String> cats) async {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
     return _tryPrimaryThenFallback(
+      () => openrouter.suggestCategory(label, cats),
       () => gemini.suggestCategory(label, cats),
       () => nvidia.suggestCategory(label, cats),
       'suggestCategory',
@@ -77,9 +101,17 @@ class UnifiedAIService {
     required List<Map<String, dynamic>> topCats,
     required int txns,
   }) async {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
     return _tryPrimaryThenFallback(
+      () => openrouter.generateMonthlyInsights(
+        spent: spent,
+        income: income,
+        budget: budget,
+        topCats: topCats,
+        txns: txns,
+      ),
       () => gemini.generateMonthlyInsights(
         spent: spent,
         income: income,
@@ -102,9 +134,11 @@ class UnifiedAIService {
     String query,
     List<Map<String, dynamic>> txns,
   ) async {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
     return _tryPrimaryThenFallback(
+      () => openrouter.answerSpendingQuery(query, txns),
       () => gemini.answerSpendingQuery(query, txns),
       () => nvidia.answerSpendingQuery(query, txns),
       'answerSpendingQuery',
@@ -116,9 +150,11 @@ class UnifiedAIService {
     required Map<String, dynamic> context,
     required List<Map<String, dynamic>> history,
   }) async {
+    final openrouter = OpenRouterAIService(_openrouterKey ?? '');
     final gemini = GeminiAIService(_geminiKey ?? '');
     final nvidia = NvidiaAIService(_nvidiaKey ?? '');
     return _tryPrimaryThenFallback(
+      () => openrouter.chat(query: query, context: context, history: history),
       () => gemini.chat(query: query, context: context, history: history),
       () => nvidia.chat(query: query, context: context, history: history),
       'chat',

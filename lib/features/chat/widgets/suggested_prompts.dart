@@ -8,7 +8,7 @@ class SuggestedPrompts extends ConsumerWidget {
   static final List<String> _prompts = [
     'How much did I spend this month?',
     'What\'s my biggest expense?',
-    r'Add $25 Food lunch today',
+    r'Add $10 lunch, $5 coffee, $20 groceries',
     'Create a new category called Travel',
   ];
 
@@ -27,10 +27,7 @@ class SuggestedPrompts extends ConsumerWidget {
               child: ActionChip(
                 label: Text(
                   prompt,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.primary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colorScheme.primary),
                 ),
                 backgroundColor: colorScheme.primary.withAlpha(15),
                 side: BorderSide(color: colorScheme.primary.withAlpha(40)),

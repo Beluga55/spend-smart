@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobile_expense_tracker/core/constants/app_constants.dart';
@@ -11,11 +12,13 @@ enum AIFeature { receiptParsing, autoCategorize, monthlyInsights, chatQuery }
 class AISettings {
   final String geminiApiKey;
   final String nvidiaApiKey;
+  final String openrouterApiKey;
   final Set<AIFeature> enabledFeatures;
 
   const AISettings({
     this.geminiApiKey = '',
     this.nvidiaApiKey = '',
+    this.openrouterApiKey = '',
     this.enabledFeatures = const {
       AIFeature.receiptParsing,
       AIFeature.autoCategorize,
@@ -26,11 +29,13 @@ class AISettings {
   AISettings copyWith({
     String? geminiApiKey,
     String? nvidiaApiKey,
+    String? openrouterApiKey,
     Set<AIFeature>? enabledFeatures,
   }) {
     return AISettings(
       geminiApiKey: geminiApiKey ?? this.geminiApiKey,
       nvidiaApiKey: nvidiaApiKey ?? this.nvidiaApiKey,
+      openrouterApiKey: openrouterApiKey ?? this.openrouterApiKey,
       enabledFeatures: enabledFeatures ?? this.enabledFeatures,
     );
   }
@@ -38,34 +43,54 @@ class AISettings {
   Map<String, dynamic> toJson() => {
     'geminiApiKey': geminiApiKey,
     'nvidiaApiKey': nvidiaApiKey,
+    'openrouterApiKey': openrouterApiKey,
     'enabledFeatures': enabledFeatures.map((f) => f.name).toList(),
   };
 
   factory AISettings.fromJson(Map<String, dynamic> json) {
-    final features = (json['enabledFeatures'] as List<dynamic>?)
-            ?.map((f) => AIFeature.values.firstWhere(
-                  (e) => e.name == f,
-                  orElse: () => AIFeature.receiptParsing,
-                ))
+    final features =
+        (json['enabledFeatures'] as List<dynamic>?)
+            ?.map(
+              (f) => AIFeature.values.firstWhere(
+                (e) => e.name == f,
+                orElse: () => AIFeature.receiptParsing,
+              ),
+            )
             .toSet() ??
         const {AIFeature.receiptParsing, AIFeature.autoCategorize};
     return AISettings(
       geminiApiKey: json['geminiApiKey'] as String? ?? '',
       nvidiaApiKey: json['nvidiaApiKey'] as String? ?? '',
+      openrouterApiKey: json['openrouterApiKey'] as String? ?? '',
       enabledFeatures: features,
     );
   }
 
   bool get hasAnyKey {
-    final g = geminiApiKey.isNotEmpty && geminiApiKey != AppConstants.geminiApiKeyPlaceholder;
-    final n = nvidiaApiKey.isNotEmpty && nvidiaApiKey != AppConstants.nvidiaApiKeyPlaceholder;
-    return g || n;
+    final g =
+        geminiApiKey.isNotEmpty &&
+        geminiApiKey != AppConstants.geminiApiKeyPlaceholder;
+    final n =
+        nvidiaApiKey.isNotEmpty &&
+        nvidiaApiKey != AppConstants.nvidiaApiKeyPlaceholder;
+    final o =
+        openrouterApiKey.isNotEmpty &&
+        openrouterApiKey != AppConstants.openrouterApiKeyPlaceholder;
+    return g || n || o;
   }
 
   String get activeProviderLabel {
-    final g = geminiApiKey.isNotEmpty && geminiApiKey != AppConstants.geminiApiKeyPlaceholder;
+    final o =
+        openrouterApiKey.isNotEmpty &&
+        openrouterApiKey != AppConstants.openrouterApiKeyPlaceholder;
+    if (o) return 'OpenRouter';
+    final g =
+        geminiApiKey.isNotEmpty &&
+        geminiApiKey != AppConstants.geminiApiKeyPlaceholder;
     if (g) return 'Gemini';
-    final n = nvidiaApiKey.isNotEmpty && nvidiaApiKey != AppConstants.nvidiaApiKeyPlaceholder;
+    final n =
+        nvidiaApiKey.isNotEmpty &&
+        nvidiaApiKey != AppConstants.nvidiaApiKeyPlaceholder;
     if (n) return 'NVIDIA';
     return 'none';
   }
@@ -83,14 +108,22 @@ class AINotifier extends StateNotifier<AISettings> {
         final loaded = AISettings.fromJson(data);
         // Fall back to env defaults if user cleared the fields.
         return loaded.copyWith(
-          geminiApiKey: loaded.geminiApiKey.isEmpty ? AppConstants.geminiApiKey : loaded.geminiApiKey,
-          nvidiaApiKey: loaded.nvidiaApiKey.isEmpty ? AppConstants.nvidiaApiKey : loaded.nvidiaApiKey,
+          geminiApiKey: loaded.geminiApiKey.isEmpty
+              ? AppConstants.geminiApiKey
+              : loaded.geminiApiKey,
+          nvidiaApiKey: loaded.nvidiaApiKey.isEmpty
+              ? AppConstants.nvidiaApiKey
+              : loaded.nvidiaApiKey,
+          openrouterApiKey: loaded.openrouterApiKey.isEmpty
+              ? AppConstants.openrouterApiKey
+              : loaded.openrouterApiKey,
         );
       }
     } catch (_) {}
     return AISettings(
       geminiApiKey: AppConstants.geminiApiKey,
       nvidiaApiKey: AppConstants.nvidiaApiKey,
+      openrouterApiKey: AppConstants.openrouterApiKey,
     );
   }
 
@@ -112,6 +145,12 @@ class AINotifier extends StateNotifier<AISettings> {
     await saveSettings(state.copyWith(nvidiaApiKey: effective));
   }
 
+  Future<void> updateOpenRouterApiKey(String apiKey) async {
+    final trimmed = apiKey.trim();
+    final effective = trimmed.isEmpty ? AppConstants.openrouterApiKey : trimmed;
+    await saveSettings(state.copyWith(openrouterApiKey: effective));
+  }
+
   Future<void> toggleFeature(AIFeature feature, bool enabled) async {
     final features = Set<AIFeature>.from(state.enabledFeatures);
     if (enabled) {
@@ -122,14 +161,19 @@ class AINotifier extends StateNotifier<AISettings> {
     await saveSettings(state.copyWith(enabledFeatures: features));
   }
 
-  UnifiedAIService get service => UnifiedAIService(
-        geminiKey: state.geminiApiKey,
-        nvidiaKey: state.nvidiaApiKey,
-      );
+  UnifiedAIService get service {
+    debugPrint(
+      '[AI Provider] Creating service with keys - OpenRouter: ${state.openrouterApiKey.isNotEmpty ? "present" : "empty"}, Gemini: ${state.geminiApiKey.isNotEmpty ? "present" : "empty"}, NVIDIA: ${state.nvidiaApiKey.isNotEmpty ? "present" : "empty"}',
+    );
+    return UnifiedAIService(
+      openrouterKey: state.openrouterApiKey,
+      geminiKey: state.geminiApiKey,
+      nvidiaKey: state.nvidiaApiKey,
+    );
+  }
 }
 
-final aiSettingsProvider =
-    StateNotifierProvider<AINotifier, AISettings>((ref) {
+final aiSettingsProvider = StateNotifierProvider<AINotifier, AISettings>((ref) {
   return AINotifier();
 });
 
@@ -153,13 +197,14 @@ class AIInsightsCache {
   });
 
   Map<String, dynamic> toJson() => {
-        'insight': insight,
-        'monthKey': monthKey,
-        'cachedAt': cachedAt,
-        'provider': provider,
-      };
+    'insight': insight,
+    'monthKey': monthKey,
+    'cachedAt': cachedAt,
+    'provider': provider,
+  };
 
-  factory AIInsightsCache.fromJson(Map<String, dynamic> json) => AIInsightsCache(
+  factory AIInsightsCache.fromJson(Map<String, dynamic> json) =>
+      AIInsightsCache(
         insight: json['insight'] as String,
         monthKey: json['monthKey'] as String,
         cachedAt: json['cachedAt'] as int,
@@ -236,8 +281,14 @@ class AIInsightsNotifier extends StateNotifier<AsyncValue<String?>> {
       final globalBudget = _ref.read(globalBudgetProvider);
       final categories = _ref.read(categoriesProvider);
 
-      final totalSpent = monthlyExpenses.fold<double>(0, (s, e) => s + e.amount);
-      final totalIncome = monthlyIncomes.fold<double>(0, (s, i) => s + i.amount);
+      final totalSpent = monthlyExpenses.fold<double>(
+        0,
+        (s, e) => s + e.amount,
+      );
+      final totalIncome = monthlyIncomes.fold<double>(
+        0,
+        (s, i) => s + i.amount,
+      );
       final budgetAmount = globalBudget?.limitAmount ?? 0;
       final transactionCount = monthlyExpenses.length;
 
@@ -307,6 +358,6 @@ class AIInsightsNotifier extends StateNotifier<AsyncValue<String?>> {
 
 final aiInsightsProvider =
     StateNotifierProvider<AIInsightsNotifier, AsyncValue<String?>>((ref) {
-  ref.keepAlive();
-  return AIInsightsNotifier(ref);
-});
+      ref.keepAlive();
+      return AIInsightsNotifier(ref);
+    });

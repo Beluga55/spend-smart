@@ -22,7 +22,9 @@ class Env {
       await dotenv.load(fileName: '.env');
       _loaded = true;
     } catch (e) {
-      debugPrint('[Env] dotenv.load failed ($e), trying rootBundle fallback...');
+      debugPrint(
+        '[Env] dotenv.load failed ($e), trying rootBundle fallback...',
+      );
       // flutter_dotenv's file loader can fail in release APKs on Android.
       // Fall back to rootBundle which is more reliable.
       try {
@@ -57,4 +59,5 @@ class Env {
   static String get googleWebClientId => _get('GOOGLE_WEB_CLIENT_ID');
   static String get geminiApiKey => _get('GEMINI_API_KEY');
   static String get nvidiaApiKey => _get('NVIDIA_API_KEY');
+  static String get openrouterApiKey => _get('OPENROUTER_API_KEY');
 }

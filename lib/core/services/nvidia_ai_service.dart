@@ -12,7 +12,11 @@ class NvidiaAIService {
 
   bool get isConfigured => apiKey.isNotEmpty && apiKey != 'nvapi-YOUR_KEY_HERE';
 
-  Future<String> _chat(String text, {double temp = 0.2, int tokens = 512}) async {
+  Future<String> _chat(
+    String text, {
+    double temp = 0.2,
+    int tokens = 512,
+  }) async {
     if (!isConfigured) {
       throw Exception('API key not configured. Add NVIDIA_API_KEY to .env');
     }
@@ -29,18 +33,25 @@ class NvidiaAIService {
 
     developer.log('[NVIDIA] Request model: $_model');
 
-    final res = await http.post(
-      Uri.parse('$_baseUrl/chat/completions'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: body,
-    ).timeout(const Duration(seconds: 15), onTimeout: () {
-      throw Exception('NVIDIA request timed out after 15s');
-    });
+    final res = await http
+        .post(
+          Uri.parse('$_baseUrl/chat/completions'),
+          headers: {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json',
+          },
+          body: body,
+        )
+        .timeout(
+          const Duration(seconds: 15),
+          onTimeout: () {
+            throw Exception('NVIDIA request timed out after 15s');
+          },
+        );
 
-    developer.log('[NVIDIA] Response ${res.statusCode}: ${res.body.substring(0, res.body.length.clamp(0, 500))}');
+    developer.log(
+      '[NVIDIA] Response ${res.statusCode}: ${res.body.substring(0, res.body.length.clamp(0, 500))}',
+    );
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body) as Map<String, dynamic>;
@@ -60,8 +71,12 @@ class NvidiaAIService {
     }
 
     // 2. Find first balanced { ... } or [ ... ]
-    final objectMatch = RegExp(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}').firstMatch(text);
-    final arrayMatch = RegExp(r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]').firstMatch(text);
+    final objectMatch = RegExp(
+      r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}',
+    ).firstMatch(text);
+    final arrayMatch = RegExp(
+      r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]',
+    ).firstMatch(text);
 
     String? jsonStr;
     if (objectMatch != null) {
@@ -145,7 +160,9 @@ class NvidiaAIService {
     required List<Map<String, dynamic>> topCats,
     required int txns,
   }) async {
-    final cats = topCats.map((c) => '${c['name']}: \$${c['amount']}').join('\n');
+    final cats = topCats
+        .map((c) => '${c['name']}: \$${c['amount']}')
+        .join('\n');
     final prompt =
         'You are a personal finance assistant. Give exactly 1 concise, actionable insight '
         'about this monthly spending (1-2 sentences max). Be specific and helpful.\n\n'
@@ -190,12 +207,18 @@ class NvidiaAIService {
 
     final expenses = (context['expenses'] as List<dynamic>? ?? [])
         .take(30)
-        .map((e) => '${e['date']} | ${e['category']} | \$${e['amount']} | ${e['note'] ?? ''}')
+        .map(
+          (e) =>
+              '${e['date']} | ${e['category']} | \$${e['amount']} | ${e['note'] ?? ''}',
+        )
         .join('\n');
 
     final incomes = (context['incomes'] as List<dynamic>? ?? [])
         .take(20)
-        .map((i) => '${i['date']} | ${i['source']} | \$${i['amount']} | ${i['note'] ?? ''}')
+        .map(
+          (i) =>
+              '${i['date']} | ${i['source']} | \$${i['amount']} | ${i['note'] ?? ''}',
+        )
         .join('\n');
 
     final budgets = (context['budgets'] as List<dynamic>? ?? [])
@@ -208,12 +231,9 @@ class NvidiaAIService {
 
     final historyText = history.isEmpty
         ? 'None'
-        : history
-            .map((h) => '${h['role']}: ${h['content']}')
-            .join('\n');
+        : history.map((h) => '${h['role']}: ${h['content']}').join('\n');
 
-    return
-        'You are SpendSmart AI, a personal finance assistant inside a mobile expense tracker app. '
+    return 'You are SpendSmart AI, a personal finance assistant inside a mobile expense tracker app. '
         'You can answer questions about the user\'s finances AND perform actions like creating expenses, incomes, or categories.\n\n'
         '=== AVAILABLE DATA ===\n'
         'Total Balance: \$${context['totalBalance'] ?? 0}\n'
@@ -232,7 +252,7 @@ class NvidiaAIService {
         'Respond with ONLY a JSON object (no markdown, no explanation, no ``` wrappers).\n\n'
         'JSON format:\n'
         '{\n'
-        '  "type": "answer" | "create_expense" | "create_income" | "create_category" | "delete_expense" | "delete_income" | "delete_category",\n'
+        '  "type": "answer" | "create_expense" | "create_income" | "create_multiple_expenses" | "create_multiple_incomes" | "create_category" | "delete_expense" | "delete_income" | "delete_category",\n'
         '  "message": "friendly text reply to show the user",\n'
         '  "action": { ... } // only for non-answer types\n'
         '}\n\n'
@@ -240,6 +260,7 @@ class NvidiaAIService {
         '{\n'
         '  "amount": number (required),\n'
         '  "category": "exact category name from available categories (required)",\n'
+        '  "wallet": "exact wallet name (optional, use the default wallet if user does not specify)",\n'
         '  "date": "YYYY-MM-DD" (use today if not specified),\n'
         '  "note": "string or null"\n'
         '}\n\n'
@@ -247,8 +268,23 @@ class NvidiaAIService {
         '{\n'
         '  "amount": number (required),\n'
         '  "source": "exact source name from available income categories or a new one (required)",\n'
+        '  "wallet": "exact wallet name (optional, use the default wallet if user does not specify)",\n'
         '  "date": "YYYY-MM-DD" (use today if not specified),\n'
         '  "note": "string or null"\n'
+        '}\n\n'
+        'For "create_multiple_expenses" action (use when user mentions multiple expenses in one message):\n'
+        '{\n'
+        '  "transactions": [\n'
+        '    {"amount": number, "category": "name", "date": "YYYY-MM-DD", "note": "string or null"},\n'
+        '    ...\n'
+        '  ]\n'
+        '}\n\n'
+        'For "create_multiple_incomes" action (use when user mentions multiple incomes in one message):\n'
+        '{\n'
+        '  "transactions": [\n'
+        '    {"amount": number, "source": "name", "date": "YYYY-MM-DD", "note": "string or null"},\n'
+        '    ...\n'
+        '  ]\n'
         '}\n\n'
         'For "create_category" action:\n'
         '{\n'
@@ -256,6 +292,14 @@ class NvidiaAIService {
         '  "iconName": "Material icon name like "restaurant" or "shopping_cart" (required)",\n'
         '  "color": "hex color string like #FF5733 (required)",\n'
         '  "categoryType": "expense" or "income" (required)\n'
+        '}\n\n'
+        'For "create_transfer" action (use when user wants to transfer money between wallets):\n'
+        '{\n'
+        '  "amount": number (required),\n'
+        '  "fromWallet": "exact source wallet name (required)",\n'
+        '  "toWallet": "exact destination wallet name (required)",\n'
+        '  "date": "YYYY-MM-DD" (optional),\n'
+        '  "note": "string or null" (optional)\n'
         '}\n\n'
         'For "delete_expense" action:\n'
         '{\n'
@@ -275,6 +319,33 @@ class NvidiaAIService {
         '{\n'
         '  "name": "category name (required)"\n'
         '}\n\n'
+        '=== MULTIPLE TRANSACTIONS - IMPORTANT ===\n'
+        'When user mentions MULTIPLE expenses/incomes in ONE message, ALWAYS use create_multiple_expenses or create_multiple_incomes.\n'
+        'Examples:\n'
+        '  User: "Add \$10 lunch and \$5 coffee"\n'
+        '  Response: {"type": "create_multiple_expenses", "message": "Added both expenses", "action": {"transactions": [{"amount": 10, "category": "Food", "date": "2026-05-21", "note": "lunch"}, {"amount": 5, "category": "Food", "date": "2026-05-21", "note": "coffee"}]}}\n'
+        '  User: "Add \$20 dinner and \$15 transport"\n'
+        '  Response: {"type": "create_multiple_expenses", "message": "Added both expenses", "action": {"transactions": [{"amount": 20, "category": "Food", "date": "2026-05-21", "note": "dinner"}, {"amount": 15, "category": "Transport", "date": "2026-05-21", "note": null}]}}\n'
+        '  User: "Add \$100 salary and \$50 freelance"\n'
+        '  Response: {"type": "create_multiple_incomes", "message": "Added both incomes", "action": {"transactions": [{"amount": 100, "source": "Salary", "date": "2026-05-21", "note": null}, {"amount": 50, "source": "Freelance", "date": "2026-05-21", "note": null}]}}\n\n'
+        '=== WALLET SELECTION - IMPORTANT ===\n'
+        'When user specifies a wallet for an expense or income, include it in the action.\n'
+        'Examples:\n'
+        '  User: "Add \$20 lunch to my Cash wallet"\n'
+        '  Response: {"type": "create_expense", "message": "Added \$20 lunch to Cash wallet", "action": {"amount": 20, "category": "Food", "wallet": "Cash", "date": "2026-05-21", "note": "lunch"}}\n'
+        '  User: "Add \$500 salary to Checking"\n'
+        '  Response: {"type": "create_income", "message": "Added \$500 salary to Checking wallet", "action": {"amount": 500, "source": "Salary", "wallet": "Checking", "date": "2026-05-21", "note": null}}\n'
+        '  User: "Can I afford \$100 dinner?" (Check wallet balance before responding)\n'
+        '  Response: {"type": "answer", "message": "You have \$150 in your Cash wallet, so yes you can afford it. That would leave you with \$50 remaining."}\n\n'
+        '=== WALLET TRANSFERS - IMPORTANT ===\n'
+        'When user wants to transfer money between wallets, use create_transfer.\n'
+        'Examples:\n'
+        '  User: "Transfer \$100 from Savings to Checking"\n'
+        '  Response: {"type": "create_transfer", "message": "Transferred \$100 from Savings to Checking", "action": {"amount": 100, "fromWallet": "Savings", "toWallet": "Checking", "date": "2026-05-21", "note": null}}\n'
+        '  User: "Move \$50 from Cash to Credit Card"\n'
+        '  Response: {"type": "create_transfer", "message": "Moved \$50 from Cash to Credit Card", "action": {"amount": 50, "fromWallet": "Cash", "toWallet": "Credit Card", "date": "2026-05-21", "note": null}}\n'
+        '  User: "Send \$200 from my Checking to Savings account"\n'
+        '  Response: {"type": "create_transfer", "message": "Sent \$200 from Checking to Savings", "action": {"amount": 200, "fromWallet": "Checking", "toWallet": "Savings", "date": "2026-05-21", "note": null}}\n\n'
         'Rules:\n'
         '1. If creating an expense/income and the category/source does not exist, prefer to use create_category first in a separate message, or pick the closest existing match.\n'
         '2. Use today\'s date (${DateTime.now().toIso8601String().split('T').first}) if the user does not specify a date.\n'
@@ -282,7 +353,10 @@ class NvidiaAIService {
         '4. Keep the message concise, friendly, and actionable.\n'
         '5. For answer type, the action field can be omitted or null.\n'
         '6. For delete actions, be as specific as possible (amount + date + note) to avoid deleting the wrong item.\n'
-        '7. You cannot delete default categories or categories that have transactions.\n\n'
+        '7. You cannot delete default categories or categories that have transactions.\n'
+        '8. CRITICAL: When user mentions 2+ items in one message, use create_multiple_expenses/incomes, NEVER use create_expense/income.\n'
+        '9. When user specifies a wallet, use the exact wallet name from the context. If not specified, use the default wallet or ask which wallet to use.\n'
+        '10. For transfers, verify the source wallet has sufficient balance. If not, inform the user and ask if they want to proceed anyway.\n\n'
         'User message: $query';
   }
 
@@ -295,22 +369,35 @@ class NvidiaAIService {
       text = match.group(1)!;
     }
 
-    // 2. Find first balanced { ... }
-    final objectMatch = RegExp(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}').firstMatch(text);
-    if (objectMatch != null) {
-      final jsonStr = objectMatch.group(0);
-      try {
-        final parsed = jsonDecode(jsonStr!) as Map<String, dynamic>;
-        if (parsed.containsKey('type') && parsed.containsKey('message')) {
-          return parsed;
+    // 2. Try to find and parse the outermost JSON object by brace counting
+    text = text.trim();
+    final jsonStart = text.indexOf('{');
+    if (jsonStart != -1) {
+      var braceCount = 0;
+      var jsonEnd = jsonStart;
+      for (var i = jsonStart; i < text.length; i++) {
+        if (text[i] == '{') {
+          braceCount++;
+        } else if (text[i] == '}') {
+          braceCount--;
+          if (braceCount == 0) {
+            jsonEnd = i + 1;
+            break;
+          }
         }
-      } catch (_) {}
+      }
+      if (braceCount == 0) {
+        final jsonStr = text.substring(jsonStart, jsonEnd);
+        try {
+          final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
+          if (parsed.containsKey('type') && parsed.containsKey('message')) {
+            return parsed;
+          }
+        } catch (_) {}
+      }
     }
 
     // 3. Fallback — treat the whole thing as an answer
-    return {
-      'type': 'answer',
-      'message': raw.trim(),
-    };
+    return {'type': 'answer', 'message': raw.trim()};
   }
 }

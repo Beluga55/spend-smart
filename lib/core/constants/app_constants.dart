@@ -15,10 +15,12 @@ class AppConstants {
   // AI API Keys — loaded from .env
   static String get geminiApiKey => Env.geminiApiKey;
   static String get nvidiaApiKey => Env.nvidiaApiKey;
+  static String get openrouterApiKey => Env.openrouterApiKey;
 
   // Placeholder sentinels — used to detect unconfigured keys.
   static const String geminiApiKeyPlaceholder = 'YOUR_GEMINI_KEY_HERE';
   static const String nvidiaApiKeyPlaceholder = 'nvapi-YOUR_KEY_HERE';
+  static const String openrouterApiKeyPlaceholder = 'YOUR_OPENROUTER_KEY_HERE';
 
   static const List<DefaultCategory> defaultCategories = [
     DefaultCategory(name: 'Food', iconName: 'restaurant', color: 0xFFFF6B6B),
