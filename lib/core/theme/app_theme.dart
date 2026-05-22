@@ -1138,4 +1138,328 @@ class AppTheme {
       ],
     );
   }
+
+  // ── Emerald palette 💎 ───────────────────────────────────────────────────────
+  static const Color emeraldPrimary = Color(0xFFA5D6A7);
+  static const Color emeraldBackground = Color(0xFFF5F7F5);
+  static const Color emeraldSurface = Color(0xFFFFFFFF);
+  static const Color emeraldTextPrimary = Color(0xFF1A1A1A);
+  static const Color emeraldTextSecondary = Color(0xFF6B7B6B);
+  static const Color emeraldDivider = Color(0xFFE0E4E0);
+
+  static const Color emeraldDarkPrimary = Color(0xFFA5D6A7);
+  static const Color emeraldDarkBackground = Color(0xFF1A1A1A);
+  static const Color emeraldDarkSurface = Color(0xFF252525);
+  static const Color emeraldDarkTextPrimary = Color(0xFFE8E8E8);
+  static const Color emeraldDarkTextSecondary = Color(0xFFA5D6A7);
+  static const Color emeraldDarkDivider = Color(0xFF404040);
+
+  // ── Emerald light 💎 ─────────────────────────────────────────────────────────
+  static ThemeData emeraldLightTheme({FontFamily fontFamily = FontFamily.comfortaa}) {
+    final t = _getTextTheme(fontFamily);
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: const ColorScheme.light(
+        primary: emeraldPrimary,
+        onPrimary: Colors.white,
+        surface: emeraldSurface,
+        onSurface: emeraldTextPrimary,
+        surfaceContainerHighest: Color(0xFFEEF0EE),
+        surfaceContainerLow: emeraldBackground,
+        outline: emeraldDivider,
+        outlineVariant: Color(0xFFCDD2CD),
+        error: Color(0xFFD32F2F),
+      ),
+      scaffoldBackgroundColor: emeraldBackground,
+      textTheme: t.copyWith(
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: emeraldTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: emeraldTextPrimary,
+        ),
+        bodyLarge: t.bodyLarge?.copyWith(color: emeraldTextPrimary),
+        bodyMedium: t.bodyMedium?.copyWith(color: emeraldTextPrimary),
+        bodySmall: t.bodySmall?.copyWith(color: emeraldTextSecondary),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: emeraldSurface,
+        foregroundColor: emeraldTextPrimary,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: emeraldTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: emeraldSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: emeraldDivider),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: emeraldSurface,
+        selectedItemColor: emeraldPrimary,
+        unselectedItemColor: emeraldTextSecondary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: GoogleFonts.comfortaa(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: emeraldPrimary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: emeraldBackground,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldPrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: GoogleFonts.comfortaa(color: emeraldTextSecondary),
+        hintStyle: GoogleFonts.comfortaa(color: emeraldTextSecondary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: emeraldPrimary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: emeraldPrimary,
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: emeraldSurface,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: emeraldTextPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.comfortaa(color: emeraldTextPrimary, fontSize: 14),
+      ),
+      extensions: const [
+        SemanticColors(
+          success: emeraldPrimary,
+          income: emeraldPrimary,
+          expense: Color(0xFFE57373),
+          warning: Color(0xFFFFB74D),
+        ),
+      ],
+    );
+  }
+
+  // ── Emerald dark 💎 ───────────────────────────────────────────────────────────
+  static ThemeData emeraldDarkTheme({FontFamily fontFamily = FontFamily.comfortaa}) {
+    final t = _getTextTheme(fontFamily);
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: emeraldDarkPrimary,
+        onPrimary: Colors.black,
+        surface: emeraldDarkSurface,
+        onSurface: emeraldDarkTextPrimary,
+        surfaceContainerHighest: Color(0xFF2A2A2A),
+        surfaceContainerLow: emeraldDarkBackground,
+        outline: emeraldDarkDivider,
+        outlineVariant: Color(0xFF383838),
+        error: Color(0xFFEF5350),
+      ),
+      scaffoldBackgroundColor: emeraldDarkBackground,
+      textTheme: t.copyWith(
+        displayLarge: t.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldDarkTextPrimary,
+        ),
+        displayMedium: t.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldDarkTextPrimary,
+        ),
+        displaySmall: t.displaySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: emeraldDarkTextPrimary,
+        ),
+        headlineLarge: t.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldDarkTextPrimary,
+        ),
+        headlineMedium: t.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldDarkTextPrimary,
+        ),
+        headlineSmall: t.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldDarkTextPrimary,
+        ),
+        titleLarge: t.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: emeraldDarkTextPrimary,
+        ),
+        titleMedium: t.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: emeraldDarkTextPrimary,
+        ),
+        titleSmall: t.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: emeraldDarkTextPrimary,
+        ),
+        bodyLarge: t.bodyLarge?.copyWith(color: emeraldDarkTextPrimary),
+        bodyMedium: t.bodyMedium?.copyWith(color: emeraldDarkTextPrimary),
+        bodySmall: t.bodySmall?.copyWith(color: emeraldDarkTextSecondary),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: emeraldDarkSurface,
+        foregroundColor: emeraldDarkTextPrimary,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: emeraldDarkTextPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: emeraldDarkSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: emeraldDarkDivider),
+        ),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: emeraldDarkSurface,
+        selectedItemColor: emeraldDarkPrimary,
+        unselectedItemColor: emeraldDarkTextSecondary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: GoogleFonts.comfortaa(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: emeraldDarkPrimary,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: emeraldDarkBackground,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldDarkDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldDarkDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: emeraldDarkPrimary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        labelStyle: GoogleFonts.comfortaa(color: emeraldDarkTextSecondary),
+        hintStyle: GoogleFonts.comfortaa(color: emeraldDarkTextSecondary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: emeraldDarkPrimary,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: emeraldDarkPrimary,
+          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: emeraldDarkSurface,
+        titleTextStyle: GoogleFonts.comfortaa(
+          color: emeraldDarkTextPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        contentTextStyle: GoogleFonts.comfortaa(color: emeraldDarkTextPrimary, fontSize: 14),
+      ),
+      extensions: const [
+        SemanticColors(
+          success: emeraldDarkPrimary,
+          income: emeraldDarkPrimary,
+          expense: Color(0xFFF87171),
+          warning: Color(0xFFFBBF24),
+        ),
+      ],
+    );
+  }
 }

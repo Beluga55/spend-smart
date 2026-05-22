@@ -52,3 +52,7 @@ windows/flutter/generated_plugins.cmake
 # Environment secrets — never commit real keys
 .env
 
+# EvoMap MCP local data
+memory/evolution/
+assets/gep/
+

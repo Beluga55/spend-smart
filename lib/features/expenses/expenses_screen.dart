@@ -753,6 +753,8 @@ class _IncomeTile extends ConsumerWidget {
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
     final cs = Theme.of(context).colorScheme;
+    final semantic = Theme.of(context).extension<SemanticColors>();
+    final incomeColor = semantic?.income ?? const Color(0xFF4CAF50);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -764,89 +766,89 @@ class _IncomeTile extends ConsumerWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: Dismissible(
-      key: Key(income.id),
-      direction: DismissDirection.endToStart,
-      confirmDismiss: (direction) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
+          key: Key(income.id),
+          direction: DismissDirection.endToStart,
+          confirmDismiss: (direction) async {
+            return await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text(
+                  l10n.deleteIncome,
+                  style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                ),
+                content: Text(
+                  l10n.areYouSureDeleteIncome,
+                  style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: Text(l10n.cancel),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: Text(l10n.delete),
+                  ),
+                ],
+              ),
+            ) ?? false;
+          },
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            color: Theme.of(context).colorScheme.error,
+            child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+          ),
+          onDismissed: (_) {
+            final deleted = income;
+            final box = Hive.box<Income>('incomes');
+            ref.read(incomesProvider.notifier).deleteIncome(income.id);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.incomeDeleted),
+                action: SnackBarAction(
+                  label: l10n.undo,
+                  onPressed: () {
+                    box.put(deleted.id, deleted);
+                  },
+                ),
+                duration: const Duration(seconds: 5),
+              ),
+            );
+          },
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            leading: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: incomeColor.withAlpha(25),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                IconConstants.getIcon(cat.iconName),
+                color: incomeColor,
+                size: 22,
+              ),
+            ),
             title: Text(
-              l10n.deleteIncome,
-              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+              income.note?.isNotEmpty == true ? income.note! : cat.name,
+              style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            content: Text(
-              l10n.areYouSureDeleteIncome,
-              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            subtitle: Text(
+              cat.name,
+              style: TextStyle(color: textSecondary, fontSize: 12),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(l10n.cancel),
+            trailing: Text(
+              '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: incomeColor,
+                fontSize: 16,
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(l10n.delete),
-              ),
-            ],
-          ),
-        ) ?? false;
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        color: Theme.of(context).colorScheme.error,
-        child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
-      ),
-      onDismissed: (_) {
-        final deleted = income;
-        final box = Hive.box<Income>('incomes');
-        ref.read(incomesProvider.notifier).deleteIncome(income.id);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.incomeDeleted),
-            action: SnackBarAction(
-              label: l10n.undo,
-              onPressed: () {
-                box.put(deleted.id, deleted);
-              },
             ),
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      },
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Color(cat.color).withAlpha(25),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            IconConstants.getIcon(cat.iconName),
-            color: Color(cat.color),
-            size: 22,
-          ),
-        ),
-        title: Text(
-          income.note?.isNotEmpty == true ? income.note! : cat.name,
-          style: TextStyle(fontWeight: FontWeight.w500, color: textPrimary),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          cat.name,
-          style: TextStyle(color: textSecondary, fontSize: 12),
-        ),
-        trailing: Text(
-          '+${currency.symbol}${income.amount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.successColor,
-            fontSize: 16,
-          ),
-        ),
         onTap: () => _showEditIncomeModal(context, ref),
       ),
     ),

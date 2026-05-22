@@ -57,6 +57,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       themeName = isDarkMode ? l10n.catDark : l10n.catLight;
     } else if (currentStyle == ThemeStyle.limeTheme) {
       themeName = isDarkMode ? l10n.limeDark : l10n.limeLight;
+    } else if (currentStyle == ThemeStyle.emeraldTheme) {
+      themeName = isDarkMode ? l10n.emeraldDark : l10n.emeraldLight;
     }
     final currentLocale = ref.watch(localeProvider);
     final localeName = currentLocale.languageCode == 'zh'

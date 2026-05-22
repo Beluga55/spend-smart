@@ -223,10 +223,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get catDark => '猫咪深色 🐱';
 
   @override
-  String get limeLight => '翠绿浅色 💚';
+  String get limeLight => '青柠浅色 💚';
 
   @override
-  String get limeDark => '翠绿深色 💚';
+  String get limeDark => '青柠深色 💚';
+
+  @override
+  String get emeraldLight => '翡翠浅色 💎';
+
+  @override
+  String get emeraldDark => '翡翠深色 💎';
 
   @override
   String get about => '关于';

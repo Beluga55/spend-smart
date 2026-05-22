@@ -764,6 +764,10 @@ class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp> {
     ThemeData lightTheme;
     ThemeData darkTheme;
     switch (themeStyle) {
+      case ThemeStyle.emeraldTheme:
+        lightTheme = AppTheme.emeraldLightTheme(fontFamily: fontFamily);
+        darkTheme = AppTheme.emeraldDarkTheme(fontFamily: fontFamily);
+        break;
       case ThemeStyle.catTheme:
         lightTheme = AppTheme.catLightTheme(fontFamily: fontFamily);
         darkTheme = AppTheme.catDarkTheme(fontFamily: fontFamily);

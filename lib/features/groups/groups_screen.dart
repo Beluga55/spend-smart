@@ -57,15 +57,6 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen>
       final sync = ref.read(groupSyncServiceProvider);
       await sync.syncAll();
       _lastSyncTime = DateTime.now();
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.syncComplete),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;

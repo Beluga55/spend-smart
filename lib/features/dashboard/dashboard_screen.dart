@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
-import 'package:mobile_expense_tracker/core/services/sync_status_provider.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/summary_card.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/budget_progress.dart';
 import 'package:mobile_expense_tracker/features/dashboard/widgets/category_chart.dart';
@@ -42,18 +41,15 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 108,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+        leading: Align(
+          alignment: Alignment.centerLeft,
+          child: GestureDetector(
+            onTap: () => Scaffold.of(context).openDrawer(),
+            child: const Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Icon(Icons.menu, size: 24),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: _buildSyncStatus(context, ref),
-            ),
-          ],
+          ),
         ),
         title: Text(l10n.appTitle),
         actions: [
@@ -258,63 +254,6 @@ class DashboardScreen extends ConsumerWidget {
           }
         },
       ),
-    );
-  }
-
-  Widget _buildSyncStatus(BuildContext context, WidgetRef ref) {
-    final syncState = ref.watch(syncNotifierProvider);
-    final l10n = Localizations.of<AppLocalizations>(context, AppLocalizations);
-
-    IconData icon;
-    Color color;
-
-    switch (syncState.status) {
-      case SyncStatus.synced:
-        icon = Icons.cloud_done_outlined;
-        color = Colors.green;
-        break;
-      case SyncStatus.pending:
-        icon = Icons.cloud_upload_outlined;
-        color = Theme.of(context).brightness == Brightness.dark
-            ? Colors.white70
-            : Colors.grey;
-        break;
-      case SyncStatus.syncing:
-        icon = Icons.cloud_sync_outlined;
-        color = Colors.blue;
-        break;
-      case SyncStatus.offline:
-        icon = Icons.cloud_off_outlined;
-        color = Colors.grey;
-        break;
-      case SyncStatus.error:
-        icon = Icons.error_outline;
-        color = Colors.red;
-        break;
-    }
-
-    return IconButton(
-      icon: Icon(icon, color: color),
-      onPressed: () {
-        if (syncState.status == SyncStatus.error &&
-            syncState.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${l10n?.syncError ?? 'Sync Error'}: ${syncState.errorMessage}',
-              ),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else if (syncState.status == SyncStatus.synced) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n?.syncSuccess ?? 'Synced'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      },
     );
   }
 }

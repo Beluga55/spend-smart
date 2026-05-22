@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-enum ThemeStyle { defaultTheme, catTheme, limeTheme }
+enum ThemeStyle { defaultTheme, catTheme, limeTheme, emeraldTheme }
 
 class ThemeState {
   final ThemeMode mode;
@@ -41,6 +41,8 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
         ? ThemeStyle.catTheme
         : styleStr == 'lime'
         ? ThemeStyle.limeTheme
+        : styleStr == 'emerald'
+        ? ThemeStyle.emeraldTheme
         : ThemeStyle.defaultTheme;
     state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);
   }
@@ -53,6 +55,8 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
           ? 'cat'
           : style == ThemeStyle.limeTheme
           ? 'lime'
+          : style == ThemeStyle.emeraldTheme
+          ? 'emerald'
           : 'default',
     );
     state = ThemeState(isDark ? ThemeMode.dark : ThemeMode.light, style);

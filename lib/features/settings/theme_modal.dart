@@ -148,12 +148,12 @@ class ThemeModal extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             _ThemeOption(
-              label: l10n.limeLight,
+              label: l10n.emeraldLight,
               icon: Icons.eco_outlined,
-              swatch: AppTheme.limeBackground,
-              swatchBorder: AppTheme.limePrimary,
+              swatch: AppTheme.emeraldBackground,
+              swatchBorder: AppTheme.emeraldPrimary,
               isSelected:
-                  currentStyle == ThemeStyle.limeTheme &&
+                  currentStyle == ThemeStyle.emeraldTheme &&
                   currentMode == ThemeMode.light,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
@@ -161,18 +161,18 @@ class ThemeModal extends ConsumerWidget {
               onTap: () {
                 ref
                     .read(themeStateProvider.notifier)
-                    .setTheme(ThemeStyle.limeTheme, false);
+                    .setTheme(ThemeStyle.emeraldTheme, false);
                 Navigator.pop(context);
               },
             ),
             const SizedBox(height: 12),
             _ThemeOption(
-              label: l10n.limeDark,
+              label: l10n.emeraldDark,
               icon: Icons.nights_stay_outlined,
-              swatch: AppTheme.limeDarkBackground,
-              swatchBorder: AppTheme.limeDarkPrimary,
+              swatch: AppTheme.emeraldDarkBackground,
+              swatchBorder: AppTheme.emeraldDarkPrimary,
               isSelected:
-                  currentStyle == ThemeStyle.limeTheme &&
+                  currentStyle == ThemeStyle.emeraldTheme &&
                   currentMode == ThemeMode.dark,
               textPrimary: textPrimary,
               backgroundColor: backgroundColor,
@@ -180,7 +180,7 @@ class ThemeModal extends ConsumerWidget {
               onTap: () {
                 ref
                     .read(themeStateProvider.notifier)
-                    .setTheme(ThemeStyle.limeTheme, true);
+                    .setTheme(ThemeStyle.emeraldTheme, true);
                 Navigator.pop(context);
               },
             ),

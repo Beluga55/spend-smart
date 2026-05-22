@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_expense_tracker/core/theme/app_theme.dart';
 import 'package:mobile_expense_tracker/core/providers/providers.dart';
 import 'package:mobile_expense_tracker/core/providers/currency_provider.dart';
 import 'package:mobile_expense_tracker/l10n/app_localizations.dart';
@@ -22,8 +23,9 @@ class IncomeExpenseChart extends ConsumerWidget {
     final textPrimary = Theme.of(context).colorScheme.onSurface;
     final textSecondary = Theme.of(context).colorScheme.onSurface.withAlpha(153);
 
-    const incomeColor = Color(0xFF4CAF50);
-    const expenseColor = Color(0xFFFF5252);
+    final semantic = Theme.of(context).extension<SemanticColors>();
+    final incomeColor = semantic?.income ?? const Color(0xFF4CAF50);
+    final expenseColor = semantic?.expense ?? const Color(0xFFFF5252);
 
     final hasData = totalIncome > 0 || totalExpense > 0;
 

@@ -521,14 +521,26 @@ abstract class AppLocalizations {
   /// No description provided for @limeLight.
   ///
   /// In en, this message translates to:
-  /// **'Emerald Light 💚'**
+  /// **'Lime Light 💚'**
   String get limeLight;
 
   /// No description provided for @limeDark.
   ///
   /// In en, this message translates to:
-  /// **'Emerald Dark 💚'**
+  /// **'Lime Dark 💚'**
   String get limeDark;
+
+  /// No description provided for @emeraldLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Light 💎'**
+  String get emeraldLight;
+
+  /// No description provided for @emeraldDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Dark 💎'**
+  String get emeraldDark;
 
   /// No description provided for @about.
   ///

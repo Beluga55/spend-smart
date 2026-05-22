@@ -225,10 +225,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catDark => 'Cat Dark 🐱';
 
   @override
-  String get limeLight => 'Emerald Light 💚';
+  String get limeLight => 'Lime Light 💚';
 
   @override
-  String get limeDark => 'Emerald Dark 💚';
+  String get limeDark => 'Lime Dark 💚';
+
+  @override
+  String get emeraldLight => 'Emerald Light 💎';
+
+  @override
+  String get emeraldDark => 'Emerald Dark 💎';
 
   @override
   String get about => 'About';
