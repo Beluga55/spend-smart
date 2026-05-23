@@ -105,6 +105,22 @@ class AppTheme {
     }
   }
 
+  static TextStyle _font(
+    FontFamily fontFamily, {
+    double fontSize = 14,
+    FontWeight fontWeight = FontWeight.w400,
+    Color? color,
+  }) {
+    switch (fontFamily) {
+      case FontFamily.sora:
+        return GoogleFonts.sora(fontSize: fontSize, fontWeight: fontWeight, color: color);
+      case FontFamily.fredoka:
+        return GoogleFonts.fredoka(fontSize: fontSize, fontWeight: fontWeight, color: color);
+      case FontFamily.comfortaa:
+        return GoogleFonts.comfortaa(fontSize: fontSize, fontWeight: fontWeight, color: color);
+    }
+  }
+
   // ── Default light ────────────────────────────────────────────────────────────
   static ThemeData lightTheme({FontFamily fontFamily = FontFamily.sora}) {
     final textTheme = _getTextTheme(fontFamily);
@@ -152,17 +168,7 @@ class AppTheme {
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )
-            : GoogleFonts.sora(
-                color: textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: textPrimary),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
@@ -178,11 +184,8 @@ class AppTheme {
         unselectedItemColor: textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.sora(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: GoogleFonts.sora(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
@@ -212,12 +215,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: textSecondary)
-            : GoogleFonts.sora(color: textSecondary),
-        hintStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: textSecondary)
-            : GoogleFonts.sora(color: textSecondary),
+        labelStyle: _font(fontFamily, color: textSecondary),
+        hintStyle: _font(fontFamily, color: textSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -228,35 +227,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600, fontSize: 16)
-              : GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryColor,
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600)
-              : GoogleFonts.sora(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surfaceColor,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              )
-            : GoogleFonts.sora(
-                color: textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-        contentTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: textPrimary, fontSize: 14)
-            : GoogleFonts.sora(color: textPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: textPrimary),
+        contentTextStyle: _font(fontFamily, color: textPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -333,17 +316,7 @@ class AppTheme {
         foregroundColor: darkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: darkTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )
-            : GoogleFonts.sora(
-                color: darkTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: darkTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: darkSurfaceColor,
@@ -359,12 +332,8 @@ class AppTheme {
         unselectedItemColor: darkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontWeight: FontWeight.w500, fontSize: 11)
-            : GoogleFonts.sora(fontWeight: FontWeight.w500, fontSize: 11),
-        unselectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontSize: 11)
-            : GoogleFonts.sora(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: Colors.white,
@@ -394,12 +363,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: darkTextSecondary)
-            : GoogleFonts.sora(color: darkTextSecondary),
-        hintStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: darkTextSecondary)
-            : GoogleFonts.sora(color: darkTextSecondary),
+        labelStyle: _font(fontFamily, color: darkTextSecondary),
+        hintStyle: _font(fontFamily, color: darkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -410,35 +375,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600, fontSize: 16)
-              : GoogleFonts.sora(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w600)
-              : GoogleFonts.sora(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: darkSurfaceColor,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: darkTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              )
-            : GoogleFonts.sora(
-                color: darkTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-        contentTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: darkTextPrimary, fontSize: 14)
-            : GoogleFonts.sora(color: darkTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: darkTextPrimary),
+        contentTextStyle: _font(fontFamily, color: darkTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -522,17 +471,7 @@ class AppTheme {
         foregroundColor: catTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: catTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              )
-            : GoogleFonts.sora(
-                color: catTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: catTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: catSurface,
@@ -548,12 +487,8 @@ class AppTheme {
         unselectedItemColor: catTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11)
-            : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 11),
-        unselectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontSize: 11)
-            : GoogleFonts.sora(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: catPrimary,
@@ -583,12 +518,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catTextSecondary)
-            : GoogleFonts.sora(color: catTextSecondary),
-        hintStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catTextSecondary)
-            : GoogleFonts.sora(color: catTextSecondary),
+        labelStyle: _font(fontFamily, color: catTextSecondary),
+        hintStyle: _font(fontFamily, color: catTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -596,38 +527,22 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
+shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16)
-              : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w700, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: catPrimary,
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700)
-              : GoogleFonts.sora(fontWeight: FontWeight.w700),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w700),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: catSurface,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: catTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              )
-            : GoogleFonts.sora(
-                color: catTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-        contentTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catTextPrimary, fontSize: 14)
-            : GoogleFonts.sora(color: catTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.w700, color: catTextPrimary),
+        contentTextStyle: _font(fontFamily, color: catTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -712,17 +627,7 @@ class AppTheme {
         foregroundColor: catDarkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: catDarkTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              )
-            : GoogleFonts.sora(
-                color: catDarkTextPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w700, color: catDarkTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: catDarkSurface,
@@ -738,12 +643,8 @@ class AppTheme {
         unselectedItemColor: catDarkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 11)
-            : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 11),
-        unselectedLabelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(fontSize: 11)
-            : GoogleFonts.sora(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: catDarkPrimary,
@@ -773,12 +674,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catDarkTextSecondary)
-            : GoogleFonts.sora(color: catDarkTextSecondary),
-        hintStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catDarkTextSecondary)
-            : GoogleFonts.sora(color: catDarkTextSecondary),
+        labelStyle: _font(fontFamily, color: catDarkTextSecondary),
+        hintStyle: _font(fontFamily, color: catDarkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -789,35 +686,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700, fontSize: 16)
-              : GoogleFonts.sora(fontWeight: FontWeight.w700, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w700, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: catDarkPrimary,
-          textStyle: fontFamily == FontFamily.fredoka
-              ? GoogleFonts.fredoka(fontWeight: FontWeight.w700)
-              : GoogleFonts.sora(fontWeight: FontWeight.w700),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w700),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: catDarkSurface,
-        titleTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(
-                color: catDarkTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              )
-            : GoogleFonts.sora(
-                color: catDarkTextPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-        contentTextStyle: fontFamily == FontFamily.fredoka
-            ? GoogleFonts.fredoka(color: catDarkTextPrimary, fontSize: 14)
-            : GoogleFonts.sora(color: catDarkTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.w700, color: catDarkTextPrimary),
+        contentTextStyle: _font(fontFamily, color: catDarkTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -893,11 +774,7 @@ class AppTheme {
         foregroundColor: limeTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: limeTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: limeTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: limeSurface,
@@ -913,11 +790,8 @@ class AppTheme {
         unselectedItemColor: limeTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.comfortaa(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: limePrimary,
@@ -943,8 +817,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: GoogleFonts.comfortaa(color: limeTextSecondary),
-        hintStyle: GoogleFonts.comfortaa(color: limeTextSecondary),
+        labelStyle: _font(fontFamily, color: limeTextSecondary),
+        hintStyle: _font(fontFamily, color: limeTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -955,23 +829,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: limePrimary,
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: limeSurface,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: limeTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-        contentTextStyle: GoogleFonts.comfortaa(color: limeTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: limeTextPrimary),
+        contentTextStyle: _font(fontFamily, color: limeTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -1048,11 +918,7 @@ class AppTheme {
         foregroundColor: limeDarkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: limeDarkTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: limeDarkTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: limeDarkSurface,
@@ -1068,11 +934,8 @@ class AppTheme {
         unselectedItemColor: limeDarkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.comfortaa(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: limeDarkPrimary,
@@ -1098,8 +961,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: GoogleFonts.comfortaa(color: limeDarkTextSecondary),
-        hintStyle: GoogleFonts.comfortaa(color: limeDarkTextSecondary),
+        labelStyle: _font(fontFamily, color: limeDarkTextSecondary),
+        hintStyle: _font(fontFamily, color: limeDarkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -1110,23 +973,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: limeDarkPrimary,
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: limeDarkSurface,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: limeDarkTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-        contentTextStyle: GoogleFonts.comfortaa(color: limeDarkTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: limeDarkTextPrimary),
+        contentTextStyle: _font(fontFamily, color: limeDarkTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -1217,11 +1076,7 @@ class AppTheme {
         foregroundColor: emeraldTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: emeraldTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: emeraldTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: emeraldSurface,
@@ -1237,11 +1092,8 @@ class AppTheme {
         unselectedItemColor: emeraldTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.comfortaa(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: emeraldPrimary,
@@ -1267,8 +1119,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: GoogleFonts.comfortaa(color: emeraldTextSecondary),
-        hintStyle: GoogleFonts.comfortaa(color: emeraldTextSecondary),
+        labelStyle: _font(fontFamily, color: emeraldTextSecondary),
+        hintStyle: _font(fontFamily, color: emeraldTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -1279,23 +1131,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: emeraldPrimary,
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: emeraldSurface,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: emeraldTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-        contentTextStyle: GoogleFonts.comfortaa(color: emeraldTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: emeraldTextPrimary),
+        contentTextStyle: _font(fontFamily, color: emeraldTextPrimary),
       ),
       extensions: const [
         SemanticColors(
@@ -1372,11 +1220,7 @@ class AppTheme {
         foregroundColor: emeraldDarkTextPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: emeraldDarkTextPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: _font(fontFamily, fontSize: 18, fontWeight: FontWeight.w600, color: emeraldDarkTextPrimary),
       ),
       cardTheme: CardThemeData(
         color: emeraldDarkSurface,
@@ -1392,11 +1236,8 @@ class AppTheme {
         unselectedItemColor: emeraldDarkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: GoogleFonts.comfortaa(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: GoogleFonts.comfortaa(fontSize: 11),
+        selectedLabelStyle: _font(fontFamily, fontSize: 11, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: _font(fontFamily, fontSize: 11),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: emeraldDarkPrimary,
@@ -1422,8 +1263,8 @@ class AppTheme {
           horizontal: 16,
           vertical: 14,
         ),
-        labelStyle: GoogleFonts.comfortaa(color: emeraldDarkTextSecondary),
-        hintStyle: GoogleFonts.comfortaa(color: emeraldDarkTextSecondary),
+        labelStyle: _font(fontFamily, color: emeraldDarkTextSecondary),
+        hintStyle: _font(fontFamily, color: emeraldDarkTextSecondary),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -1434,23 +1275,19 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600, fontSize: 16),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: emeraldDarkPrimary,
-          textStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w600),
+          textStyle: _font(fontFamily, fontWeight: FontWeight.w600),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: emeraldDarkSurface,
-        titleTextStyle: GoogleFonts.comfortaa(
-          color: emeraldDarkTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-        contentTextStyle: GoogleFonts.comfortaa(color: emeraldDarkTextPrimary, fontSize: 14),
+        titleTextStyle: _font(fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: emeraldDarkTextPrimary),
+        contentTextStyle: _font(fontFamily, color: emeraldDarkTextPrimary),
       ),
       extensions: const [
         SemanticColors(
