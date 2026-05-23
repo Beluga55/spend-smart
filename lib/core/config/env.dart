@@ -39,9 +39,11 @@ class Env {
           final value = trimmed.substring(idx + 1).trim();
           map[key] = value;
         }
-        dotenv.testLoad(mergeWith: map);
+        for (final entry in map.entries) {
+          dotenv.env[entry.key] = entry.value;
+        }
         _loaded = true;
-        debugPrint('[Env] Loaded ${map.length} keys via rootBundle.');
+        debugPrint('[Env] Loaded ${map.length} keys via rootBundle. Keys: ${map.keys.toList()}');
       } catch (fallbackErr) {
         debugPrint('[Env] rootBundle fallback also failed: $fallbackErr');
         // Allow the app to continue with empty values so that CI/build
